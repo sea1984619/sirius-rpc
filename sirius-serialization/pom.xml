@@ -11,5 +11,6 @@
   <name>sirius-serialization</name>
   <modules>
     <module>sirius-serialization-api</module>
+    <module>sirius-serialization-java</module>
   </modules>
 </project>
