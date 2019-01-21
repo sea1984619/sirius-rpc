@@ -15,10 +15,37 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
 public class NettyServer implements Server {
-
+	static final int port = Integer.parseInt(System.getProperty("port", "8007"));
+	
 	@Override
 	public void bind(Integer port) {
-		// TODO Auto-generated method stub
+		EventLoopGroup boss = new NioEventLoopGroup(1);
+		EventLoopGroup worker = new NioEventLoopGroup();
+		ServerBootstrap b=new ServerBootstrap();
+		
+		try {
+			b.group(boss, worker)
+			 .channel(NioServerSocketChannel.class)
+			 .option(ChannelOption.SO_BACKLOG, 100)
+			 .handler(new LoggingHandler(LogLevel.INFO))
+			 .childHandler(new ChannelInitializer<SocketChannel>() {
+
+				@Override
+				protected void initChannel(SocketChannel ch) throws Exception {
+					ChannelPipeline p = ch.pipeline();
+					
+				}
+			 });
+			ChannelFuture f = b.bind(port).sync();
+			f.channel().closeFuture().sync();
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			boss.shutdownGracefully();
+			worker.shutdownGracefully();
+		}
 		
 	}
 
