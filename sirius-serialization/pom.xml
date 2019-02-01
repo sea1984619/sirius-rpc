@@ -12,5 +12,10 @@
   <modules>
     <module>sirius-serialization-api</module>
     <module>sirius-serialization-java</module>
+    <module>sirius-serialization-protostuff</module>
+    <module>sirius-serialization-jdk</module>
+    <module>sirius-serialization-kyro</module>
+    <module>sirius-serialization-kryo</module>
+    <module>sirius-serialization-hessian</module>
   </modules>
 </project>
