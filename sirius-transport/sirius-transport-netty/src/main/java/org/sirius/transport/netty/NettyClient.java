@@ -1,5 +1,6 @@
 package org.sirius.transport.netty;
 
+import org.sirius.transport.api.Channel;
 import org.sirius.transport.api.Client;
 import org.sirius.transport.api.Connection;
 
@@ -20,7 +21,7 @@ public class NettyClient implements Client {
 	static final int SIZE = Integer.parseInt(System.getProperty("size", "256"));
 	
 	@Override
-	public Connection connect(String adress, Integer port) {
+	public Channel connect(String adress, Integer port) {
 
 		EventLoopGroup g = new NioEventLoopGroup();
 		Bootstrap b =new Bootstrap();
@@ -36,6 +37,7 @@ public class NettyClient implements Client {
 	         });
 			ChannelFuture c =b.connect(HOST,PORT).sync();
 			c.channel().closeFuture().sync();
+			return NettyChannel.attachChnanel(c.channel());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

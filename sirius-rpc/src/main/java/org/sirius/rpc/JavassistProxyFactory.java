@@ -1,11 +1,9 @@
 package org.sirius.rpc;
 
 import java.io.FileOutputStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,7 +72,7 @@ public class JavassistProxyFactory implements ProxyFactory {
                          .append(returnName + " ")
                          .append(method.getName())
                          .append("(");
-        	//构造参数(parm0,parm1....)
+        	//构造参数列表(parm0,parm1....)
         	int i = 0;
         	Class<?>[] argTypes =  method.getParameterTypes();
         	if(argTypes.length != 0) {
