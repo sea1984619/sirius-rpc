@@ -1,10 +1,12 @@
 package org.sirius.rpc;
 
 import java.io.FileOutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,8 +19,9 @@ import javassist.CtNewMethod;
 
 public class JavassistProxyFactory implements ProxyFactory {
 
+	private static final AtomicLong PROXY_CLASS_COUNTER = new AtomicLong(0);
 	@Override
-	public <T> T getProxy(Invoker invoker, Class<T> clazz) throws Exception {
+	public Object getProxy(Invoker invoker, Class clazz) throws Exception {
 		if(clazz == null) {
 			throw new RuntimeException("clazz must not be null");
 		}
@@ -27,14 +30,14 @@ public class JavassistProxyFactory implements ProxyFactory {
 			throw new RuntimeException("clazz must not be an interface");
 		}
 		Method[] allMethods = clazz.getDeclaredMethods();
-		List<Method> allPublicMethods = Stream
+		ArrayList<Method> allPublicMethods = (ArrayList<Method>) Stream
 				.of(allMethods)//
 				.filter(m -> Modifier.isPublic(m.getModifiers()))//
 				.filter(m -> !Modifier.isStatic(m.getModifiers()))//
 				.collect(Collectors.toList());
 		
 		final String remoteClassName = clazz.getName() + "_proxy_"//
-				+ UUID.randomUUID().toString().replace("-", "");
+				+ PROXY_CLASS_COUNTER.getAndIncrement();
 
 		// 创建类
 		ClassPool pool = ClassPool.getDefault();
@@ -43,11 +46,17 @@ public class JavassistProxyFactory implements ProxyFactory {
 		CtClass[] interfaces = { pool.getCtClass(clazz.getName())};
 		remoteCtClass.setInterfaces(interfaces);
 
-		// 添加私有成员
+		// 添加invoker字段
 		CtField invokerField = new CtField(pool.get(Invoker.class.getName()), "invoker", remoteCtClass);
 		invokerField.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
 		remoteCtClass.addField(invokerField);
-
+		
+       //添加method[]字段
+		StringBuilder methodsFieldBuilder = new StringBuilder("public static java.lang.reflect.Method[] methods;\r\n");
+		CtField methodsField = CtField.make(methodsFieldBuilder.toString(), remoteCtClass);
+		remoteCtClass.addField(methodsField);
+		
+		
 		// 添加get方法
 		remoteCtClass.addMethod(CtNewMethod.getter("getInvoker", invokerField));
 
@@ -55,15 +64,17 @@ public class JavassistProxyFactory implements ProxyFactory {
 		CtConstructor constructor1 = new CtConstructor(new CtClass[] { pool.get(Invoker.class.getName()) }, remoteCtClass);
 		constructor1.setBody("{$0.invoker = $1;}");
 		remoteCtClass.addConstructor(constructor1);
+		//开始创建代理方法
+		int n = 0;
         for(Method method : allPublicMethods) {
-        	
         	StringBuilder methodBuilder = new StringBuilder();
         	Class<?> returnType = method.getReturnType();
-        	String returnName = returnType != null ? returnType.getName() :"void"; 
+        	String returnName = returnType.equals(Void.TYPE) ? "void" :returnType.getName(); 
         	methodBuilder.append("public ")
                          .append(returnName + " ")
                          .append(method.getName())
                          .append("(");
+        	//构造参数(parm0,parm1....)
         	int i = 0;
         	Class<?>[] argTypes =  method.getParameterTypes();
         	if(argTypes.length != 0) {
@@ -77,8 +88,10 @@ public class JavassistProxyFactory implements ProxyFactory {
             		i++;
             	}
         	}
+        	//生成参数数组 Object[] parmArray ={parm0 ,parm1 ....}
         	StringBuilder parmArrayBuilder = generateParmArray(method);
         	methodBuilder.append(")")
+        	//开始生成方法体
         	             .append("{\r\n")
         		         .append(parmArrayBuilder.toString())
 	                     .append(";\r\n");
@@ -91,18 +104,22 @@ public class JavassistProxyFactory implements ProxyFactory {
         	}
         	methodBuilder.append("this.invoker.invoke")
         	             .append("(")
+        	             .append("methods[" + n + "],")
         	             .append("parmArray")
         	             .append(");\r\n}");
         	System.out.println(methodBuilder.toString());
             CtMethod m = CtNewMethod.make(methodBuilder.toString(), remoteCtClass);
             remoteCtClass.addMethod(m);
+            n++;
         }
         Class<?> invokerClass = remoteCtClass.toClass();
+        invokerClass.getField("methods").set(null, allPublicMethods.toArray(new Method[allPublicMethods.size()]));
+        
         byte[] code = remoteCtClass.toBytecode();
 		FileOutputStream fos = new FileOutputStream(remoteCtClass.getName()+".class");  
         fos.write(code);  
         fos.close();  
-		return (T) invokerClass.getConstructor(Invoker.class).newInstance(invoker);
+		return  invokerClass.getConstructor(Invoker.class).newInstance(invoker);
 	
 	}
 

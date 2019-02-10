@@ -5,5 +5,5 @@ public interface ProxyFactory {
 	/*
 	 * 创建客户端代理
 	 */
-	public <T> T getProxy(Invoker invoker , Class<T> t) throws Exception;
+	public Object getProxy(Invoker invoker , Class clazz) throws Exception;
 }
