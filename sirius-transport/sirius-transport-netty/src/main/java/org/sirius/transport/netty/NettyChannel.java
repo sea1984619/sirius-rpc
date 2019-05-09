@@ -4,6 +4,7 @@ package org.sirius.transport.netty;
 import java.net.SocketAddress;
 
 import org.sirius.transport.api.AbstractChannel;
+import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
 
 import io.netty.util.Attribute;
@@ -51,12 +52,12 @@ public class NettyChannel extends AbstractChannel {
 	}
 
 	@Override
-	public SocketAddress localAdress() {
+	public UnresolvedAddress localAdress() {
 		return null;
 	}
 
 	@Override
-	public SocketAddress remoteAdress() {
+	public UnresolvedAddress remoteAdress() {
 		return null;
 	}
 

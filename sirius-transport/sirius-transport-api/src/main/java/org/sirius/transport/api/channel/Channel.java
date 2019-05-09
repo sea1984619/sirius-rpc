@@ -1,14 +1,14 @@
 package org.sirius.transport.api.channel;
 
-import java.net.SocketAddress;
+import org.sirius.transport.api.UnresolvedAddress;
 
 public interface Channel {
 
 	String id();
 
-	SocketAddress  localAdress();
+	UnresolvedAddress  localAdress();
 	
-	SocketAddress  remoteAdress();
+	UnresolvedAddress  remoteAdress();
 	
 	boolean isActive();
 	
