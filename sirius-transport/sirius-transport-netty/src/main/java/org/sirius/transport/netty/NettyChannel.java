@@ -20,7 +20,7 @@ public class NettyChannel extends AbstractChannel {
 		this.channel = channel;
 	}
 
-	public static NettyChannel attachChnanel(io.netty.channel.Channel channel) {
+	public static NettyChannel attachChannel(io.netty.channel.Channel channel) {
 		Attribute<NettyChannel>  attr = channel.attr(NETTY_CHANNEL_KEY);
 		NettyChannel nc = attr.get();
 		if(nc == null){
@@ -32,6 +32,10 @@ public class NettyChannel extends AbstractChannel {
 		
 		return nc;
 		
+	}
+	
+	public io.netty.channel.Channel nettyChannel() {
+		return this.channel;
 	}
 	@Override
 	public Channel send(Object message) {

@@ -21,6 +21,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>sirius-transport-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sirius-common</artifactId>
+    </dependency>
     
      <dependency>
             <groupId>io.netty</groupId>
