@@ -67,7 +67,7 @@ public class NettyChannelGroup implements ChannelGroup {
 	@Override
 	public int getWeight() {
 		
-		return 0;
+		return this.weight;
 	}
 
 	@Override
@@ -92,7 +92,17 @@ public class NettyChannelGroup implements ChannelGroup {
 		
 	}
 
-	
-	
-
+	@Override
+	public boolean equals(Object o) {
+		if(o == this) return true;
+		if(o == null || o.getClass() != this.getClass()) return false;
+		NettyChannelGroup group = (NettyChannelGroup) o;
+		return group.remoteAddress().equals(remoteAddress);
+		
+	}
+	@Override
+	public int hashCode() {
+		return remoteAddress.hashCode();
+	}
+  
 }

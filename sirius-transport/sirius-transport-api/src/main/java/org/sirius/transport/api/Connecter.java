@@ -17,5 +17,6 @@ public interface Connecter {
 	
 	ChannelGroup group(UnresolvedAddress address);
 	
+	
 	void shutdownGracefully();
 }
