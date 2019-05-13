@@ -3,11 +3,11 @@ package org.sirius.transport.api;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.rpc.consumer.ConsumerProcessor;
 
-public interface Connecter {
+public interface Connecter extends Transporter {
 
 	Config getConfig();
 	
-	ConsumerProcessor ConsumerProcessor();
+	ConsumerProcessor consumerProcessor();
 	
 	void setConsumerProcessor(ConsumerProcessor c);
 	
@@ -16,7 +16,6 @@ public interface Connecter {
 	Connection connect(UnresolvedAddress address,boolean async);
 	
 	ChannelGroup group(UnresolvedAddress address);
-	
 	
 	void shutdownGracefully();
 }
