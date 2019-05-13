@@ -1,13 +1,17 @@
 package org.sirius.transport.api;
 
-import org.sirius.transport.api.channel.ChannelGroup;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.sirius.common.util.internal.logging.CheckNullUtil;
 import org.sirius.rpc.consumer.ConsumerProcessor;
+import org.sirius.transport.api.channel.ChannelGroup;
 
 public abstract class AbstractConnecter implements Connecter {
 
-	private Protocol protocol;
-	private ConsumerProcessor processor;
-	private Config config;
+	protected Protocol protocol;
+	protected ConsumerProcessor processor;
+	protected Config config;
+	protected ConcurrentHashMap<UnresolvedAddress ,ChannelGroup> adressTOchannelGroup  = new ConcurrentHashMap<UnresolvedAddress ,ChannelGroup>();
 	@Override
 	public Protocol protocol() {
 		return this.protocol;
@@ -28,24 +32,19 @@ public abstract class AbstractConnecter implements Connecter {
             this.processor = processor;
 	}
 
-	@Override
-	public Connection connect(UnresolvedAddress address) {
-		return null;
-	}
-
-	@Override
-	public Connection connect(UnresolvedAddress address, boolean async) {
-		return null;
-	}
-
-	@Override
 	public ChannelGroup group(UnresolvedAddress address) {
-		return null;
+		CheckNullUtil.check(address);
+		ChannelGroup group = adressTOchannelGroup.get(address);
+		if(group==null) {
+			ChannelGroup newGroup = creatChannelGroup(address);
+			 group = adressTOchannelGroup.putIfAbsent(address, newGroup);
+			 if(group==null)
+				 return newGroup;
+ 		}
+		return group;
 	}
 
-	@Override
-	public void shutdownGracefully() {
-
-	}
-
+	protected abstract ChannelGroup creatChannelGroup(UnresolvedAddress address);
+	
+	
 }
