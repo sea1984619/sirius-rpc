@@ -1,4 +1,4 @@
-package org.sirius.transport.netty;
+package org.sirius.transport.netty.channel;
 
 
 import java.net.SocketAddress;

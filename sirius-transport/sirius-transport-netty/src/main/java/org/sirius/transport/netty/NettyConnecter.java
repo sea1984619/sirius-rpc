@@ -7,6 +7,7 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.api.AbstractConnecter;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
+import org.sirius.transport.netty.channel.NettyChannelGroup;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
