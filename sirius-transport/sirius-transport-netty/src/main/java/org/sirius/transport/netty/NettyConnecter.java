@@ -43,7 +43,23 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	protected  ChannelGroup creatChannelGroup(UnresolvedAddress address) {
 		 return (ChannelGroup) new NettyChannelGroup(address);
 	 }
+	protected void init() {
+		ThreadFactory factory = new DefaultThreadFactory("connecter", Thread.MAX_PRIORITY);
+		loopGroup = initEventLoopGroup(workers, factory);
+		bootstrap = new Bootstrap().group(loopGroup);
+        doInit();
+	}
 	
+	 protected abstract void doInit();
+
+	@Override
+	public void shutdownGracefully() {
+		loopGroup.shutdownGracefully().syncUninterruptibly();
+		timer.stop();
+		 if (processor != null) {
+	            processor.shutdown();;
+	        }
+	}
 	 /**
      * Create a WriteBufferWaterMark is used to set low water mark and high water mark for the write buffer.
      */
