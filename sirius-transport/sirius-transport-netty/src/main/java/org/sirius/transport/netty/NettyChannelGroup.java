@@ -1,6 +1,5 @@
 package org.sirius.transport.netty;
 
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.sirius.transport.api.UnresolvedAddress;
