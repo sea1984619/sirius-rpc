@@ -1,6 +1,7 @@
 package org.sirius.transport.netty;
 
 import java.util.concurrent.ThreadFactory;
+
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -52,6 +53,7 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	}
 	
 	 protected abstract void doInit();
+
 
 	@Override
 	public void shutdownGracefully() {
