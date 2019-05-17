@@ -63,22 +63,22 @@ public class NettyChannel extends AbstractChannel {
 
 	@Override
 	public boolean isActive() {
-		return false;
+		return channel.isActive();
 	}
 
 	@Override
 	public boolean isAutoRead() {
-		return false;
+		return channel.config().isAutoRead();
 	}
 
 	@Override
-	public boolean setAutoRead(boolean autoRead) {
-		return false;
+	public void setAutoRead(boolean autoRead) {
+		 channel.config().setAutoRead(autoRead);
 	}
 
 	@Override
-	public boolean close() {
-		return false;
+	public void close() {
+		 channel.close();
 	}
 	
 }

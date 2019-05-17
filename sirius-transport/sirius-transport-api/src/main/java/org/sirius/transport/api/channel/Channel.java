@@ -14,9 +14,9 @@ public interface Channel {
 	
 	boolean isAutoRead();
 	
-	boolean setAutoRead(boolean autoRead);
+	void setAutoRead(boolean autoRead);
 	
-	boolean close();
+	void close();
 	
 	Channel send(Object message);
 	

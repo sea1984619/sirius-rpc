@@ -124,12 +124,7 @@ public class NettyTcpConnector extends NettyConnecter {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void setIoRatio(int workerIoRatio) {
-		// TODO Auto-generated method stub
-
-	}
+	
 	@Override
     protected EventLoopGroup initEventLoopGroup(int nThreads, ThreadFactory tFactory) {
         SocketChannelProvider.SocketType socketType = socketType();
