@@ -1,11 +1,9 @@
 package org.sirius.transport.netty.channel;
 
-
-import java.net.SocketAddress;
-
 import org.sirius.transport.api.AbstractChannel;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
+import org.sirius.transport.api.channel.ChannelGroup;
 
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
@@ -14,7 +12,7 @@ public class NettyChannel extends AbstractChannel {
 
 	private io.netty.channel.Channel channel;
 	
-	private static final AttributeKey<NettyChannel> NETTY_CHANNEL_KEY = AttributeKey.valueOf("netty.channel");
+	public static final AttributeKey<NettyChannel> NETTY_CHANNEL_KEY = AttributeKey.valueOf("netty.channel");
 	
 	private NettyChannel(io.netty.channel.Channel channel) {
 		
@@ -53,12 +51,12 @@ public class NettyChannel extends AbstractChannel {
 
 	@Override
 	public UnresolvedAddress localAdress() {
-		return null;
+		return localAdress();
 	}
 
 	@Override
 	public UnresolvedAddress remoteAdress() {
-		return null;
+		return remoteAdress();
 	}
 
 	@Override
@@ -79,6 +77,12 @@ public class NettyChannel extends AbstractChannel {
 	@Override
 	public void close() {
 		 channel.close();
+	}
+
+	@Override
+	public ChannelGroup group() {
+		
+		return null;
 	}
 	
 }

@@ -14,6 +14,8 @@ public interface Channel {
 	
 	boolean isAutoRead();
 	
+	ChannelGroup group();
+	
 	void setAutoRead(boolean autoRead);
 	
 	void close();
