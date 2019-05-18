@@ -12,11 +12,19 @@ public abstract class AbstractConnecter implements Connecter {
 	protected ConsumerProcessor processor;
 	protected Config config;
 	protected ConcurrentHashMap<UnresolvedAddress ,ChannelGroup> adressTOchannelGroup  = new ConcurrentHashMap<UnresolvedAddress ,ChannelGroup>();
-	@Override
+	
+	public AbstractConnecter(Protocol protocol) {
+		this.protocol = protocol;
+	}
+	
 	public Protocol protocol() {
 		return this.protocol;
 	}
 
+	@Override
+	public void setConfig(Config config) {
+		this.config =  config;
+	}
 	@Override
 	public Config getConfig() {
 		return this.config;

@@ -2,6 +2,8 @@ package org.sirius.transport.netty;
 
 import java.util.concurrent.ThreadFactory;
 
+import org.sirius.common.util.Constants;
+import org.sirius.transport.api.Config;
 import org.sirius.transport.api.Connection;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
@@ -19,33 +21,35 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyTcpConnector extends NettyConnecter {
 
 	private final boolean isNative;// use native transport 
-	private final TcpConnectorConfig config = new TcpConnectorConfig();
 	
 	public NettyTcpConnector() {
-		super(Protocol.TCP);
-		isNative = false;
-        init();
+		this(Constants.AVAILABLE_PROCESSORS << 1,false);
 	}
 	public NettyTcpConnector(boolean isNative) {
-        super(Protocol.TCP);
-        this.isNative = isNative;
-        init();
+       this(Constants.AVAILABLE_PROCESSORS << 1,isNative);
     }
 	 public NettyTcpConnector(int nWorkers) {
-	        super(Protocol.TCP, nWorkers);
-	        isNative = false;
-	        init();
+	   this(nWorkers,false);
 	}
 	public NettyTcpConnector(int nWorkers, boolean isNative) {
 	        super(Protocol.TCP, nWorkers);
 	        this.isNative = isNative;
+	        TcpConnectorConfig config = new TcpConnectorConfig();
+	        setConfig(config);
 	        init();
 	}
+	
+	@Override
+	public void setConfig(Config config) {
+		this.config =  config;
+	}
+	
 	protected void setOptions() {
+		
         Bootstrap boot = bootstrap();
-        TcpConnectorConfig child = config;
-        
+        TcpConnectorConfig child = (TcpConnectorConfig) this.config;
         EventLoopGroup worker = loopGroup();
+        
         int ioRatio = config.getOption(Option.IO_RATIO);
         if (worker instanceof EpollEventLoopGroup) {
             ((EpollEventLoopGroup) worker).setIoRatio(ioRatio);
@@ -168,6 +172,5 @@ public class NettyTcpConnector extends NettyConnecter {
 	        }
 	        return SocketChannelProvider.SocketType.JAVA_NIO;
 	    }
-	
 
 }

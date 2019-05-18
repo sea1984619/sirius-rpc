@@ -1,11 +1,12 @@
 package org.sirius.transport.netty;
 
 import java.util.concurrent.ThreadFactory;
-
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.api.AbstractConnecter;
+import org.sirius.transport.api.Config;
+import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
@@ -20,7 +21,6 @@ public abstract class NettyConnecter extends AbstractConnecter {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyConnecter.class);
 	protected final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
-	
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workers;
@@ -30,7 +30,7 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	}
 	
 	public NettyConnecter(Protocol protocol, int workers) {
-		this.protocol = protocol;
+		super(protocol);
 		this.workers = workers;
 	}
 	
@@ -41,18 +41,23 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	 protected EventLoopGroup loopGroup() {
 	        return loopGroup;
     }
+	 
 	@Override
 	protected  ChannelGroup creatChannelGroup(UnresolvedAddress address) {
 		 return (ChannelGroup) new NettyChannelGroup(address);
 	 }
+	
+	
 	protected void init() {
 		ThreadFactory factory = new DefaultThreadFactory("connecter", Thread.MAX_PRIORITY);
 		loopGroup = initEventLoopGroup(workers, factory);
 		bootstrap = new Bootstrap().group(loopGroup);
+		Config config = getConfig();
+		config.setOption(Option.IO_RATIO, 100);
         doInit();
 	}
 	
-	 protected abstract void doInit();
+	protected abstract void doInit();
 
 
 	@Override

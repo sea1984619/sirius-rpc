@@ -7,6 +7,8 @@ public interface Connecter extends Transporter {
 
 	Config getConfig();
 	
+	void setConfig(Config config);
+	
 	ConsumerProcessor consumerProcessor();
 	
 	void setConsumerProcessor(ConsumerProcessor c);
