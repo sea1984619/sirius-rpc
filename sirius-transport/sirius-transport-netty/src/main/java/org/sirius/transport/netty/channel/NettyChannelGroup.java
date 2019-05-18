@@ -9,7 +9,6 @@ import org.sirius.common.util.IntegerSequencer;
 import org.sirius.common.util.Lists;
 import io.netty.channel.ChannelFutureListener;
 
-
 public class NettyChannelGroup implements ChannelGroup {
 
 	private UnresolvedAddress remoteAddress;
