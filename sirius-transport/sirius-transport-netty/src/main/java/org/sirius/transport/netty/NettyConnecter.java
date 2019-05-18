@@ -1,6 +1,7 @@
 package org.sirius.transport.netty;
 
 import java.util.concurrent.ThreadFactory;
+
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -9,11 +10,15 @@ import org.sirius.transport.api.Config;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
+import org.sirius.transport.netty.SocketChannelProvider.SocketType;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
@@ -23,15 +28,15 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	protected final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
-	private int workers;
+	private int workerNum;
 	
 	public NettyConnecter(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);
 	}
 	
-	public NettyConnecter(Protocol protocol, int workers) {
+	public NettyConnecter(Protocol protocol, int workerNum) {
 		super(protocol);
-		this.workers = workers;
+		this.workerNum = workerNum;
 	}
 	
 	 protected Bootstrap bootstrap() {
@@ -50,24 +55,13 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	
 	protected void init() {
 		ThreadFactory factory = new DefaultThreadFactory("connecter", Thread.MAX_PRIORITY);
-		loopGroup = initEventLoopGroup(workers, factory);
+		loopGroup = initEventLoopGroup(workerNum, factory);
 		bootstrap = new Bootstrap().group(loopGroup);
+		initChannelFactory();
 		Config config = getConfig();
 		config.setOption(Option.IO_RATIO, 100);
-        doInit();
 	}
 	
-	protected abstract void doInit();
-
-
-	@Override
-	public void shutdownGracefully() {
-		loopGroup.shutdownGracefully().syncUninterruptibly();
-		timer.stop();
-		 if (processor != null) {
-	            processor.shutdown();;
-	        }
-	}
 	 /**
      * Create a WriteBufferWaterMark is used to set low water mark and high water mark for the write buffer.
      */
@@ -81,8 +75,57 @@ public abstract class NettyConnecter extends AbstractConnecter {
         return waterMark;
     }
 
-    /**
-     * Create a new instance using the specified number of threads, the given {@link ThreadFactory}.
-     */
-    protected abstract EventLoopGroup initEventLoopGroup(int nThreads, ThreadFactory tFactory);
+    
+    protected EventLoopGroup initEventLoopGroup(int nThreads, ThreadFactory tFactory) {
+        SocketChannelProvider.SocketType socketType = socketType();
+        switch (socketType) {
+            case NATIVE_EPOLL:
+                return new EpollEventLoopGroup(nThreads, tFactory);
+            case NATIVE_KQUEUE:
+                return new KQueueEventLoopGroup(nThreads, tFactory);
+            case JAVA_NIO:
+                return new NioEventLoopGroup(nThreads, tFactory);
+            case NATIVE_EPOLL_DOMAIN:
+                return new EpollEventLoopGroup(nThreads, tFactory);
+            case NATIVE_KQUEUE_DOMAIN:
+                return new KQueueEventLoopGroup(nThreads, tFactory);
+            default:
+                throw new IllegalStateException("Invalid socket type: " + socketType);
+        }
+    }
+    
+	protected void initChannelFactory() {
+        SocketChannelProvider.SocketType socketType = socketType();
+        switch (socketType) {
+            case NATIVE_EPOLL:
+                bootstrap().channelFactory(SocketChannelProvider.NATIVE_EPOLL_CONNECTOR);
+                break;
+            case NATIVE_KQUEUE:
+                bootstrap().channelFactory(SocketChannelProvider.NATIVE_KQUEUE_CONNECTOR);
+                break;
+            case JAVA_NIO:
+                bootstrap().channelFactory(SocketChannelProvider.JAVA_NIO_CONNECTOR);
+                break;
+            case NATIVE_EPOLL_DOMAIN:
+                bootstrap().channelFactory(SocketChannelProvider.NATIVE_EPOLL_DOMAIN_CONNECTOR);
+                break;
+            case NATIVE_KQUEUE_DOMAIN:
+                bootstrap().channelFactory(SocketChannelProvider.NATIVE_KQUEUE_DOMAIN_CONNECTOR);
+                break;
+            default:
+                throw new IllegalStateException("Invalid socket type: " + socketType);
+        }
+    }
+	
+	@Override
+	public void shutdownGracefully() {
+		loopGroup.shutdownGracefully().syncUninterruptibly();
+		timer.stop();
+		 if (processor != null) {
+	            processor.shutdown();;
+	        }
+	}
+	
+	protected abstract SocketType socketType();
+   
 }

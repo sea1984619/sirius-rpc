@@ -14,7 +14,9 @@ public class NettyChannel extends AbstractChannel {
 	
 	public static final AttributeKey<NettyChannel> NETTY_CHANNEL_KEY = AttributeKey.valueOf("netty.channel");
 	
-	private NettyChannel(io.netty.channel.Channel channel) {
+	private ChannelGroup group;
+	
+	public NettyChannel(io.netty.channel.Channel channel) {
 		
 		this.channel = channel;
 	}
@@ -38,9 +40,8 @@ public class NettyChannel extends AbstractChannel {
 	}
 	@Override
 	public Channel send(Object message) {
-		
 		channel.writeAndFlush(message,channel.voidPromise());
-		return null;
+		return this;
 		
 	}
 
@@ -80,9 +81,12 @@ public class NettyChannel extends AbstractChannel {
 	}
 
 	@Override
-	public ChannelGroup group() {
-		
-		return null;
+	public ChannelGroup getGroup() {
+		return this.group;
 	}
-	
+
+	@Override
+	public void setGroup(ChannelGroup group) {
+		this.group = group;
+	}
 }

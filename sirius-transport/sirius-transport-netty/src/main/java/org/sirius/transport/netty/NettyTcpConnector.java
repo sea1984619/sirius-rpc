@@ -1,5 +1,7 @@
 package org.sirius.transport.netty;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.ThreadFactory;
 
 import org.sirius.common.util.Constants;
@@ -7,8 +9,14 @@ import org.sirius.transport.api.Config;
 import org.sirius.transport.api.Connection;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
+import org.sirius.transport.api.channel.Channel;
+import org.sirius.transport.api.channel.ChannelGroup;
+import org.sirius.transport.api.exception.ConnectFailedException;
+import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
@@ -21,7 +29,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyTcpConnector extends NettyConnecter {
 
 	private final boolean isNative;// use native transport 
-	
+	private final Object lock = new Object();
 	public NettyTcpConnector() {
 		this(Constants.AVAILABLE_PROCESSORS << 1,false);
 	}
@@ -112,56 +120,46 @@ public class NettyTcpConnector extends NettyConnecter {
         }
     }
 	@Override
-	public Connection connect(UnresolvedAddress address) {
-		// TODO Auto-generated method stub
-		return null;
+	public Channel connect(UnresolvedAddress address) {
+		return connect(address,true);
 	}
 
 	@Override
-	public Connection connect(UnresolvedAddress address, boolean async) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected void doInit() {
-		// TODO Auto-generated method stub
-
-	}
+	public Channel connect(UnresolvedAddress address, boolean async) {
+		setOptions();
+		
+		Bootstrap boot = bootstrap();
+		SocketAddress socketAddress =  InetSocketAddress.createUnresolved(address.getHost(), address.getPort());
+		ChannelGroup  group = group(address);
 	
-	@Override
-    protected EventLoopGroup initEventLoopGroup(int nThreads, ThreadFactory tFactory) {
-        SocketChannelProvider.SocketType socketType = socketType();
-        switch (socketType) {
-            case NATIVE_EPOLL:
-                return new EpollEventLoopGroup(nThreads, tFactory);
-            case NATIVE_KQUEUE:
-                return new KQueueEventLoopGroup(nThreads, tFactory);
-            case JAVA_NIO:
-                return new NioEventLoopGroup(nThreads, tFactory);
-            default:
-                throw new IllegalStateException("Invalid socket type: " + socketType);
-        }
-    }
-	 protected void initChannelFactory() {
-	        SocketChannelProvider.SocketType socketType = socketType();
-	        switch (socketType) {
-	            case NATIVE_EPOLL:
-	                bootstrap().channelFactory(SocketChannelProvider.NATIVE_EPOLL_CONNECTOR);
-	                break;
-	            case NATIVE_KQUEUE:
-	                bootstrap().channelFactory(SocketChannelProvider.NATIVE_KQUEUE_CONNECTOR);
-	                break;
-	            case JAVA_NIO:
-	                bootstrap().channelFactory(SocketChannelProvider.JAVA_NIO_CONNECTOR);
-	                break;
-	            default:
-	                throw new IllegalStateException("Invalid socket type: " + socketType);
+		ChannelFuture future;
+		try {
+			synchronized (lock) {
+	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
+	                @Override
+	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
+	                    ch.pipeline().addLast(null);
+	                }
+	            });
+
+	            future = boot.connect(socketAddress);
+	            io.netty.channel.Channel channel =future.channel();
+	            NettyChannel nettyChannel = NettyChannel.attachChannel(channel);
 	        }
-	    }
-
-
-	 protected SocketChannelProvider.SocketType socketType() {
+			if(!async) {
+				future.sync();
+			}
+			
+		}catch (Throwable t) {
+            throw new ConnectFailedException("Connects to [" + address + "] fails", t);
+        }
+		
+		 
+		return null;
+	}
+   
+	@Override
+	protected SocketChannelProvider.SocketType socketType() {
 	        if (isNative && NativeSupport.isNativeEPollAvailable()) {
 	            // netty provides the native socket transport for Linux using JNI.
 	            return SocketChannelProvider.SocketType.NATIVE_EPOLL;
@@ -172,5 +170,5 @@ public class NettyTcpConnector extends NettyConnecter {
 	        }
 	        return SocketChannelProvider.SocketType.JAVA_NIO;
 	    }
-
+	
 }
