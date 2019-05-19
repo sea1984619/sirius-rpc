@@ -39,7 +39,7 @@ public abstract class NettyConnecter extends AbstractConnecter {
 		this.workerNum = workerNum;
 	}
 	
-	 protected Bootstrap bootstrap() {
+	 public Bootstrap bootstrap() {
 	        return bootstrap;
 	}
 	 

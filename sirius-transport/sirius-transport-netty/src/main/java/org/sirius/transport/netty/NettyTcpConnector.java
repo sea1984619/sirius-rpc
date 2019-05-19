@@ -133,6 +133,7 @@ public class NettyTcpConnector extends NettyConnecter {
 		ChannelGroup  group = group(address);
 	
 		ChannelFuture future;
+	    NettyChannel nettyChannel;
 		try {
 			synchronized (lock) {
 	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
@@ -144,7 +145,7 @@ public class NettyTcpConnector extends NettyConnecter {
 
 	            future = boot.connect(socketAddress);
 	            io.netty.channel.Channel channel =future.channel();
-	            NettyChannel nettyChannel = NettyChannel.attachChannel(channel);
+	            nettyChannel = NettyChannel.attachChannel(channel);
 	        }
 			if(!async) {
 				future.sync();
@@ -155,7 +156,7 @@ public class NettyTcpConnector extends NettyConnecter {
         }
 		
 		 
-		return null;
+		return nettyChannel;
 	}
    
 	@Override
