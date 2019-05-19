@@ -9,7 +9,7 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.api.AddressReconnectManager;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
-import org.sirius.transport.netty.NettyConnecter;
+import org.sirius.transport.netty.NettyConnector;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
 
@@ -33,10 +33,10 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	private final static HashedWheelTimer timer = new HashedWheelTimer(
 			new DefaultThreadFactory("connector.timer", true));
 	private final static int MaxAttempts = 12;
-	private NettyConnecter connecter;
+	private NettyConnector connector;
 
-	public ReconnectHandler(NettyConnecter connecter) {
-		this.connecter = connecter;
+	public ReconnectHandler(NettyConnector connector) {
+		this.connector = connector;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 		logger.warn("Disconnects with {}, address: {}", channel, address);
 		
 		if(isReconnectNeeded(address,group)) {
-			ReconnectTask task = new ReconnectTask(connecter, group, address, 1);
+			ReconnectTask task = new ReconnectTask(connector, group, address, 1);
 			timer.newTimeout(task, 2<<1, TimeUnit.MILLISECONDS);
 		}
 		
@@ -76,19 +76,19 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 		ChannelGroup group;
 		int attempts;
 		UnresolvedAddress remoteAddress;
-		NettyConnecter connecter;
+		NettyConnector connector;
 
-		public ReconnectTask(NettyConnecter connecter, ChannelGroup group, UnresolvedAddress remoteAddress, int attempts) {
+		public ReconnectTask(NettyConnector connector, ChannelGroup group, UnresolvedAddress remoteAddress, int attempts) {
 			this.group = group;
 			this.remoteAddress = remoteAddress;
 			this.attempts = attempts;
-			this.connecter = connecter;
+			this.connector = connector;
 		}
 
 		@Override
 		public void run(Timeout timeout) throws Exception {
 			if(attempts <= ReconnectHandler.MaxAttempts && isReconnectNeeded(remoteAddress,group)) {
-				Bootstrap bootstrap = connecter.bootstrap();
+				Bootstrap bootstrap = connector.bootstrap();
 				SocketAddress socketAddress =  InetSocketAddress.createUnresolved(remoteAddress.getHost(), remoteAddress.getPort());
 			
 				ChannelFuture future;
@@ -115,7 +115,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 						if(!succeed) {
 							attempts ++;
 							long timeOut = 2 << attempts;
-							ReconnectTask newTask = new ReconnectTask(connecter, group, remoteAddress, attempts);
+							ReconnectTask newTask = new ReconnectTask(connector, group, remoteAddress, attempts);
 							timer.newTimeout(newTask, timeOut, TimeUnit.MILLISECONDS);
 						}
 					});

@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 
 import org.sirius.common.util.Constants;
 import org.sirius.transport.api.Config;
+import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
@@ -24,7 +25,7 @@ import io.netty.channel.epoll.EpollMode;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 
-public class NettyTcpConnector extends NettyConnecter {
+public class NettyTcpConnector extends NettyConnector {
 
 	private final boolean isNative;// use native transport 
 	public NettyTcpConnector() {

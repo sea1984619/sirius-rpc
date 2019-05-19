@@ -4,16 +4,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.util.internal.logging.CheckNullUtil;
 import org.sirius.rpc.consumer.ConsumerProcessor;
+import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.channel.ChannelGroup;
 
-public abstract class AbstractConnecter implements Connecter {
+public abstract class AbstractConnector implements Connector {
 
 	protected Protocol protocol;
 	protected ConsumerProcessor processor;
 	protected Config config;
 	protected ConcurrentHashMap<UnresolvedAddress ,ChannelGroup> adressTOchannelGroup  = new ConcurrentHashMap<UnresolvedAddress ,ChannelGroup>();
 	
-	public AbstractConnecter(Protocol protocol) {
+	public AbstractConnector(Protocol protocol) {
 		this.protocol = protocol;
 	}
 	

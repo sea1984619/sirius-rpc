@@ -5,9 +5,10 @@ import java.util.concurrent.ThreadFactory;
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.transport.api.AbstractConnecter;
+import org.sirius.transport.api.AbstractConnector;
 import org.sirius.transport.api.Config;
 import org.sirius.transport.api.Option;
+import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.netty.SocketChannelProvider.SocketType;
@@ -23,20 +24,20 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
-public abstract class NettyConnecter extends AbstractConnecter {
+public abstract class NettyConnector extends AbstractConnector {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyConnecter.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyConnector.class);
 	protected final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;
 	private ChannelHandler handlers[];
 	
-	public NettyConnecter(Protocol protocol) {
+	public NettyConnector(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);
 	}
 	
-	public NettyConnecter(Protocol protocol, int workerNum) {
+	public NettyConnector(Protocol protocol, int workerNum) {
 		super(protocol);
 		this.workerNum = workerNum;
 	}
@@ -56,7 +57,7 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	
 	
 	protected void init() {
-		ThreadFactory factory = new DefaultThreadFactory("connecter", Thread.MAX_PRIORITY);
+		ThreadFactory factory = new DefaultThreadFactory("connector", Thread.MAX_PRIORITY);
 		loopGroup = initEventLoopGroup(workerNum, factory);
 		bootstrap = new Bootstrap().group(loopGroup);
 		initChannelFactory();
