@@ -2,11 +2,9 @@ package org.sirius.transport.netty;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.concurrent.ThreadFactory;
 
 import org.sirius.common.util.Constants;
 import org.sirius.transport.api.Config;
-import org.sirius.transport.api.Connection;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
@@ -146,6 +144,7 @@ public class NettyTcpConnector extends NettyConnecter {
 	            future = boot.connect(socketAddress);
 	            io.netty.channel.Channel channel =future.channel();
 	            nettyChannel = NettyChannel.attachChannel(channel);
+	            nettyChannel.setGroup(group);
 	        }
 			if(!async) {
 				future.sync();

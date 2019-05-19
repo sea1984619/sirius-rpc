@@ -64,14 +64,12 @@ public class NettyChannelGroup implements ChannelGroup {
 
 	@Override
 	public int getWeight() {
-		
 		return this.weight;
 	}
 
 	@Override
 	public void setWeight(int weight) {
 		this.weight = weight;
-		
 	}
 
 	@Override
@@ -80,6 +78,11 @@ public class NettyChannelGroup implements ChannelGroup {
 	}
 
 	@Override
+	public int size() {
+		return channels.size();
+	}
+  
+	@Override
 	public int getCapacity() {
 		return this.capacity;
 	}
@@ -87,7 +90,6 @@ public class NettyChannelGroup implements ChannelGroup {
 	@Override
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
-		
 	}
 
 	@Override
@@ -102,5 +104,5 @@ public class NettyChannelGroup implements ChannelGroup {
 	public int hashCode() {
 		return remoteAddress.hashCode();
 	}
-  
+	
 }

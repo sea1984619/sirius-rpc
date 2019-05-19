@@ -6,10 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.transport.api.Connecter;
+import org.sirius.transport.api.AddressReconnectManager;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
-import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.NettyConnecter;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
@@ -18,6 +17,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
@@ -26,6 +26,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
+@ChannelHandler.Sharable
 public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ReconnectHandler.class);
@@ -34,7 +35,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	private final static int MaxAttempts = 12;
 	private NettyConnecter connecter;
 
-	public ReconnectHandler(NettyConnecter connector) {
+	public ReconnectHandler(NettyConnecter connecter) {
 		this.connecter = connecter;
 	}
 
@@ -104,6 +105,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 			            future = bootstrap.connect(socketAddress);
 			            io.netty.channel.Channel channel =future.channel();
 			            nettyChannel = NettyChannel.attachChannel(channel);
+			            nettyChannel.setGroup(group);
 			        }
 					future.addListener((ChannelFutureListener) f ->{
 						boolean succeed = f.isSuccess();
@@ -123,6 +125,6 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	private boolean isReconnectNeeded(UnresolvedAddress address,ChannelGroup group) {
-		return true;
+		return AddressReconnectManager.isNeedReonnent(address) && (group == null || group.size() < group.getCapacity());
 	}
 }

@@ -31,6 +31,8 @@ public interface ChannelGroup {
 	
 	boolean  remove(Channel c);
 	
+	int size();
+	
 	int  getCapacity();
 	
 	void setCapacity(int capacity);
