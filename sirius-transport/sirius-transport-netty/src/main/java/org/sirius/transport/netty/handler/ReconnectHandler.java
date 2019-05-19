@@ -85,10 +85,12 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void run(Timeout timeout) throws Exception {
-			logger.warn("尝试重新链接 {} ,当前第{}次", remoteAddress, attempts );
-			if(attempts <= ReconnectHandler.MaxAttempts && isReconnectNeeded(remoteAddress,group)) {
-				Bootstrap bootstrap = connector.bootstrap();
 			
+			if(attempts <= ReconnectHandler.MaxAttempts && isReconnectNeeded(remoteAddress,group)) {
+				
+				logger.warn("尝试重新链接 {} ,当前第{}次", remoteAddress, attempts );
+				
+				Bootstrap bootstrap = connector.bootstrap();
 				ChannelFuture future;
 			    NettyChannel nettyChannel;
 				
