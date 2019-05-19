@@ -53,10 +53,4 @@ public abstract class AbstractAcceptor implements Acceptor {
 		return this.processor;
 	}
 
-	@Override
-	public void shutdownGracefully() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

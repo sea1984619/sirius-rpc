@@ -6,7 +6,9 @@ import org.sirius.rpc.provider.ProviderProcessor;
 
 public interface Acceptor {
 
-	void start();
+	void start() throws InterruptedException;
+	
+	void start(boolean sync) throws InterruptedException;
 	
 	Config getConfig();
 	
