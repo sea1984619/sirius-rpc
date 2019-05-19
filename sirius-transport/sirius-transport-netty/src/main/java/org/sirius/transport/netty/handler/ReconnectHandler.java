@@ -1,6 +1,5 @@
 package org.sirius.transport.netty.handler;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -34,21 +33,20 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 			new DefaultThreadFactory("connector.timer", true));
 	private final static int MaxAttempts = 12;
 	private NettyConnector connector;
-
 	public ReconnectHandler(NettyConnector connector) {
 		this.connector = connector;
 	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		
-		NettyChannel channel = (NettyChannel) ctx.channel().attr(NettyChannel.NETTY_CHANNEL_KEY);
+		Channel ch = ctx.channel();
+		NettyChannel channel = (NettyChannel) ch.attr(NettyChannel.NETTY_CHANNEL_KEY).get();
 		NettyChannelGroup group = (NettyChannelGroup) channel.getGroup();
 		
 		if (group != null)
 			group.add(channel);
 		
-		logger.info("connects to {}", channel);
+		logger.info("connects to {}", ch);
 		
 		ctx.fireChannelActive();
 	}
@@ -57,8 +55,8 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		
 		Channel channel = ctx.channel();
-		NettyChannel nettyChannel = (NettyChannel) channel.attr(NettyChannel.NETTY_CHANNEL_KEY);
-		UnresolvedAddress address = nettyChannel.remoteAdress();
+		NettyChannel nettyChannel = (NettyChannel) channel.attr(NettyChannel.NETTY_CHANNEL_KEY).get();
+		SocketAddress address = nettyChannel.remoteAdress();
 		NettyChannelGroup group = (NettyChannelGroup) nettyChannel.getGroup();
 		
 		logger.warn("Disconnects with {}, address: {}", channel, address);
@@ -75,10 +73,10 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 		ChannelGroup group;
 		int attempts;
-		UnresolvedAddress remoteAddress;
+		SocketAddress remoteAddress;
 		NettyConnector connector;
 
-		public ReconnectTask(NettyConnector connector, ChannelGroup group, UnresolvedAddress remoteAddress, int attempts) {
+		public ReconnectTask(NettyConnector connector, ChannelGroup group, SocketAddress remoteAddress, int attempts) {
 			this.group = group;
 			this.remoteAddress = remoteAddress;
 			this.attempts = attempts;
@@ -87,9 +85,9 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 		@Override
 		public void run(Timeout timeout) throws Exception {
+			logger.warn("尝试重新链接 {} ,当前第{}次", remoteAddress, attempts );
 			if(attempts <= ReconnectHandler.MaxAttempts && isReconnectNeeded(remoteAddress,group)) {
 				Bootstrap bootstrap = connector.bootstrap();
-				SocketAddress socketAddress =  InetSocketAddress.createUnresolved(remoteAddress.getHost(), remoteAddress.getPort());
 			
 				ChannelFuture future;
 			    NettyChannel nettyChannel;
@@ -98,11 +96,11 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 						bootstrap.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 			                @Override
 			                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-			                    ch.pipeline().addLast(null);
+			                    ch.pipeline().addLast(connector.getHandlersArray());
 			                }
 			            });
 
-			            future = bootstrap.connect(socketAddress);
+			            future = bootstrap.connect(remoteAddress);
 			            io.netty.channel.Channel channel =future.channel();
 			            nettyChannel = NettyChannel.attachChannel(channel);
 			            nettyChannel.setGroup(group);
@@ -124,7 +122,9 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 	}
 
-	private boolean isReconnectNeeded(UnresolvedAddress address,ChannelGroup group) {
-		return AddressReconnectManager.isNeedReonnent(address) && (group == null || group.size() < group.getCapacity());
+	private boolean isReconnectNeeded(SocketAddress address,ChannelGroup group) {
+		//return AddressReconnectManager.isNeedReonnent(address) && (group == null || group.size() < group.getCapacity());
+		
+		return  true ;
 	}
 }

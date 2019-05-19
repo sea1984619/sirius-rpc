@@ -174,5 +174,13 @@ public abstract class NettyAcceptor extends AbstractAcceptor {
 	 * Create a new {@link io.netty.channel.Channel} and bind it.
 	 */
 	protected abstract ChannelFuture bind(SocketAddress localAddress);
+	
+	@Override
+    public String toString() {
+        return "Socket address:[" + address + ']'
+                + ", socket type: " + socketType()
+                + Constants.NEWLINE
+                + bootstrap();
+    }
 
 }

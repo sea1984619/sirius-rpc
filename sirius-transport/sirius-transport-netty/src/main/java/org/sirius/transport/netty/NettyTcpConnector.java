@@ -13,6 +13,8 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
+import org.sirius.transport.netty.handler.ReconnectHandler;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -28,6 +30,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyTcpConnector extends NettyConnector {
 
 	private final boolean isNative;// use native transport 
+	ReconnectHandler reconnectHandler = new ReconnectHandler(this);
+	
 	public NettyTcpConnector() {
 		this(Constants.AVAILABLE_PROCESSORS << 1,false);
 	}
@@ -43,6 +47,7 @@ public class NettyTcpConnector extends NettyConnector {
 	        TcpConnectorConfig config = new TcpConnectorConfig();
 	        setConfig(config);
 	        init();
+	        this.getHandlers().add(reconnectHandler);
 	}
 	
 	@Override
@@ -137,7 +142,7 @@ public class NettyTcpConnector extends NettyConnector {
 	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 	                @Override
 	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-	                    ch.pipeline().addLast();
+	                    ch.pipeline().addLast(reconnectHandler);
 	                }
 	            });
 
