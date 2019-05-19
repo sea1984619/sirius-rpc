@@ -27,7 +27,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyTcpConnector extends NettyConnecter {
 
 	private final boolean isNative;// use native transport 
-	private final Object lock = new Object();
 	public NettyTcpConnector() {
 		this(Constants.AVAILABLE_PROCESSORS << 1,false);
 	}
@@ -133,11 +132,11 @@ public class NettyTcpConnector extends NettyConnecter {
 		ChannelFuture future;
 	    NettyChannel nettyChannel;
 		try {
-			synchronized (lock) {
+			synchronized (boot) {
 	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 	                @Override
 	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-	                    ch.pipeline().addLast(null);
+	                    ch.pipeline().addLast();
 	                }
 	            });
 

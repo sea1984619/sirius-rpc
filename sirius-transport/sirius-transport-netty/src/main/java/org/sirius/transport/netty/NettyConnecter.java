@@ -14,6 +14,7 @@ import org.sirius.transport.netty.SocketChannelProvider.SocketType;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -29,6 +30,7 @@ public abstract class NettyConnecter extends AbstractConnecter {
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;
+	private ChannelHandler handlers[];
 	
 	public NettyConnecter(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);
@@ -62,6 +64,9 @@ public abstract class NettyConnecter extends AbstractConnecter {
 		config.setOption(Option.IO_RATIO, 100);
 	}
 	
+	public ChannelHandler[] getHandlers() {
+		return this.handlers;
+	}
 	 /**
      * Create a WriteBufferWaterMark is used to set low water mark and high water mark for the write buffer.
      */
