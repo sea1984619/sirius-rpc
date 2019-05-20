@@ -21,13 +21,6 @@ import org.sirius.common.util.internal.UnsafeUtil;
 
 import sun.misc.Unsafe;
 
-
-/**
- * jupiter
- * org.jupiter.common.util
- *
- * @author jiachun.fjc
- */
 public final class ThrowUtil {
 
     private static final UnsafeReferenceFieldUpdater<Throwable, Throwable> causeUpdater =
