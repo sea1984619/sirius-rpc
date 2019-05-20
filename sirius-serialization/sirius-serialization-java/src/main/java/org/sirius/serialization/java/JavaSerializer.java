@@ -29,7 +29,6 @@ public class JavaSerializer implements Serializer{
 				if(oos != null)
 				oos.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -46,14 +45,12 @@ public class JavaSerializer implements Serializer{
 			oos.flush();
 			return out.toByteArray();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
 			try {
 				if(oos != null)
 				oos.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -68,14 +65,12 @@ public class JavaSerializer implements Serializer{
 			Object o = ois.readObject();
 			return cls.cast(o);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if(ois != null) {
 				try {
 					ois.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -94,7 +89,6 @@ public class JavaSerializer implements Serializer{
 			Object o = ois.readObject();
 			return clazz.cast(o);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally {
@@ -102,7 +96,6 @@ public class JavaSerializer implements Serializer{
 				try {
 					ois.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
