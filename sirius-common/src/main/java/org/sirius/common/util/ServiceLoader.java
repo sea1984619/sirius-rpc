@@ -118,6 +118,10 @@ public final class ServiceLoader<S> implements Iterable<S> {
 
     // parse a single line from the given configuration file, adding the name
     // on the line to the names list.
+    // 解析服务提供者配置文件中的一行
+    // 首先去掉注释校验，然后保存
+    // 返回下一行行号
+    // 重复的配置项和已经被实例化的配置项不会被保存
     private int parseLine(Class<?> service, URL u, BufferedReader r, int lc, List<String> names)
             throws IOException, ServiceConfigurationError {
 
@@ -152,6 +156,8 @@ public final class ServiceLoader<S> implements Iterable<S> {
         return lc + 1;
     }
 
+    // 解析配置文件，解析指定的url配置文件
+    // 使用parseLine方法进行解析，未被实例化的服务提供者会被保存到缓存中去
     @SuppressWarnings("all")
     private Iterator<String> parse(Class<?> service, URL url) {
         InputStream in = null;

@@ -15,15 +15,6 @@
  */
 package org.sirius.serialization.api;
 
-/**
- * A workaround for object arrays serialize with null value error:
- * to use a special value (enum) to denote none/null.
- *
- * jupiter
- * org.jupiter.serialization
- *
- * @author jiachun.fjc
- */
 public enum ArrayElement {
     NULL
 }
