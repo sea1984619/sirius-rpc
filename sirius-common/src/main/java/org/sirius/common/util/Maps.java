@@ -26,19 +26,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.sirius.common.concurrent.NonBlockingHashMap;
 import org.sirius.common.concurrent.NonBlockingHashMapLong;
 
-
-
-/**
- * Static utility methods pertaining to {@link Map} instances.
- *
- * jupiter
- * org.jupiter.common.util
- *
- * @author jiachun.fjc
- */
 public final class Maps {
 
-    private static final boolean USE_NON_BLOCKING_HASH = SystemPropertyUtil.getBoolean("jupiter.use.non_blocking_hash", false);
+    private static final boolean USE_NON_BLOCKING_HASH = SystemPropertyUtil.getBoolean("use.non_blocking_hash", false);
 
     /**
      * Creates a mutable, empty {@code HashMap} instance.

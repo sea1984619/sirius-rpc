@@ -1,24 +1,32 @@
 package org.sirius.serialization.api;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 public interface OutputBuf {
 
-	// 数据输出源为outputStream
-	OutputStream OutputStream();
+    /**
+     * Exposes this backing data as an {@link OutputStream}.
+     */
+    OutputStream outputStream();
 
-	// 数据输出源为ByteBuffer
-	ByteBuffer nioByteBuffer();
+    /**
+     * Exposes this backing data as a NIO {@link ByteBuffer}.
+     */
+    ByteBuffer nioByteBuffer(int minWritableBytes);
 
-	// 数据输出源可读字节数
-	int size();
+    /**
+     * Returns the number of readable bytes.
+     */
+    int size();
 
-	// 数据输出源是否有直接内存地址
-	boolean hasMemoryAddress();
-	
-	/**
+    /**
+     * Returns {@code true} if and only if this buf has a reference to the low-level memory address that points
+     * to the backing data.
+     */
+    boolean hasMemoryAddress();
+
+    /**
      * Returns the backing object.
      */
     Object backingObject();

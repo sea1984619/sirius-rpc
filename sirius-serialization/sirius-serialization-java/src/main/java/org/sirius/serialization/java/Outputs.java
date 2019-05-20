@@ -9,6 +9,6 @@ public class Outputs {
 
 	public static ObjectOutputStream getOutput(OutputBuf out) throws IOException {
 
-		return new ObjectOutputStream(out.OutputStream());
+		return new ObjectOutputStream(out.outputStream());
 	}
 }

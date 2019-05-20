@@ -12,14 +12,7 @@ import static java.lang.Character.MIN_SURROGATE;
 import static java.lang.Character.isSurrogatePair;
 import static java.lang.Character.toCodePoint;
 
-/**
- * jupiter
- * org.jupiter.common.util.internal
- *
- * Forked from protobuf <A>https://github.com/protocolbuffers/protobuf<A/>.
- *
- * @author jiachun.fjc
- */
+
 public final class UnsafeUtf8Util {
 
     /**
