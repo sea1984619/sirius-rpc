@@ -18,8 +18,7 @@ package org.sirius.common.util;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.netty.util.internal.ObjectUtil;
-import io.netty.util.internal.PlatformDependent;
+
 
 /**
  * A pool of {@link Constant}s.
@@ -28,7 +27,7 @@ import io.netty.util.internal.PlatformDependent;
  */
 public abstract class ConstantPool<T extends Constant<T>> {
 
-	private final ConcurrentMap<String, T> constants = PlatformDependent.newConcurrentHashMap();
+	private final ConcurrentMap<String, T> constants =  Maps.newConcurrentMap();
 
     private final AtomicInteger nextId = new AtomicInteger(1);
 

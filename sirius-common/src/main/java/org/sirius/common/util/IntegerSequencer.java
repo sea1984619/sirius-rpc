@@ -2,7 +2,8 @@ package org.sirius.common.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.netty.util.concurrent.FastThreadLocal;
+import org.sirius.common.util.internal.InternalThreadLocal;
+
 
 /*
  * 适用于多线程环境下的整数序号生成器 ,
@@ -13,7 +14,7 @@ public class IntegerSequencer {
 	private static final int defalut_step = 64 ;
 	private int step;
 	AtomicInteger rootCounter ;
-	FastThreadLocal<InnerCounter> inner = new FastThreadLocal<InnerCounter>() {
+	InternalThreadLocal<InnerCounter> inner = new InternalThreadLocal<InnerCounter>() {
 		 @Override
 	        protected InnerCounter initialValue() {
 	            return new InnerCounter();

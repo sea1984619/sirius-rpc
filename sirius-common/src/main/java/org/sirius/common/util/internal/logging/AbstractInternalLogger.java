@@ -15,7 +15,6 @@
  */
 package org.sirius.common.util.internal.logging;
 
-import io.netty.util.internal.StringUtil;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -235,6 +234,6 @@ public abstract class AbstractInternalLogger implements InternalLogger, Serializ
 
     @Override
     public String toString() {
-        return StringUtil.simpleClassName(this) + '(' + name() + ')';
+        return getClass().getName() + '(' + name() + ')';
     }
 }
