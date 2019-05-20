@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.sirius.serialization.api;
+package org.sirius.serialization.java.io;
 
-/**
- * A workaround for object arrays serialize with null value error:
- * to use a special value (enum) to denote none/null.
- *
- * jupiter
- * org.jupiter.serialization
- *
- * @author jiachun.fjc
- */
-public enum ArrayElement {
-    NULL
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
+import org.sirius.serialization.api.io.OutputBuf;
+
+
+public final class Outputs {
+
+    public static ObjectOutputStream getOutput(OutputBuf outputBuf) throws IOException {
+        return new ObjectOutputStream(outputBuf.outputStream());
+    }
+
+    public static ObjectOutputStream getOutput(OutputStream buf) throws IOException {
+        return new ObjectOutputStream(buf);
+    }
+
+    private Outputs() {}
 }

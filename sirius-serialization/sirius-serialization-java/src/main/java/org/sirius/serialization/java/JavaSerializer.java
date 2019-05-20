@@ -1,133 +1,81 @@
+
 package org.sirius.serialization.java;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
-import org.sirius.serialization.api.InputBuf;
-import org.sirius.serialization.api.OutputBuf;
+import org.sirius.common.util.ThrowUtil;
 import org.sirius.serialization.api.Serializer;
+import org.sirius.serialization.api.SerializerType;
+import org.sirius.serialization.api.io.InputBuf;
+import org.sirius.serialization.api.io.OutputBuf;
+import org.sirius.serialization.api.io.OutputStreams;
+import org.sirius.serialization.java.io.Inputs;
+import org.sirius.serialization.java.io.Outputs;
 
-public class JavaSerializer implements Serializer{
 
-	@Override
-	public <T> OutputBuf serialize(OutputBuf out, T t) {
-		ObjectOutputStream oos = null;
-		try {
-			oos = Outputs.getOutput(out);
-			oos.writeObject(t);
-			oos.flush();
-			return out;
-		} catch (IOException e) {
-			
-		}
-		finally {
-			try {
-				if(oos != null)
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
+public class JavaSerializer extends Serializer {
 
-	@Override
-	public <T> byte[] serialize(T t) {
-		ObjectOutputStream oos =null;
-		ByteArrayOutputStream out = new ByteArrayOutputStream(512);
-		try {
-		    oos = new ObjectOutputStream(out);
-			oos.writeObject(t);
-			oos.flush();
-			return out.toByteArray();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(oos != null)
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
+    @Override
+    public byte code() {
+        return SerializerType.JAVA.value();
+    }
 
-	@Override
-	public <T> T deserialize(InputBuf in, Class<T> cls) {
-		ObjectInputStream ois = null;
-		try {
-			ois = Inputs.getInput(in);
-			Object o = ois.readObject();
-			return cls.cast(o);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if(ois != null) {
-				try {
-					ois.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			in.release();
-		}
-		
-		return null;
-	}
+    @Override
+    public <T> OutputBuf writeObject(OutputBuf outputBuf, T obj) {
+        try (ObjectOutputStream output = Outputs.getOutput(outputBuf)) {
+            output.writeObject(obj);
+            output.flush();
+            return outputBuf;
+        } catch (IOException e) {
+            ThrowUtil.throwException(e);
+        }
+        return null; // never get here
+    }
 
-	@Override
-	public <T> T deserialize(byte[] b, int offset, int length, Class<T> clazz) {
-		ObjectInputStream ois = null;
-		ByteArrayInputStream  in = new ByteArrayInputStream(b, offset, length);
-		try {
-			ois =new ObjectInputStream(in);
-			Object o = ois.readObject();
-			return clazz.cast(o);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			if(ois != null) {
-				try {
-					ois.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
+    @Override
+    public <T> byte[] writeObject(T obj) {
+        ByteArrayOutputStream buf = OutputStreams.getByteArrayOutputStream();
+        try (ObjectOutputStream output = Outputs.getOutput(buf)) {
+            output.writeObject(obj);
+            output.flush();
+            return buf.toByteArray();
+        } catch (IOException e) {
+            ThrowUtil.throwException(e);
+        } finally {
+            OutputStreams.resetBuf(buf);
+        }
+        return null; // never get here
+    }
 
-	
-	public static void main(String[] args)
-	{
-		Object[]  o = {new People(),new Animal(),"东方大厦",3,new Integer(8)};
-		
-		JavaSerializer j = new JavaSerializer();
-		
-		byte[] b = j.serialize(o);
-		
-		Object[]  d = j.deserialize(b,Object[].class);
-		
-		for(Object oo : d ) {
-			
-			System.out.println(oo.getClass());
-		}
-	}
-	
-}
- class People implements Serializable{
-	
-	private static final long serialVersionUID = -6232015901871893816L;
-	int age = 18;
-}
- class Animal implements Serializable{
-	
-	private static final long serialVersionUID = 2274223957232502145L;
-	String name = "mao";
+    @Override
+    public <T> T readObject(InputBuf inputBuf, Class<T> clazz) {
+        try (ObjectInputStream input = Inputs.getInput(inputBuf)) {
+            Object obj = input.readObject();
+            return clazz.cast(obj);
+        } catch (Exception e) {
+            ThrowUtil.throwException(e);
+        } finally {
+            inputBuf.release();
+        }
+        return null; // never get here
+    }
+
+    @Override
+    public <T> T readObject(byte[] bytes, int offset, int length, Class<T> clazz) {
+        try (ObjectInputStream input = Inputs.getInput(bytes, offset, length)) {
+            Object obj = input.readObject();
+            return clazz.cast(obj);
+        } catch (Exception e) {
+            ThrowUtil.throwException(e);
+        }
+        return null; // never get here
+    }
+
+    @Override
+    public String toString() {
+        return "java:(code=" + code() + ")";
+    }
 }

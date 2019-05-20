@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import org.sirius.common.util.internal.UnsafeReferenceFieldUpdater;
 import org.sirius.common.util.internal.UnsafeUpdater;
 import org.sirius.common.util.internal.UnsafeUtf8Util;
-import org.sirius.serialization.api.OutputBuf;
+import org.sirius.serialization.api.io.OutputBuf;
 
 import io.protostuff.ByteString;
 import io.protostuff.IntSerializer;

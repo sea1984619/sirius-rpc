@@ -13,9 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.sirius.serialization.api;
 
+/**
+ * 最多可以扩展到15种不同的序列化/反序列化方式, 取值范围为: 0x01 ~ 0x0f,
+ * 每当想增加一种序列化/反序列化方式都要修改这个枚举, 不过我想这个限制是值得的.
+ *
+ * jupiter
+ * org.jupiter.serialization
+ *
+ * @author jiachun.fjc
+ */
 public enum SerializerType {
     PROTO_STUFF ((byte) 0x01),
     HESSIAN     ((byte) 0x02),
@@ -25,7 +33,7 @@ public enum SerializerType {
     ;
 
     SerializerType(byte value) {
-        if (0x00 < value && value < 0x10) {
+        if (0x00 < value && value < 0x0f) {
             this.value = value;
         } else {
             throw new IllegalArgumentException("Out of range(0x01 ~ 0x0f): " + value);

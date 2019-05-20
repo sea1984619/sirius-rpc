@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.sirius.common.util.internal.UnsafeDirectBufferUtil;
 import org.sirius.common.util.internal.UnsafeUtf8Util;
 import org.sirius.common.util.internal.UnsafeUtil;
-import org.sirius.serialization.api.OutputBuf;
+import org.sirius.serialization.api.io.OutputBuf;
 
 import static io.protostuff.WireFormat.WIRETYPE_LENGTH_DELIMITED;
 import static io.protostuff.WireFormat.makeTag;

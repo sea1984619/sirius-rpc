@@ -1,6 +1,7 @@
 package org.sirius.serialization.protostuff.io;
 
-import org.sirius.serialization.api.InputBuf;
+
+import org.sirius.serialization.api.io.InputBuf;
 
 import io.protostuff.ByteArrayInput;
 import io.protostuff.Input;
