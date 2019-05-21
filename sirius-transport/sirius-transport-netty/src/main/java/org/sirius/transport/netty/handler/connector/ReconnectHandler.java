@@ -1,4 +1,4 @@
-package org.sirius.transport.netty.handler;
+package org.sirius.transport.netty.handler.connector;
 
 import java.net.SocketAddress;
 import java.util.concurrent.TimeUnit;

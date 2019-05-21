@@ -13,7 +13,7 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
-import org.sirius.transport.netty.handler.ReconnectHandler;
+import org.sirius.transport.netty.handler.connector.ReconnectHandler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
