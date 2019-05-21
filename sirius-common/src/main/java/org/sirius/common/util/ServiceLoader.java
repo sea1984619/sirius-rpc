@@ -290,6 +290,6 @@ public final class ServiceLoader<S> implements Iterable<S> {
      */
     @Override
     public String toString() {
-        return "org.jupiter.common.util.ServiceLoader[" + service.getName() + "]";
+        return "org.sirius.common.util.ServiceLoader[" + service.getName() + "]";
     }
 }
