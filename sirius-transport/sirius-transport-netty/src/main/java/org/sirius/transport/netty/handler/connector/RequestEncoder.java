@@ -12,5 +12,4 @@ public class RequestEncoder extends MessageToByteEncoder<Request>{
 	protected void encode(ChannelHandlerContext ctx, Request msg, ByteBuf out) throws Exception {
 		
 	}
-
 }

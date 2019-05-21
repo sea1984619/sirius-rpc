@@ -55,8 +55,6 @@ public class ProtocolHeader {
     private byte status;            // 响应状态码
     private long id;                // request.invokeId, 用于映射 <id, request, response> 三元组
     private int bodySize;           // 消息体长度
-    //用于扩展消息头
-    private Map<String, Object> attachment = new HashMap<String, Object>(); // 附件
     
     public static byte toSign(byte messegeType ,byte serializerType) {
     	return  (byte) ((messegeType << 4) | (serializerType & 0x0f)) ;
@@ -66,11 +64,17 @@ public class ProtocolHeader {
     	this.messageType = (byte) (sign & 0x0f);
     	this.serializerType = (byte) ((sign & 0xf0) >> 4);
     }
-    
     public byte messageCode() {
         return messageType;
     }
 
+    public static byte  messageCode(byte sign) {
+        return (byte) (sign & 0x0f);
+    }
+
+    public static byte  serializerCode(byte sign) {
+        return (byte) ((sign & 0xf0) >> 4);
+    }
     public byte serializerCode() {
         return serializerType;
     }
@@ -91,13 +95,6 @@ public class ProtocolHeader {
         this.id = id;
     }
     
-    public void attachment(Map<String , Object> attachment) {
-    	this.attachment = attachment;
-    }
-
-    public Map<String , Object> attachment() {
-    	return this.attachment;
-    }
     public int bodySize() {
         return bodySize;
     }
