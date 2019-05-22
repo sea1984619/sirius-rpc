@@ -56,8 +56,8 @@ public class ProtocolHeader {
     private long id;                // request.invokeId, 用于映射 <id, request, response> 三元组
     private int bodySize;           // 消息体长度
     
-    public static byte toSign(byte messegeType ,byte serializerType) {
-    	return  (byte) ((messegeType << 4) | (serializerType & 0x0f)) ;
+    public static byte toSign(byte serializerCode, byte messageCode) {
+        return (byte) ((serializerCode << 4) | (messageCode & 0x0f));
     }
     
     public void sign(byte sign) {

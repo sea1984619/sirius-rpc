@@ -7,6 +7,7 @@ public class Response implements Serializable{
 	private static final long serialVersionUID = -9091908161302683663L;
 	private long invokeId;
 	private byte status;
+	private byte serializerCode;
 	private Object result;
 	
 	public long getInvokeId() {
@@ -26,5 +27,12 @@ public class Response implements Serializable{
 	}
 	public void setResult(Object result) {
 		this.result = result;
+	}
+	public byte getSerializerCode() {
+		return serializerCode;
+	}
+
+	public void setSerializerCode(byte serializerCode) {
+		this.serializerCode = serializerCode;
 	}
 }

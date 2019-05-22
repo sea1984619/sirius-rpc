@@ -9,7 +9,7 @@ public final class Request implements Serializable{
 	private static final long serialVersionUID = 6826443474660576589L;
 	private static final LongSequencer sequencer = new LongSequencer();
 	private long invokeId;
-	
+	private byte serializerCode;
 	private String className;
 	private String methodName;
     private Class<?>[] ParametersType;
@@ -17,6 +17,10 @@ public final class Request implements Serializable{
     
 	private transient long timestamp;
 	
+
+	public Request() {
+		this.invokeId = sequencer.next();
+	}
     public String getClassName() {
 		return className;
 	}
@@ -49,12 +53,6 @@ public final class Request implements Serializable{
 		this.parameters = parameters;
 	}
 
-	
-
-	public Request() {
-		this.invokeId = sequencer.next();
-	}
-
 	public Request(long invokeId) {
 		this.invokeId = invokeId;
 	}
@@ -70,4 +68,12 @@ public final class Request implements Serializable{
 	public void timestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
+	public byte getSerializerCode() {
+		return serializerCode;
+	}
+
+	public void setSerializerCode(byte serializerCode) {
+		this.serializerCode = serializerCode;
+	}
+
 }

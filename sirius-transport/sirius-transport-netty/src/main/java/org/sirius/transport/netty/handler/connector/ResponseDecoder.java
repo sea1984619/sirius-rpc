@@ -14,6 +14,7 @@ import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.exception.IoSignals;
 import org.sirius.transport.netty.NettyTcpAcceptor;
+import org.sirius.transport.netty.buf.NettyInputBuf;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -24,7 +25,7 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyTcpAcceptor.class);
 	// 协议体最大限制, 默认5M
-	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("jupiter.io.decoder.max.body.size",
+	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("io.decoder.max.body.size",
 			1024 * 1024 * 5);
 
 	public ResponseDecoder() {
@@ -72,39 +73,5 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 			throw IoSignals.BODY_TOO_LARGE;
 		}
 		return size;
-	}
-
-	static final class NettyInputBuf implements InputBuf {
-
-		private final ByteBuf byteBuf;
-
-		NettyInputBuf(ByteBuf byteBuf) {
-			this.byteBuf = byteBuf;
-		}
-
-		@Override
-		public InputStream inputStream() {
-			return new ByteBufInputStream(byteBuf); // should not be called more than once
-		}
-
-		@Override
-		public ByteBuffer nioByteBuffer() {
-			return byteBuf.nioBuffer(); // should not be called more than once
-		}
-
-		@Override
-		public int size() {
-			return byteBuf.readableBytes();
-		}
-
-		@Override
-		public boolean hasMemoryAddress() {
-			return byteBuf.hasMemoryAddress();
-		}
-
-		@Override
-		public boolean release() {
-			return byteBuf.release();
-		}
 	}
 }
