@@ -29,8 +29,6 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ReconnectHandler.class);
-	private final static HashedWheelTimer timer = new HashedWheelTimer(
-			new DefaultThreadFactory("connector.timer", true));
 	private final static int MaxAttempts = 12;
 	private NettyConnector connector;
 	public ReconnectHandler(NettyConnector connector) {
@@ -64,7 +62,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 		
 		if(isReconnectNeeded(address,group)) {
 			ReconnectTask task = new ReconnectTask(connector, group, address, 1);
-			timer.newTimeout(task, 2<<1, TimeUnit.MILLISECONDS);
+			connector.timer.newTimeout(task, 2<<1, TimeUnit.MILLISECONDS);
 		}
 		
 		ctx.fireChannelInactive();
@@ -117,7 +115,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 							attempts ++;
 							long timeOut = 2 << attempts;
 							ReconnectTask newTask = new ReconnectTask(connector, group, remoteAddress, attempts);
-							timer.newTimeout(newTask, timeOut, TimeUnit.MILLISECONDS);
+							connector.timer.newTimeout(newTask, timeOut, TimeUnit.MILLISECONDS);
 						}
 					});
 			}

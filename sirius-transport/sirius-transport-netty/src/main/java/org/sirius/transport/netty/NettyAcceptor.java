@@ -17,6 +17,7 @@ import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
 public abstract class NettyAcceptor extends AbstractAcceptor {
@@ -28,6 +29,7 @@ public abstract class NettyAcceptor extends AbstractAcceptor {
 	private EventLoopGroup worker;
 	private Config parentConfig;
 	private Config childConfig;
+	protected final static HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
 
 	public NettyAcceptor(Protocol protocol, SocketAddress address) {
 		this(protocol, address, Constants.AVAILABLE_PROCESSORS << 1);

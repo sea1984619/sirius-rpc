@@ -27,7 +27,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 public abstract class NettyConnector extends AbstractConnector {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyConnector.class);
-	protected final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
+	public final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("connector.timer", true));
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;

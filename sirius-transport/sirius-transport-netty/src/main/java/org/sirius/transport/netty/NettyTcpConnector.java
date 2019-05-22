@@ -13,10 +13,12 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
+import org.sirius.transport.netty.handler.IdleStateHandler;
 import org.sirius.transport.netty.handler.connector.ConnectorHandler;
 import org.sirius.transport.netty.handler.connector.ReconnectHandler;
 import org.sirius.transport.netty.handler.connector.RequestEncoder;
 import org.sirius.transport.netty.handler.connector.ResponseDecoder;
+import org.sirius.transport.netty.handler.connector.WriteIdleEventHandler;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -37,6 +39,7 @@ public class NettyTcpConnector extends NettyConnector {
 	private ReconnectHandler reconnectHandler = new ReconnectHandler(this);
 	private RequestEncoder encoder = new RequestEncoder();
 	private ConnectorHandler connectorHandler = new ConnectorHandler();
+	private WriteIdleEventHandler writeIdleEventHandler = new WriteIdleEventHandler();
 	
 	public NettyTcpConnector() {
 		this(Constants.AVAILABLE_PROCESSORS << 1,false);
@@ -57,7 +60,12 @@ public class NettyTcpConnector extends NettyConnector {
 	
 	@Override
 	public ChannelHandler[] getHandlers(){
-		ChannelHandler[] handler = {reconnectHandler ,new ResponseDecoder(),encoder,connectorHandler};
+		ChannelHandler[] handler = {reconnectHandler ,
+				                    new IdleStateHandler(timer,0,Constants.WRITER_IDLE_TIME_SECONDS ,0),
+				                    writeIdleEventHandler,
+				                    new ResponseDecoder(),
+				                    encoder,
+				                    connectorHandler};
 		return handler;
 	}
 	
@@ -154,6 +162,8 @@ public class NettyTcpConnector extends NettyConnector {
 	                @Override
 	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
 	                    ch.pipeline().addLast(reconnectHandler)
+	                                 .addLast(new IdleStateHandler(timer,0,Constants.WRITER_IDLE_TIME_SECONDS ,0))
+	                                 .addLast(writeIdleEventHandler)
 	                                 .addLast(new ResponseDecoder())
 	                                 .addLast(encoder)
 	                                 .addLast(connectorHandler);
