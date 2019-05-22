@@ -45,16 +45,17 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 			byte sign = buf.readByte();
 			if (ProtocolHeader.messageCode(sign) == ProtocolHeader.HEARTBEAT)
 				return null;
-			byte status = buf.readByte();
-			long id = buf.readLong();
+//			buf.readByte();
+//			buf.readLong();
+			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			checkBodySize(bodySize);
 			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
-			InputBuf input = new NettyInputBuf(buf);
+			InputBuf input = new NettyInputBuf(buf.readRetainedSlice(bodySize));
 			return serializer.readObject(input, Response.class);
 		} catch(Exception e){
 			logger.warn("Response解码错误.......");
-			throw IoSignals.ILLEGAL_SIGN;
+			throw IoSignals.SERIALIZER_WRONG;
 		}finally {
 			buf.release();
 		}
