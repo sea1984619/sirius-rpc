@@ -23,8 +23,7 @@ public class Test {
 			System.out.println("magic:"+magic);
 			byte sign = buf.readByte();
 			System.out.println("sign:"+sign);
-			System.out.println("status:"+buf.readByte());
-			System.out.println("id:"+buf.readLong());
+			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			System.out.println("size:"+bodySize);
 			Serializer serializer = new ProtoStuffSerializer();

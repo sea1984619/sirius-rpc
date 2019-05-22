@@ -10,7 +10,7 @@ public class Response implements Serializable{
 	private byte serializerCode;
 	private Object result;
 	
-	public long getInvokeId() {
+	public long invokeId() {
 		return invokeId;
 	}
 	public void setInvokeId(long invokeId) {

@@ -1,8 +1,5 @@
 package org.sirius.transport.netty.handler.connector;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-
 import org.sirius.common.util.Signal;
 import org.sirius.common.util.SystemPropertyUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -17,7 +14,6 @@ import org.sirius.transport.netty.NettyTcpAcceptor;
 import org.sirius.transport.netty.buf.NettyInputBuf;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
@@ -25,11 +21,10 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyTcpAcceptor.class);
 	// 协议体最大限制, 默认5M
-	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("io.decoder.max.body.size",
-			1024 * 1024 * 5);
+	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("io.decoder.max.body.size",1024 * 1024 * 5);
 
 	public ResponseDecoder() {
-		this(MAX_BODY_SIZE, 0, 4);
+		this(MAX_BODY_SIZE, 12, 4);
 	}
 
 	public ResponseDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength) {
@@ -37,6 +32,7 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 	}
 
 	protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
+		
 		ByteBuf buf = (ByteBuf) super.decode(ctx, in);
 		if (buf == null)
 			return null;
