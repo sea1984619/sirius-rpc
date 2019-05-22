@@ -13,10 +13,14 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
+import org.sirius.transport.netty.handler.connector.ConnectorHandler;
 import org.sirius.transport.netty.handler.connector.ReconnectHandler;
+import org.sirius.transport.netty.handler.connector.RequestEncoder;
+import org.sirius.transport.netty.handler.connector.ResponseDecoder;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -30,7 +34,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 public class NettyTcpConnector extends NettyConnector {
 
 	private final boolean isNative;// use native transport 
-	ReconnectHandler reconnectHandler = new ReconnectHandler(this);
+	private ReconnectHandler reconnectHandler = new ReconnectHandler(this);
+	private RequestEncoder encoder = new RequestEncoder();
+	private ConnectorHandler connectorHandler = new ConnectorHandler();
 	
 	public NettyTcpConnector() {
 		this(Constants.AVAILABLE_PROCESSORS << 1,false);
@@ -47,7 +53,12 @@ public class NettyTcpConnector extends NettyConnector {
 	        TcpConnectorConfig config = new TcpConnectorConfig();
 	        setConfig(config);
 	        init();
-	        this.getHandlers().add(reconnectHandler);
+	}
+	
+	@Override
+	public ChannelHandler[] getHandlers(){
+		ChannelHandler[] handler = {reconnectHandler ,new ResponseDecoder(),encoder,connectorHandler};
+		return handler;
 	}
 	
 	@Override
@@ -142,12 +153,15 @@ public class NettyTcpConnector extends NettyConnector {
 	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 	                @Override
 	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-	                    ch.pipeline().addLast(reconnectHandler);
+	                    ch.pipeline().addLast(reconnectHandler)
+	                                 .addLast(new ResponseDecoder())
+	                                 .addLast(encoder)
+	                                 .addLast(connectorHandler);
 	                }
 	            });
 
 	            future = boot.connect(socketAddress);
-	            io.netty.channel.Channel channel =future.channel();
+	            io.netty.channel.Channel channel = future.channel();
 	            nettyChannel = NettyChannel.attachChannel(channel);
 	            nettyChannel.setGroup(group);
 	        }

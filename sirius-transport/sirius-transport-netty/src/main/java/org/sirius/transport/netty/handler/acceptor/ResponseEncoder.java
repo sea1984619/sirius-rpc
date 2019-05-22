@@ -2,14 +2,17 @@ package org.sirius.transport.netty.handler.acceptor;
 
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
+import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.netty.buf.NettyOutputBuf;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+@ChannelHandler.Sharable
 public class ResponseEncoder extends  MessageToByteEncoder<Response>{
 
 	@Override
@@ -19,7 +22,8 @@ public class ResponseEncoder extends  MessageToByteEncoder<Response>{
 		byte status = msg.getStatus();
 		long invokeId = msg.invokeId();
 		
-		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
+//		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
+		Serializer serializer = new ProtoStuffSerializer();
 		
 		out.writeShort(ProtocolHeader.MAGIC)
 		   .writeByte(sign)
@@ -35,8 +39,8 @@ public class ResponseEncoder extends  MessageToByteEncoder<Response>{
 		
 		int bodySize = out.readableBytes() - 16;
 		
-		out.writerIndex(12)//重新设置长度
-		   .writeInt(bodySize)
+		out.writerIndex(12)
+		   .writeInt(bodySize)//重新设置长度
 		   .resetWriterIndex();
 	}
 }

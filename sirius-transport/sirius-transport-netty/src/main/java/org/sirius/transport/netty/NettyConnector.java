@@ -1,6 +1,5 @@
 package org.sirius.transport.netty;
 
-import java.util.ArrayList;
 import java.util.concurrent.ThreadFactory;
 
 import org.sirius.common.util.Constants;
@@ -32,7 +31,6 @@ public abstract class NettyConnector extends AbstractConnector {
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;
-	private ArrayList<ChannelHandler> handlers = new ArrayList<ChannelHandler>();
 
 	public NettyConnector(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);
@@ -42,15 +40,7 @@ public abstract class NettyConnector extends AbstractConnector {
 		super(protocol);
 		this.workerNum = workerNum;
 	}
-
-	public ChannelHandler[] getHandlersArray(){
-		int size = handlers.size();
-		ChannelHandler[] handler = new ChannelHandler[size];
-		for(int i=0;i<size;i++) {
-			handler[i] = handlers.get(i);
-		}
-		return handler;
-	}
+	
 	
 	public Bootstrap bootstrap() {
 		return bootstrap;
@@ -74,10 +64,7 @@ public abstract class NettyConnector extends AbstractConnector {
 		config.setOption(Option.IO_RATIO, 100);
 	}
 
-	public ArrayList<ChannelHandler> getHandlers() {
-		return this.handlers;
-	}
-
+	
 	/**
 	 * Create a WriteBufferWaterMark is used to set low water mark and high water
 	 * mark for the write buffer.
@@ -144,9 +131,13 @@ public abstract class NettyConnector extends AbstractConnector {
 	}
 
 	protected abstract SocketType socketType();
+	
+	public abstract ChannelHandler[] getHandlers();
 
 	@Override
 	public String toString() {
 		return "Socket type: " + socketType() + Constants.NEWLINE + bootstrap();
 	}
+
+		
 }

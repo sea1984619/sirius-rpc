@@ -7,6 +7,7 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
 import org.sirius.serialization.api.io.InputBuf;
+import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.exception.IoSignals;
@@ -46,7 +47,8 @@ public class RequestDecoder extends LengthFieldBasedFrameDecoder {
 			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			checkBodySize(bodySize);
-			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
+//			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
+			Serializer serializer = new ProtoStuffSerializer();
 			InputBuf input = new NettyInputBuf(buf.readRetainedSlice(bodySize));
 			return serializer.readObject(input, Request.class);
 		} catch (Exception e) {

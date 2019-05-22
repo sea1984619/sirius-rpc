@@ -10,6 +10,9 @@ public class Response implements Serializable{
 	private byte serializerCode;
 	private Object result;
 	
+	public Response(long invokeId) {
+		this.invokeId = invokeId;
+	}
 	public long invokeId() {
 		return invokeId;
 	}

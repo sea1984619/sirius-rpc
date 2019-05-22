@@ -11,6 +11,9 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.netty.SocketChannelProvider.SocketType;
 import org.sirius.transport.netty.config.TcpAcceptorConfig;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
+import org.sirius.transport.netty.handler.acceptor.AcceptorHandler;
+import org.sirius.transport.netty.handler.acceptor.RequestDecoder;
+import org.sirius.transport.netty.handler.acceptor.ResponseEncoder;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -32,6 +35,9 @@ public class NettyTcpAcceptor extends NettyAcceptor {
     
     public static final int DEFAULT_ACCEPTOR_PORT = 18090;
     
+    ResponseEncoder encoder = new ResponseEncoder();
+	AcceptorHandler acceptorHandler = new AcceptorHandler();
+	
     public  NettyTcpAcceptor() {
     	this(new InetSocketAddress(DEFAULT_ACCEPTOR_PORT), 1,Constants.AVAILABLE_PROCESSORS << 1, false);
     }
@@ -239,7 +245,9 @@ public class NettyTcpAcceptor extends NettyAcceptor {
 
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast();
+                ch.pipeline().addLast(new RequestDecoder())
+                             .addLast(encoder)
+                             .addLast(acceptorHandler);
             }
         });
 

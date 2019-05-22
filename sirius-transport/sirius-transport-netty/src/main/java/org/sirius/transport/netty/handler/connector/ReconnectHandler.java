@@ -41,8 +41,9 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		Channel ch = ctx.channel();
 		NettyChannel channel = (NettyChannel) ch.attr(NettyChannel.NETTY_CHANNEL_KEY).get();
+		System.out.println("channel"+channel);
 		NettyChannelGroup group = (NettyChannelGroup) channel.getGroup();
-		
+	
 		if (group != null)
 			group.add(channel);
 		
@@ -98,7 +99,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 						bootstrap.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 			                @Override
 			                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-			                    ch.pipeline().addLast(connector.getHandlersArray());
+			                    ch.pipeline().addLast(connector.getHandlers());
 			                }
 			            });
 
