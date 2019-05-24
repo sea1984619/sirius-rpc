@@ -22,10 +22,10 @@ public class ChannelGroupList {
 	}
 	
    public boolean remove(ChannelGroup group) {
-	   boolean added = groupList.remove(group);
-	   if(added)
+	   boolean removed = groupList.remove(group);
+	   if(removed)
 	     vision.incrementAndGet();
-	   return added;
+	   return removed;
 	   
    }
 }
