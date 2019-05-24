@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
@@ -22,7 +23,6 @@ public class AbstractInvoker implements Invoker{
 	private final Connector connector = new NettyTcpConnector();
 	UnresolvedSocketAddress address =new UnresolvedSocketAddress("127.0.0.1", 18090);
 	private ChannelGroup group =new NettyChannelGroup(address);
-	private static ConcurrentMap<Long,Future> futureContent = Maps.newConcurrentMap();
 	void initChannelList(){
 		for(int i= 0;i<9;i++) {
 			Channel channel = connector.connect(address);
@@ -36,7 +36,7 @@ public class AbstractInvoker implements Invoker{
 		fillRequest(request,method,params);
 		group.next().send(request);
 		CompletableFuture futrue = new CompletableFuture();
-		futureContent.putIfAbsent(request.invokeId(), futrue);
+		ResultFutureContent.add(request.invokeId(), futrue);
 		RpcContent.add(futrue);
 		return null;
 	}
