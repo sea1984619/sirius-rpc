@@ -2,6 +2,7 @@ package org.sirius.transport.netty.handler.connector;
 
 import org.sirius.rpc.consumer.ConsumerProcessor;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
+import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.netty.channel.NettyChannel;
 
@@ -16,11 +17,12 @@ public class ConnectorHandler extends ChannelInboundHandlerAdapter{
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-//		for(int i= 0;i<10;i++) {
-//			Request r = new Request();
-//			r.setClassName("org.sirius.request");
-//			ctx.writeAndFlush(r);
-//		}
+		for(int i= 0;i<10;i++) {
+			Request r = new Request();
+			System.out.println(r.invokeId());
+			r.setClassName("org.sirius.request");
+			ctx.writeAndFlush(r);
+		}
 		
 	}
 	

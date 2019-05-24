@@ -31,7 +31,7 @@ public abstract class NettyConnector extends AbstractConnector {
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;
-
+    
 	public NettyConnector(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);
 	}

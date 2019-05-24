@@ -12,9 +12,13 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		Request re = (Request)msg;
-		System.out.println(re.invokeId());
-		Response res = new Response(re.invokeId());
+		Request request = (Request)msg;
+		System.out.println(request.invokeId());
+		Response res = new Response(request.invokeId());
+		if(request.getMethodName().equals("buyBook"))
+		   res.setResult("one book");
+		else
+	       res.setResult("one pig");
 		ctx.writeAndFlush(res);
 	}
 }

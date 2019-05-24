@@ -137,7 +137,6 @@ public class JavassistProxyFactory implements ProxyFactory {
 			}
 			methodBuilder.append("this.invoker.invoke").append("(").append("methods[" + n + "],").append("parmArray")
 					.append(");\r\n}");
-			System.out.println(methodBuilder.toString());
 			CtMethod m = CtNewMethod.make(methodBuilder.toString(), remoteCtClass);
 			remoteCtClass.addMethod(m);
 			n++;

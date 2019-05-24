@@ -29,22 +29,25 @@ public class AbstractInvoker implements Invoker{
 			group.add(channel);
 		}
 	}
+	public  AbstractInvoker() {
+		initChannelList();
+	}
 	@Override
 	public Object invoke(Method method,Object[] params) {
 		Request  request = new Request();
 		
 		fillRequest(request,method,params);
 		group.next().send(request);
-		CompletableFuture futrue = new CompletableFuture();
+		CompletableFuture<Object> futrue = new CompletableFuture<Object>();
 		ResultFutureContent.add(request.invokeId(), futrue);
 		RpcContent.add(futrue);
 		return null;
 	}
 
 	private final void fillRequest(Request request ,Method method,Object[] params) {
-		request.setClassName(method.getDeclaringClass().toString());
-		request.setMethodName(method.getName());
-		request.setParameters(params);
+//		request.setClassName(method.getDeclaringClass().toString());
+//		request.setMethodName(method.getName());
+//		request.setParameters(params);
 	}
 	
 }
