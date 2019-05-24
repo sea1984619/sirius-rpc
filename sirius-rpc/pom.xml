@@ -11,6 +11,7 @@
 	</parent>
 	<artifactId>sirius-rpc</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>sirius-rpc</name>
 
 	<properties>
@@ -20,8 +21,17 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>sirius-transport-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sirius-transport-netty</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-common</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>

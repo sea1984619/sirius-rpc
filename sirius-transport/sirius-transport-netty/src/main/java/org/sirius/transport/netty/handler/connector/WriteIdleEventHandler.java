@@ -25,7 +25,7 @@ public class WriteIdleEventHandler extends ChannelInboundHandlerAdapter {
 
 	}
 
-	static class Heartbeats {
+	final static class Heartbeats {
 
 		private static final ByteBuf HEARTBEAT_BUF;
 
