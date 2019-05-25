@@ -21,10 +21,10 @@ public class AbstractInvoker implements Invoker{
 	UnresolvedSocketAddress address =new UnresolvedSocketAddress("127.0.0.1", 18090);
 	private ChannelGroup group =new NettyChannelGroup(address);
 	void initChannelList(){
-		for(int i= 0;i<9;i++) {
+		
 			Channel channel = connector.connect(address);
 			group.add(channel);
-		}
+		
 	}
 	public  AbstractInvoker() {
 		connector.setConsumerProcessor(new DefaultConsumerProcessor());
