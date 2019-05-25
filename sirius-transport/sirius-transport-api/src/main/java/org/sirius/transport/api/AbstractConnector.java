@@ -3,7 +3,6 @@ package org.sirius.transport.api;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.util.internal.logging.CheckNullUtil;
-import org.sirius.rpc.consumer.ConsumerProcessor;
 import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.channel.ChannelGroup;
 

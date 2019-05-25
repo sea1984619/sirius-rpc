@@ -23,7 +23,7 @@ public class Test4 {
 		System.out.println(result.get());
 		shop.buyPig();
 		CompletableFuture<Object> result2 = RpcContent.get();
-		System.out.println(result.get());
+		System.out.println(result2.get());
 
 	}
 

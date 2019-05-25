@@ -38,7 +38,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		Channel ch = ctx.channel();
-		NettyChannel channel = (NettyChannel) ch.attr(NettyChannel.NETTY_CHANNEL_KEY).get();
+		NettyChannel channel = NettyChannel.attachChannel(ch);
 		NettyChannelGroup group = (NettyChannelGroup) channel.getGroup();
 	
 		if (group != null)

@@ -25,11 +25,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sirius-transport-netty</artifactId>
+			<artifactId>sirius-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sirius-common</artifactId>
+			<artifactId>sirius-transport-netty</artifactId>
 		</dependency>
 
 		<dependency>

@@ -2,6 +2,7 @@ package org.sirius.rpc.consumer;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 

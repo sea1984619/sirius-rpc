@@ -1,6 +1,5 @@
 package org.sirius.transport.api;
 
-import org.sirius.rpc.consumer.ConsumerProcessor;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroup;
 

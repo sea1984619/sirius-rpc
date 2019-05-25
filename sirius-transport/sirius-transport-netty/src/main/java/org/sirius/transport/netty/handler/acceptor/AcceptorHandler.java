@@ -15,10 +15,17 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 		Request request = (Request)msg;
 		System.out.println(request.invokeId());
 		Response res = new Response(request.invokeId());
+		System.out.println(request.getMethodName());
 		if(request.getMethodName().equals("buyBook"))
 		   res.setResult("one book");
 		else
 	       res.setResult("one pig");
 		ctx.writeAndFlush(res);
 	}
+	
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    	
+    }
 }

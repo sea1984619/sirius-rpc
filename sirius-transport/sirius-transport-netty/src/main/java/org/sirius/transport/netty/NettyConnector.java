@@ -2,6 +2,7 @@ package org.sirius.transport.netty;
 
 import java.util.concurrent.ThreadFactory;
 
+import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -31,6 +32,11 @@ public abstract class NettyConnector extends AbstractConnector {
 	private Bootstrap bootstrap;
 	private EventLoopGroup loopGroup;
 	private int workerNum;
+	 static {
+	        // touch off DefaultChannelId.<clinit>
+	        // because getProcessId() sometimes too slow
+	        ClassUtil.initializeClass("io.netty.channel.DefaultChannelId", 500);
+	    }
     
 	public NettyConnector(Protocol protocol) {
 		this(protocol, Constants.AVAILABLE_PROCESSORS << 1);

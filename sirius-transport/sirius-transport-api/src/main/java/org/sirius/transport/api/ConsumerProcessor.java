@@ -1,6 +1,5 @@
-package org.sirius.rpc.consumer;
+package org.sirius.transport.api;
 
-import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 public interface ConsumerProcessor {

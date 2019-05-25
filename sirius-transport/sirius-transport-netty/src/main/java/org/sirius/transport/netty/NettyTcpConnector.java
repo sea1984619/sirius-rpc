@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 
 import org.sirius.common.util.Constants;
 import org.sirius.transport.api.Config;
+import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
@@ -141,11 +142,19 @@ public class NettyTcpConnector extends NettyConnector {
             }
         }
     }
+	
+	
+	@Override
+	public void setConsumerProcessor(ConsumerProcessor processor) {
+           connectorHandler.processor(processor);
+	}
+	
 	@Override
 	public Channel connect(UnresolvedAddress address) {
 		return connect(address,true);
 	}
 
+	
 	@Override
 	public Channel connect(UnresolvedAddress address, boolean async) {
 		setOptions();

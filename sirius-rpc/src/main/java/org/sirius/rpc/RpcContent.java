@@ -17,7 +17,7 @@ public class RpcContent {
 	        }
 	};
 	
-	public static void add(CompletableFuture<Object> future) {
+	public static void set(CompletableFuture<Object> future) {
 		content.set(future);
 	}
 	public  static CompletableFuture<Object> get() throws InterruptedException, ExecutionException {

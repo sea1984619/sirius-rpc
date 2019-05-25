@@ -2,7 +2,6 @@ package org.sirius.transport.api;
 
 import java.net.SocketAddress;
 
-import org.sirius.rpc.provider.ProviderProcessor;
 
 public interface Acceptor {
 

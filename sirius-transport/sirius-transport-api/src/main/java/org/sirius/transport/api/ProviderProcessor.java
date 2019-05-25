@@ -1,4 +1,4 @@
-package org.sirius.rpc.provider;
+package org.sirius.transport.api;
 
 public interface ProviderProcessor {
 
