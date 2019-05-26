@@ -53,9 +53,6 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 			Serializer serializer = new ProtoStuffSerializer();
 			InputBuf input = new NettyInputBuf(buf.readRetainedSlice(bodySize));
 			return serializer.readObject(input, Response.class);
-		} catch(Exception e){
-			logger.warn("Response解码错误.......");
-			throw IoSignals.SERIALIZER_WRONG;
 		}finally {
 			buf.release();
 		}

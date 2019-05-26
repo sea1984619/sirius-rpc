@@ -59,11 +59,6 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		NettyTcpAcceptor server = new NettyTcpAcceptor();
 		server.start();
-//		Request r = new Request();
-//		r.setClassName("org.sirius.request");
-//		ByteBuf buf =Test.encode(r);
-//		Request res = (Request) Test.decode(buf);
-//		System.out.println("ie过:"+res.getClassName());
 	}
 
 }
