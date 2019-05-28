@@ -1,6 +1,7 @@
 package org.sirius.rpc.executor;
 
 import org.sirius.rpc.consumer.RequestTask;
+import org.sirius.transport.api.Request;
 
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.RingBuffer;
@@ -17,6 +18,7 @@ public class DisruptorExecutor implements InnerExecutor{
 		
 		disruptor = new Disruptor<Event>(Event.FACTORY,1024,DaemonThreadFactory.INSTANCE);
 		disruptor.handleEventsWithWorkerPool(new RequestTaskHandler<Event>());
+		buffer = disruptor.start();
 		
 	}
 	@Override
@@ -38,6 +40,15 @@ public class DisruptorExecutor implements InnerExecutor{
 		// TODO Auto-generated method stub
 		
 	}
-
+	 public static void main(String[] args)
+	    {
+	       
+		 DisruptorExecutor d = new DisruptorExecutor();
+	        for (int i = 0; i < 1000; i++)
+	        {
+	        	RequestTask task = new RequestTask(new Request());
+	        	d.execute(task);
+	        }
+	    }
 	
 }

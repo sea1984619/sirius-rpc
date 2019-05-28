@@ -8,6 +8,10 @@ public class RequestTask implements Runnable{
 	private Channel channel;
 	private Request request;
 	
+	public RequestTask(Request request) {
+		
+		this.request = request;
+	}
 	public RequestTask(Channel channel,Request request) {
 		this.channel = channel;
 		this.request = request;
