@@ -20,8 +20,7 @@ public class RequestEncoder extends MessageToByteEncoder<Request> {
 	protected void encode(ChannelHandlerContext ctx, Request msg, ByteBuf out) throws Exception {
 		
 		byte sign = ProtocolHeader.toSign(msg.getSerializerCode(), ProtocolHeader.REQUEST);
-//		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
-		Serializer serializer = new ProtoStuffSerializer();
+		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
 		long invokeId = msg.invokeId();
 		
 		out.writeShort(ProtocolHeader.MAGIC)

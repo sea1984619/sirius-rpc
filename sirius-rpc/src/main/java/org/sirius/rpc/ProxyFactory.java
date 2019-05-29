@@ -9,5 +9,4 @@ public interface ProxyFactory {
 	 */
 	public Object getProxy(Invoker invoker , Class clazz) throws Exception;
 	
-	
 }

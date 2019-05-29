@@ -22,8 +22,7 @@ public class ResponseEncoder extends  MessageToByteEncoder<Response>{
 		byte status = msg.getStatus();
 		long invokeId = msg.invokeId();
 		
-//		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
-		Serializer serializer = new ProtoStuffSerializer();
+		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
 		
 		out.writeShort(ProtocolHeader.MAGIC)
 		   .writeByte(sign)

@@ -49,8 +49,7 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			checkBodySize(bodySize);
-//			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
-			Serializer serializer = new ProtoStuffSerializer();
+			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
 			InputBuf input = new NettyInputBuf(buf.readRetainedSlice(bodySize));
 			return serializer.readObject(input, Response.class);
 		}finally {

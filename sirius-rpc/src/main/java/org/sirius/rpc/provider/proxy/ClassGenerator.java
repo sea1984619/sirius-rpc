@@ -16,8 +16,6 @@
  */
 package org.sirius.rpc.provider.proxy;
 
-
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
