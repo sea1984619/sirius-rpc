@@ -1,4 +1,4 @@
-package org.sirius.rpc.executor;
+package org.sirius.rpc.executor.disruptor;
 
 import org.sirius.rpc.consumer.RequestTask;
 
@@ -6,12 +6,6 @@ import com.lmax.disruptor.EventFactory;
 
 public class Event {
 
-	public Event() {
-		
-	}
-	public Event(RequestTask task) {
-		this.task = task;
-	}
 	public RequestTask task;
 
 	public RequestTask getTask() {

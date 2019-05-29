@@ -1,6 +1,7 @@
-package org.sirius.rpc.executor;
+package org.sirius.rpc.executor.disruptor;
 
 import org.sirius.rpc.consumer.RequestTask;
+import org.sirius.rpc.executor.InnerExecutor;
 import org.sirius.transport.api.Request;
 
 import com.lmax.disruptor.EventFactory;
@@ -17,7 +18,7 @@ public class DisruptorExecutor implements InnerExecutor{
 	public DisruptorExecutor() {
 		
 		disruptor = new Disruptor<Event>(Event.FACTORY,1024,DaemonThreadFactory.INSTANCE);
-		disruptor.handleEventsWithWorkerPool(new RequestTaskHandler<Event>());
+		disruptor.handleEventsWithWorkerPool(new RequestTaskHandler());
 		buffer = disruptor.start();
 		
 	}
@@ -31,6 +32,7 @@ public class DisruptorExecutor implements InnerExecutor{
 			event.task = (RequestTask) task;
 		}finally {
 			buffer.publish(next);
+			System.out.println("序号为"+next);
 		}
 		
 	}
@@ -40,15 +42,16 @@ public class DisruptorExecutor implements InnerExecutor{
 		// TODO Auto-generated method stub
 		
 	}
-	 public static void main(String[] args)
+	 public static void main(String[] args) throws InterruptedException
 	    {
 	       
 		 DisruptorExecutor d = new DisruptorExecutor();
-	        for (int i = 0; i < 1000; i++)
+	        for (int i = 0; i < 1000000; i++)
 	        {
 	        	RequestTask task = new RequestTask(new Request());
 	        	d.execute(task);
 	        }
+	        Thread.sleep(50000);
 	    }
 	
 }
