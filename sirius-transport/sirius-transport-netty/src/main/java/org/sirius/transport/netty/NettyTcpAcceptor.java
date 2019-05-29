@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.sirius.transport.api.Option;
+import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.common.util.Constants;
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -217,11 +218,15 @@ public class NettyTcpAcceptor extends NettyAcceptor {
 		
 	}
 
+	public void setProcessor(ProviderProcessor processor) {
+		acceptorHandler.setProcessor(processor);
+	}
+
 	@Override
     public void start() throws InterruptedException {
         start(true);
     }
-
+    
     @Override
     public void start(boolean sync) throws InterruptedException  {
         // wait until the server socket is bind succeed.
