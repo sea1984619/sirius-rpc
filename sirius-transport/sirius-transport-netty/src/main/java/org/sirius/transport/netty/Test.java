@@ -2,6 +2,7 @@ package org.sirius.transport.netty;
 
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
+import org.sirius.serialization.api.SerializerType;
 import org.sirius.serialization.api.io.InputBuf;
 import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
@@ -57,8 +58,11 @@ public class Test {
 		return out;
 	}
 	public static void main(String[] args) throws Exception {
-		NettyTcpAcceptor server = new NettyTcpAcceptor();
-		server.start();
+//		NettyTcpAcceptor server = new NettyTcpAcceptor();
+//		server.start();
+		
+		SerializerFactory s= new SerializerFactory();
+		s.getSerializer(SerializerType.PROTO_STUFF.value());
 	}
 
 }

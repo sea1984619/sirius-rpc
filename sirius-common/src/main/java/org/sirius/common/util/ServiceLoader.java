@@ -262,6 +262,7 @@ public final class ServiceLoader<S> implements Iterable<S> {
         @SuppressWarnings("unchecked")
         @Override
         public Pair<String, Class<S>> next() {
+        	System.out.println("next");
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }

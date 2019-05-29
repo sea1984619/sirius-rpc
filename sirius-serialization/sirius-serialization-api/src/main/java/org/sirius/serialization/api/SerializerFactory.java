@@ -37,8 +37,9 @@ public final class SerializerFactory {
         return serializer;
     }
 
-    private SerializerFactory() {}
+    public SerializerFactory() {}
     public static void main(String args[]) {
     	SerializerFactory s= new SerializerFactory();
+    	
     }
 }

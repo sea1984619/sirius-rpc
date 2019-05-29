@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.sirius.rpc.consumer.invoker.Invoker;
+
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;

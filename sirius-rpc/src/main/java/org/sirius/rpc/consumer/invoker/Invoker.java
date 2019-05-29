@@ -1,4 +1,4 @@
-package org.sirius.rpc;
+package org.sirius.rpc.consumer.invoker;
 
 import java.lang.reflect.Method;
 

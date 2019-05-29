@@ -31,11 +31,23 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-serialization-api</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sirius-serialization-kryo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sirius-serialization-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sirius-serialization-hessian</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-serialization-protostuff</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-common</artifactId>

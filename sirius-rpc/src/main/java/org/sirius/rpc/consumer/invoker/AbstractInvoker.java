@@ -3,7 +3,6 @@ package org.sirius.rpc.consumer.invoker;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import org.sirius.rpc.Invoker;
 import org.sirius.rpc.RpcContent;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.ResultFutureContent;
