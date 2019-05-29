@@ -16,7 +16,6 @@ public class DisruptorExecutor implements InnerExecutor{
 	private Disruptor<Event> disruptor; 
 	
 	public DisruptorExecutor() {
-		
 		disruptor = new Disruptor<Event>(Event.FACTORY,1024,DaemonThreadFactory.INSTANCE);
 		disruptor.handleEventsWithWorkerPool(new RequestTaskHandler());
 		buffer = disruptor.start();
