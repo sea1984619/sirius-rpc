@@ -151,7 +151,7 @@ public class DisruptorExecutor implements InnerExecutor {
 	}
 
 	@Override
-	public void close() {
+	public void shutdown() {
 		disruptor.shutdown();
 	}
 }

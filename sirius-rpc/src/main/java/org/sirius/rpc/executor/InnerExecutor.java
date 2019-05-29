@@ -4,5 +4,5 @@ public interface InnerExecutor {
 
 	 void execute(Runnable task);
 	 
-	 void close();
+	 void shutdown();
 }

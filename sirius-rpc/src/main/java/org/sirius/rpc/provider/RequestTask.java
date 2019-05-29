@@ -1,4 +1,4 @@
-package org.sirius.rpc.consumer;
+package org.sirius.rpc.provider;
 
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.channel.Channel;
