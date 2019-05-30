@@ -1,4 +1,4 @@
-package org.sirius.rpc.proxy;
+package org.sirius.rpc.proxy.bytecode;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -440,4 +440,16 @@ public abstract class Wrapper {
      * @return return value.
      */
     abstract public Object invokeMethod(Object instance, String mn, Class<?>[] types, Object[] args) throws NoSuchMethodException, InvocationTargetException;
+    
+    class NoSuchPropertyException extends RuntimeException {
+        private static final long serialVersionUID = -2725364246023268766L;
+
+        public NoSuchPropertyException() {
+            super();
+        }
+
+        public NoSuchPropertyException(String msg) {
+            super(msg);
+        }
+    }
 }

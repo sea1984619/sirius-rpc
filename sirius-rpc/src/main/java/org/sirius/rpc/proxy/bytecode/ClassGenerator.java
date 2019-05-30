@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.sirius.rpc.proxy;
+package org.sirius.rpc.proxy.bytecode;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;

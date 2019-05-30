@@ -13,7 +13,7 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.netty.NettyTcpConnector;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
 
-public class AbstractInvoker implements Invoker{
+public abstract class AbstractInvoker implements Invoker{
 
 	
 	@Override
@@ -25,5 +25,8 @@ public class AbstractInvoker implements Invoker{
 	public Object invoke(Method method, Object[] args) {
 		return null;
 	}
+	
+	public abstract Object doInvoke(Object t,String methodName, Class<?>[] argsType, Object[] args) throws Exception ;
+		
 	
 }
