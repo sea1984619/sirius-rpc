@@ -1,6 +1,5 @@
 package org.sirius.rpc.proxy;
 
-import org.sirius.rpc.Invoker;
 
 public interface ProxyFactory<T> {
 

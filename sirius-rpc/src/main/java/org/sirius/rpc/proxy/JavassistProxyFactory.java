@@ -2,7 +2,7 @@ package org.sirius.rpc.proxy;
 
 import org.sirius.rpc.AbstractInvoker;
 import org.sirius.rpc.Invoker;
-import org.sirius.rpc.proxy.bytecode.ProxyUtil;
+import org.sirius.rpc.consumer.ProxyUtil;
 import org.sirius.rpc.proxy.bytecode.Wrapper;
 
 public class JavassistProxyFactory implements ProxyFactory{

@@ -1,4 +1,4 @@
-package org.sirius.rpc.proxy.bytecode;
+package org.sirius.rpc.consumer;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -15,7 +15,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
-import org.sirius.rpc.Invoker;
+import org.sirius.rpc.consumer.invoke.Invoker;
+import org.sirius.rpc.proxy.bytecode.ClassGenerator;
 
 public class ProxyUtil {
 
