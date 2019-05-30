@@ -7,7 +7,6 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
 import org.sirius.serialization.api.io.InputBuf;
-import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.exception.IoSignals;
@@ -15,7 +14,6 @@ import org.sirius.transport.netty.NettyTcpAcceptor;
 import org.sirius.transport.netty.buf.NettyInputBuf;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 

@@ -8,8 +8,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.sirius.rpc.consumer.invoker.Invoker;
-
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
@@ -62,12 +60,12 @@ import javassist.CtNewMethod;
 }
 
  */
-public class JavassistProxyFactory implements ProxyFactory {
+public class JavassistProxyFactory<T> implements ProxyFactory<T> {
 
 	private static final AtomicLong PROXY_CLASS_COUNTER = new AtomicLong(0);
 
 	@Override
-	public Object getProxy(Invoker invoker, Class clazz) throws Exception {
+	public Object getProxy(Invoker<T> invoker, Class<?> clazz) throws Exception {
 		if (clazz == null) {
 			throw new RuntimeException("clazz must not be null");
 		}
@@ -147,10 +145,10 @@ public class JavassistProxyFactory implements ProxyFactory {
 		// 初始化method[];
 		invokerClass.getField("methods").set(null, allPublicMethods.toArray(new Method[allPublicMethods.size()]));
 
-		byte[] code = remoteCtClass.toBytecode();
-		FileOutputStream fos = new FileOutputStream(remoteCtClass.getName() + ".class");
-		fos.write(code);
-		fos.close();
+//		byte[] code = remoteCtClass.toBytecode();
+//		FileOutputStream fos = new FileOutputStream(remoteCtClass.getName() + ".class");
+//		fos.write(code);
+//		fos.close();
 		return invokerClass.getConstructor(Invoker.class).newInstance(invoker);
 
 	}
@@ -173,6 +171,13 @@ public class JavassistProxyFactory implements ProxyFactory {
 			parmArrayBuilder.append("null");
 		}
 		return parmArrayBuilder;
+	}
+
+
+	@Override
+	public Invoker<T> getInvoker(Class<T> t) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

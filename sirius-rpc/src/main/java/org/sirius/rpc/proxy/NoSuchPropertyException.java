@@ -1,4 +1,4 @@
-package org.sirius.rpc.provider.proxy;
+package org.sirius.rpc.proxy;
 
 public class NoSuchPropertyException extends RuntimeException {
     private static final long serialVersionUID = -2725364246023268766L;

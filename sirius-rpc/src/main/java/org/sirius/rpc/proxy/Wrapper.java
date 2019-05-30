@@ -1,4 +1,4 @@
-package org.sirius.rpc.provider.proxy;
+package org.sirius.rpc.proxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -2,7 +2,6 @@ package org.sirius.transport.netty.handler.acceptor;
 
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
-import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.netty.buf.NettyOutputBuf;

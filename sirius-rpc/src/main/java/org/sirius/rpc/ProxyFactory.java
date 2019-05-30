@@ -1,12 +1,15 @@
 package org.sirius.rpc;
 
-import org.sirius.rpc.consumer.invoker.Invoker;
-
-public interface ProxyFactory {
+public interface ProxyFactory<T> {
 
 	/*
 	 * 创建客户端代理
 	 */
-	public Object getProxy(Invoker invoker , Class clazz) throws Exception;
+	public Object getProxy(Invoker<T> invoker , Class<?> clazz) throws Exception;
+	
+	/*
+	 * 创建服务端invoker
+	 */
+	public Invoker<T> getInvoker(Class<T> t);
 	
 }

@@ -7,7 +7,6 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerFactory;
 import org.sirius.serialization.api.io.InputBuf;
-import org.sirius.serialization.protostuff.ProtoStuffSerializer;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.exception.IoSignals;
