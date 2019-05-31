@@ -7,22 +7,14 @@ import org.sirius.transport.api.Request;
 
 public class ProviderProxyInvoker implements Invoker {
 
-	@Override
-	public Object invoke(Method method, Object[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object invoke(String methodName, Class[] argsType, Object[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Object invoke(Request request) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	private Request creatRequest(Method method, Object[] args) {
+		return null;
+	}
 }

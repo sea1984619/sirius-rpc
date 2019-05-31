@@ -382,7 +382,7 @@ public final class ClassGenerator {
         }
     }
 
-    private CtClass getCtClass(Class<?> c) throws NotFoundException {
+    public CtClass getCtClass(Class<?> c) throws NotFoundException {
         return mPool.get(c.getName());
     }
 
