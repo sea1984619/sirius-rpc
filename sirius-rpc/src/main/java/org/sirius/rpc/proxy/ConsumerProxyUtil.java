@@ -17,9 +17,7 @@ import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
-import org.sirius.rpc.consumer.invoke.InvokerHandler;
 import org.sirius.rpc.proxy.bytecode.ClassGenerator;
-import org.sirius.serialization.api.SerializerType;
 import org.sirius.transport.api.Request;
 
 public class ConsumerProxyUtil {
@@ -151,7 +149,6 @@ public class ConsumerProxyUtil {
 					code.append(Request.class.getCanonicalName()+" request =");
 					code.append(RequestMessageBuilder.class.getCanonicalName()+".build(methods[").append(ix).append("], args);");
 					code.append(" Object ret = invoker.invoke(request);");
-					System.out.println(code.toString());
 					if (!Void.TYPE.equals(rt)) {
 						code.append(" return ").append(asArgument(rt, "ret")).append(";");
 					}
@@ -168,8 +165,6 @@ public class ConsumerProxyUtil {
 
 			// create ProxyInstance class.
 			String pcn = pkg + ".proxy" + id;
-			ccp.getCtClass(InvokerHandler.class);
-			
 			ccp.setClassName(pcn);
 			ccp.addField("public static java.lang.reflect.Method[] methods;");
 			ccp.addField("private " + Invoker.class.getName() + " invoker;");
@@ -233,6 +228,6 @@ public class ConsumerProxyUtil {
 	}
 
 	public static void main(String args[]) {
-		ConsumerProxyUtil.getProxy(new ConsumerPoxyInvoker(),Test.class );
+		
 	} 
 }
