@@ -1,8 +1,5 @@
 package org.sirius.rpc.provider.invoke;
 
-
-import java.lang.reflect.InvocationTargetException;
-
 import org.sirius.rpc.Invoker;
 import org.sirius.transport.api.Request;
 
@@ -10,6 +7,12 @@ public abstract class ProviderProxyInvoker<T> implements Invoker {
 
 	private T provider;
 
+	private Class<T> type;
+	
+	public ProviderProxyInvoker(T provider,Class<T> type) {
+		this.provider = provider;
+		this.type = type;
+	}
 	@Override
 	public Object invoke(Request request) throws Throwable {
 		

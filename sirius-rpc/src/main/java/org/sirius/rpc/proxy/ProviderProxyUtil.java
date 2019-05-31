@@ -11,7 +11,7 @@ public class ProviderProxyUtil {
 		
 		Wrapper wrapper = Wrapper.getWrapper(provideClass.getClass().getName().indexOf('$') < 0 ? providerImpl.getClass() : provideClass);
 		
-		return new ProviderProxyInvoker<T>() {
+		return new ProviderProxyInvoker<T>(providerImpl,provideClass) {
 
 			@Override
 			public Object doInvoke(T provider, String mn, Class<?>[] types, Object[] args) throws Throwable {
