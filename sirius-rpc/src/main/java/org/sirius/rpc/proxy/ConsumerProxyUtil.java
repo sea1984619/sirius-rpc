@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
 import org.sirius.rpc.Invoker;
-import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
 import org.sirius.rpc.proxy.bytecode.ClassGenerator;
 import org.sirius.transport.api.Request;
 
