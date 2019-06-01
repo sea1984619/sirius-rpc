@@ -9,13 +9,13 @@ import org.sirius.transport.netty.NettyTcpConnector;
 
 public class DefaultRpcClient implements RpcClient {
 	
-	private NettyTcpConnector connector;
-	private DefaultConsumerProcessor processor;
+	private Connector connector;
+	private ConsumerProcessor processor;
 	
 	public DefaultRpcClient(Connector connector, ConsumerProcessor processor) {
 		this.connector = (NettyTcpConnector) connector;
 		this.processor =  (DefaultConsumerProcessor) processor;
-		connector.setConsumerProcessor(processor);
+		this.connector.setConsumerProcessor(processor);
 	}
 
 	@Override
@@ -25,7 +25,19 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	@Override
+	public Connector getConnector() {
+		return this.connector;
+	}
+	
+
+	@Override
+	public ConsumerProcessor getProcessor() {
+		return this.processor;
+		}
+
+	@Override
 	public void Shutdown() {
 		
 	}
+	
 }
