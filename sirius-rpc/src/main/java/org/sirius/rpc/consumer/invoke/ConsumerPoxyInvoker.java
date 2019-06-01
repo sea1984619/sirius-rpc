@@ -35,12 +35,12 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	@Override
 	public Object invoke(Request request) {
 		Channel channel = route(request);
-		try {
-			Thread.sleep(000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		CompletableFuture future = new CompletableFuture();
 		ResultFutureContent.add(request.invokeId(), future);
 		RpcContent.set(future);

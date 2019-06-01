@@ -6,9 +6,9 @@ public interface Channel {
 
 	String id();
 
-	SocketAddress  localAdress();
+	SocketAddress  localAddress();
 	
-	SocketAddress  remoteAdress();
+	SocketAddress  remoteAddress();
 	
 	boolean isActive();
 	

@@ -55,12 +55,12 @@ public class NettyChannel extends AbstractChannel {
 	}
 
 	@Override
-	public SocketAddress localAdress() {
+	public SocketAddress localAddress() {
 		return channel.localAddress();
 	}
 
 	@Override
-	public SocketAddress remoteAdress() {
+	public SocketAddress remoteAddress() {
 		return channel.remoteAddress();
 	}
 
