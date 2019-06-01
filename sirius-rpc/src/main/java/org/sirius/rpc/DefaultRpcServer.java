@@ -1,7 +1,9 @@
 package org.sirius.rpc;
 
+import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
+import org.sirius.transport.netty.NettyTcpAcceptor;
 
 public class DefaultRpcServer implements RpcServer {
 
@@ -36,5 +38,11 @@ public class DefaultRpcServer implements RpcServer {
 	@Override
 	public void shutdown() {
 
+	}
+	
+	public static void main(String args[]) {
+		Acceptor acceptor = new NettyTcpAcceptor();
+		ProviderProcessor providerProcessor = new DefaultProviderProcessor();
+		DefaultRpcServer server = new DefaultRpcServer(acceptor,providerProcessor);
 	}
 }

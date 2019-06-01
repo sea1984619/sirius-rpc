@@ -15,6 +15,9 @@ import java.util.regex.Matcher;
 
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
+import org.sirius.rpc.provider.Test;
+import org.sirius.rpc.provider.TestImpl;
+import org.sirius.rpc.proxy.ProviderProxyUtil;
 
 /**
  * Wrapper.
@@ -266,6 +269,7 @@ public abstract class Wrapper {
         }
     }
 
+
     private static String arg(Class<?> cl, String name) {
         if (cl.isPrimitive()) {
             if (cl == Boolean.TYPE) {
@@ -441,15 +445,4 @@ public abstract class Wrapper {
      */
     abstract public Object invokeMethod(Object instance, String mn, Class<?>[] types, Object[] args) throws NoSuchMethodException, InvocationTargetException;
     
-    class NoSuchPropertyException extends RuntimeException {
-        private static final long serialVersionUID = -2725364246023268766L;
-
-        public NoSuchPropertyException() {
-            super();
-        }
-
-        public NoSuchPropertyException(String msg) {
-            super(msg);
-        }
-    }
 }

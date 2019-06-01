@@ -2,6 +2,8 @@ package org.sirius.rpc.proxy;
 
 
 import org.sirius.rpc.Invoker;
+import org.sirius.rpc.provider.Test;
+import org.sirius.rpc.provider.TestImpl;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.bytecode.Wrapper;
 
@@ -18,5 +20,11 @@ public class ProviderProxyUtil {
 				return wrapper.invokeMethod(provider, mn, types, args);
 			}
 		};
+	}
+	
+	public static void main(String args[]) {
+		TestImpl im = new TestImpl();
+		
+		ProviderProxyUtil.getInvoker(im, Test.class);
 	}
 }
