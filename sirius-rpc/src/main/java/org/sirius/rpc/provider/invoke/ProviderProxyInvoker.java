@@ -2,6 +2,7 @@ package org.sirius.rpc.provider.invoke;
 
 import org.sirius.rpc.Invoker;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 
 public abstract class ProviderProxyInvoker<T> implements Invoker {
 
@@ -14,13 +15,19 @@ public abstract class ProviderProxyInvoker<T> implements Invoker {
 		this.type = type;
 	}
 	@Override
-	public Object invoke(Request request) throws Throwable {
+	public Response invoke(Request request) throws Throwable {
 		
-		String methodName = request.getMethodName();
-		Class<?>[] types = request.getParametersType();
-		Object[] args = request.getParameters();
+		Request _request = request;
+		String methodName = _request.getMethodName();
+		Class<?>[] types = _request.getParametersType();
+		Object[] args = _request.getParameters();
 		
-		return doInvoke(provider,methodName,types,args);
+		Response response = new Response(_request.invokeId());
+		response.setSerializerCode(_request.getSerializerCode());
+		Object result =  doInvoke(provider,methodName,types,args);
+		response.setResult(result);
+		System.out.println("结果为"+result);
+		return response;
 	}
 	
 	public abstract Object doInvoke(T provider,String mn, Class<?>[] types, Object[] args) throws Throwable;

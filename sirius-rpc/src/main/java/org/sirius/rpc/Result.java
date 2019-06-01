@@ -4,5 +4,4 @@ public interface Result {
 
 	public  Object get();
 	
-	
 }

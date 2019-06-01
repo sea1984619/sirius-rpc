@@ -22,13 +22,12 @@ public class RequestTask implements Runnable{
 		DefaultProviderProcessor _processor = processor;
 		Request _request = request;
 		Channel _channel = channel;
-		Response response = new Response(_request.invokeId());
-		response.setSerializerCode(_request.getSerializerCode());
 		ProviderProxyInvoker invoker =  _processor.lookupInvoker(_request);
+		Response response = null;
 		try {
-			 Object result = invoker.invoke(_request);
-			response.setResult(result);
+			response  = invoker.invoke(_request);
 		} catch (Throwable e) {
+			System.out.println("异常为"+e);
 			_processor.handlerException(_channel, e);
 		}
 		try {

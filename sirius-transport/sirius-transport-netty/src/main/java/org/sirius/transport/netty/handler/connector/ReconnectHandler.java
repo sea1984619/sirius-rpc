@@ -54,7 +54,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 		
 		Channel channel = ctx.channel();
 		NettyChannel nettyChannel = (NettyChannel) channel.attr(NettyChannel.NETTY_CHANNEL_KEY).get();
-		SocketAddress address = nettyChannel.remoteAdress();
+		SocketAddress address = nettyChannel.remoteAddress();
 		NettyChannelGroup group = (NettyChannelGroup) nettyChannel.getGroup();
 		
 		logger.warn("Disconnects with {}, address: {}", channel, address);

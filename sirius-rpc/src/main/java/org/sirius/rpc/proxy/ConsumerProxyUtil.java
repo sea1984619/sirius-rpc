@@ -18,6 +18,7 @@ import org.sirius.common.util.ReflectUtils;
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.proxy.bytecode.ClassGenerator;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 
 public class ConsumerProxyUtil {
 
@@ -147,7 +148,8 @@ public class ConsumerProxyUtil {
 					}
 					code.append(Request.class.getCanonicalName()+" request =");
 					code.append(RequestMessageBuilder.class.getCanonicalName()+".build(methods[").append(ix).append("], args);");
-					code.append(" Object ret = invoker.invoke(request);");
+					code.append(Response.class.getCanonicalName()+ " response  = invoker.invoke(request);");
+					code.append("Object ret = response.getResult();");
 					if (!Void.TYPE.equals(rt)) {
 						code.append(" return ").append(asArgument(rt, "ret")).append(";");
 					}

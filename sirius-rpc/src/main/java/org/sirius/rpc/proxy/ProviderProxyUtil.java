@@ -6,6 +6,7 @@ import org.sirius.rpc.provider.Test;
 import org.sirius.rpc.provider.TestImpl;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.bytecode.Wrapper;
+import org.sirius.transport.api.Response;
 
 public class ProviderProxyUtil {
 
@@ -17,7 +18,7 @@ public class ProviderProxyUtil {
 
 			@Override
 			public Object doInvoke(T provider, String mn, Class<?>[] types, Object[] args) throws Throwable {
-				return wrapper.invokeMethod(provider, mn, types, args);
+				return  wrapper.invokeMethod(provider, mn, types, args);
 			}
 		};
 	}
