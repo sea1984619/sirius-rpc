@@ -41,8 +41,6 @@ public class RequestDecoder extends LengthFieldBasedFrameDecoder {
 			byte sign = buf.readByte();
 			if (ProtocolHeader.messageCode(sign) == ProtocolHeader.HEARTBEAT)
 				return null;
-			// buf.readByte();
-			// buf.readLong();
 			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			checkBodySize(bodySize);

@@ -26,9 +26,12 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 	private ProviderProcessor providerProcessor;
 	private static final AtomicInteger channelCounter = new AtomicInteger(0);
 
+	public void setProcessor(ProviderProcessor processor) {
+		this.providerProcessor = processor;
+	}
+	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
 		Channel channel = (Channel) ctx.channel();
 		NettyChannel nettyChannel = NettyChannel.attachChannel(channel);
 		if (msg instanceof Request) {
@@ -46,7 +49,7 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		int count = channelCounter.getAndDecrement();
+		int count = channelCounter.decrementAndGet();
 		logger.warn("Disconnects with {} , remain {} channels.", ctx.channel(), count);
 	}
 
@@ -93,7 +96,6 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 			logger.error("Unexpected exception was caught: {}, channel: {}.", StackTraceUtil.stackTrace(cause), ch);
 		}
 	}
-	public void setProcessor(ProviderProcessor processor) {
-		this.providerProcessor = processor;
-	}
+	
+	
 }

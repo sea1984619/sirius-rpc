@@ -42,6 +42,7 @@ public class ConnectorHandler extends ChannelInboundHandlerAdapter {
 			}
 
 		} else {
+			System.out.println("返回结果为"+msg);
 			logger.warn("Unexpected message type received: {}, channel: {}.", msg.getClass(), ctx.channel());
 		}
 	}

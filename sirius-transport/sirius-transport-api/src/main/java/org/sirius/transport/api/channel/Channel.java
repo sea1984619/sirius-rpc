@@ -22,6 +22,6 @@ public interface Channel {
 	
 	void close();
 	
-	Channel send(Object message);
+	Channel send(Object message) throws Exception;
 	
 }

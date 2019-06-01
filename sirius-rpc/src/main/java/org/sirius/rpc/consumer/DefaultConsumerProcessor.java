@@ -19,7 +19,6 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 
 	@Override
 	public void shutdown() {
-		// TODO Auto-generated method stub
 		
 	}
 

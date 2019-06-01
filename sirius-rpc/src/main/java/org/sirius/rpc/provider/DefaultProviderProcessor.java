@@ -21,7 +21,8 @@ public class DefaultProviderProcessor  implements ProviderProcessor{
 	public DefaultProviderProcessor() {
 		executor = new DisruptorExecutor(8,null);
 		TestImpl impl = new TestImpl();
-		invokers.put(Apple.class.getName(), (ProviderProxyInvoker) ProviderProxyUtil.getInvoker(impl, Test.class));
+		System.out.println("服务名"+Test.class.getName());
+		invokers.put(Test.class.getName(), (ProviderProxyInvoker) ProviderProxyUtil.getInvoker(impl, Test.class));
 	}
 	
 	@Override
@@ -36,6 +37,7 @@ public class DefaultProviderProcessor  implements ProviderProcessor{
 	
 	public ProviderProxyInvoker lookupInvoker(Request request) {
 		String serviceName = request.getClassName();
+		System.out.println("请求服务名:"+serviceName);
 		return invokers.get(serviceName);
 	}
 	@Override

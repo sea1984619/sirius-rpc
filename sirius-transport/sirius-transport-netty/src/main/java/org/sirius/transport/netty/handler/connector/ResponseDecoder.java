@@ -32,7 +32,6 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 	}
 
 	protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
-		
 		ByteBuf buf = (ByteBuf) super.decode(ctx, in);
 		if (buf == null)
 			return null;
@@ -40,10 +39,6 @@ public class ResponseDecoder extends LengthFieldBasedFrameDecoder {
 			short magic = buf.readShort();
 			checkMagic(magic);
 			byte sign = buf.readByte();
-			if (ProtocolHeader.messageCode(sign) == ProtocolHeader.HEARTBEAT)
-				return null;
-//			buf.readByte();
-//			buf.readLong();
 			buf.skipBytes(9);
 			int bodySize = buf.readInt();
 			checkBodySize(bodySize);

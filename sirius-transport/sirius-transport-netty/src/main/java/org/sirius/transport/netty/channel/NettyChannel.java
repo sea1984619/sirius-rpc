@@ -40,8 +40,10 @@ public class NettyChannel extends AbstractChannel {
 	public io.netty.channel.Channel nettyChannel() {
 		return this.channel;
 	}
+	
 	@Override
-	public Channel send(Object message) {
+	public Channel send(Object message) throws Exception {
+		super.send(message);
 		channel.writeAndFlush(message,channel.voidPromise());
 		return this;
 		

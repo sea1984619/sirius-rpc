@@ -2,6 +2,7 @@ package org.sirius.rpc.provider;
 
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 public class RequestTask implements Runnable{
@@ -21,13 +22,20 @@ public class RequestTask implements Runnable{
 		DefaultProviderProcessor _processor = processor;
 		Request _request = request;
 		Channel _channel = channel;
-		Object response = null;
+		Response response = new Response(_request.invokeId());
+		response.setSerializerCode(_request.getSerializerCode());
 		ProviderProxyInvoker invoker =  _processor.lookupInvoker(_request);
 		try {
-			response = invoker.invoke(_request);
+			 Object result = invoker.invoke(_request);
+			response.setResult(result);
 		} catch (Throwable e) {
 			_processor.handlerException(_channel, e);
 		}
-		_channel.send(response);
+		try {
+			_channel.send(response);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

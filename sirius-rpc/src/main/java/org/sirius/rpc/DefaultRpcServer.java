@@ -44,5 +44,6 @@ public class DefaultRpcServer implements RpcServer {
 		Acceptor acceptor = new NettyTcpAcceptor();
 		ProviderProcessor providerProcessor = new DefaultProviderProcessor();
 		DefaultRpcServer server = new DefaultRpcServer(acceptor,providerProcessor);
+		server.start();
 	}
 }

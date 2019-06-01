@@ -9,7 +9,7 @@ public class RequestMessageBuilder {
 
 	public static Request build(Method method,Object[] params) {
 		Request re = new Request();
-		re.setClassName(method.getDeclaringClass().toString());
+		re.setClassName(method.getDeclaringClass().getCanonicalName());
 		re.setMethodName(method.getName());
 		re.setParameters(params);
 		re.setParametersType(method.getParameterTypes());

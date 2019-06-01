@@ -17,7 +17,6 @@ public class RequestEncoder extends MessageToByteEncoder<Request> {
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Request msg, ByteBuf out) throws Exception {
-		
 		byte sign = ProtocolHeader.toSign(msg.getSerializerCode(), ProtocolHeader.REQUEST);
 		Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
 		long invokeId = msg.invokeId();
@@ -39,5 +38,6 @@ public class RequestEncoder extends MessageToByteEncoder<Request> {
 		out.writerIndex(12)
 		   .writeInt(bodySize)//重新设置长度
 		   .resetWriterIndex();
+		
 	}
 }

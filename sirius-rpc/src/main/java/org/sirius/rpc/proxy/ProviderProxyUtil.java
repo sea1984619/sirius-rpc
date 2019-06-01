@@ -21,10 +21,4 @@ public class ProviderProxyUtil {
 			}
 		};
 	}
-	
-	public static void main(String args[]) {
-		TestImpl im = new TestImpl();
-		
-		ProviderProxyUtil.getInvoker(im, Test.class);
-	}
 }
