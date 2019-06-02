@@ -14,11 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.sofa.rpc.common.utils;
-
-import com.alipay.sofa.rpc.core.exception.SofaRpcRuntimeException;
-import com.alipay.sofa.rpc.log.Logger;
-import com.alipay.sofa.rpc.log.LoggerFactory;
+package org.sirius.common.util;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,17 +28,21 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.sirius.common.util.IOUtils;
+import org.sirius.common.util.StringUtils;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+
 /**
  * 网络操作工具类
  *
- * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 public class NetUtils {
 
     /**
      * slf4j Logger for this class
      */
-    private final static Logger LOGGER   = LoggerFactory.getLogger(NetUtils.class);
+	 private final static InternalLogger  LOGGER   = InternalLoggerFactory.getInstance(NetUtils.class);
 
     /**
      * 最小端口
@@ -123,9 +123,9 @@ public class NetUtils {
                     IOUtils.closeQuietly(ss);
                 }
             }
-            throw new SofaRpcRuntimeException("Can't bind to ANY port of " + host + ", please check config");
+            throw new RuntimeException("Can't bind to ANY port of " + host + ", please check config");
         } else {
-            throw new SofaRpcRuntimeException("The host " + host
+            throw new RuntimeException("The host " + host
                 + " is not found in network cards, please check config");
         }
     }

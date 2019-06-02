@@ -1,29 +1,10 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.alipay.sofa.rpc.common;
+package org.sirius.rpc.config;
 
 import java.nio.charset.Charset;
-
-import static com.alipay.sofa.rpc.common.RpcConfigs.getStringValue;
 
 /**
  * Rpc Constants
  *
- * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 public class RpcConstants {
 
@@ -92,7 +73,7 @@ public class RpcConstants {
      * 默认字符集 utf-8
      */
     public static final Charset DEFAULT_CHARSET                    = Charset
-                                                                       .forName(getStringValue(RpcOptions.DEFAULT_CHARSET));
+                                                                       .forName("utf-8");
 
     /**
      * 调用方式：同步调用
@@ -130,78 +111,10 @@ public class RpcConstants {
      * protobuf序列化
      */
     public static final String  SERIALIZE_PROTOBUF                 = "protobuf";
-    /**
-     * json序列化
-     */
-    public static final String  SERIALIZE_JSON                     = "json";
-
-    /**
-     * 协议类型：(tr+bolt) v==4.0?bolt:tr
-     *
-     * @since 5.1.0
-     */
-    public static final String  PROTOCOL_TYPE_TR                   = "tr";
-    /**
-     * 协议类型：bolt
-     *
-     * @since 5.1.0
-     */
-    public static final String  PROTOCOL_TYPE_BOLT                 = "bolt";
-    /**
-     * 协议类型：GRPC
-     *
-     * @since 5.1.0
-     */
-    public static final String  PROTOCOL_TYPE_GRPC                 = "grpc";
-    /**
-     * 协议类型：xfire
-     *
-     * @since 5.1.0
-     */
-    public static final String  PROTOCOL_TYPE_XFIRE                = "xfire";
-    /**
-     * 协议类型：rest
-     *
-     * @since 5.2.0
-     */
+    
     public static final String  PROTOCOL_TYPE_REST                 = "rest";
-    /**
-     * 协议类型：http (http/1.1)
-     *
-     * @since 5.4.0
-     */
-    public static final String  PROTOCOL_TYPE_HTTP                 = "http";
-    /**
-     * 协议类型：https
-     *
-     * @since 5.4.0
-     */
-    public static final String  PROTOCOL_TYPE_HTTPS                = "https";
-    /**
-     * 协议类型：http2 clear text
-     *
-     * @since 5.4.0
-     */
-    public static final String  PROTOCOL_TYPE_H2C                  = "h2c";
-    /**
-     * 协议类型：http2 
-     *
-     * @since 5.4.0
-     */
-    public static final String  PROTOCOL_TYPE_H2                   = "h2";
-
-    /**
-     * rest allow origins key
-     *
-     * @since 5.5.0
-     */
-    public static final String  ALLOWED_ORIGINS                    = "allowedOrigins";
-
-    /**
-     * bolt server process in io thread
-     *
-     * @since 5.5.6
-     */
+   
+     
     public static final String  PROCESS_IN_IOTHREAD                = "processInIOThread";
 
     /*--------Config配置值相关结束---------*/
