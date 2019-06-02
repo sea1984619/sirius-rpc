@@ -117,9 +117,9 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	/*-------- 下面是方法级配置 --------*/
 
 	/**
-	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制 子类默认值不一样 protected int
-	 * concurrents = 0;
+	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
 	 */
+	protected int concurrents = 0;
 
 	/**
 	 * 是否启动结果缓存
