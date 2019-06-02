@@ -1,8 +1,14 @@
 package org.sirius.rpc;
 
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 
 public interface Filter {
 
-	Object invoke(Invoker invoker, Request request);
+	Response invoke(Invoker invoker, Request request) throws Throwable;
+	
+	default  Response onResponse(Response res) {
+		
+		return res;
+	}
 }
