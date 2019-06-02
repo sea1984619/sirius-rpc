@@ -7,7 +7,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 服务提供者配置
- *
  */
 public class ProviderConfig<T> implements Serializable {
 
@@ -78,12 +77,6 @@ public class ProviderConfig<T> implements Serializable {
 	 */
 	protected int concurrents;
 
-	/**
-	 * 同一个服务（接口协议uniqueId相同）的最大发布次数，防止由于代码bug导致重复发布。注意：后面的发布可能会覆盖前面的实现，-1表示不检查
-	 *
-	 * @since 5.2.0
-	 */
-	protected int repeatedExportLimit;
 
 	/*---------- 参数配置项结束 ------------*/
 
@@ -302,26 +295,6 @@ public class ProviderConfig<T> implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Gets repeated export limit.
-	 *
-	 * @return the repeated export limit
-	 */
-	public int getRepeatedExportLimit() {
-		return repeatedExportLimit;
-	}
-
-	/**
-	 * Sets repeated export limit.
-	 *
-	 * @param repeatedExportLimit
-	 *            the repeated export limit
-	 * @return the repeated export limit
-	 */
-	public ProviderConfig<T> setRepeatedExportLimit(int repeatedExportLimit) {
-		this.repeatedExportLimit = repeatedExportLimit;
-		return this;
-	}
 
 	/**
 	 * Gets client timeout.

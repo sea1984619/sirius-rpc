@@ -55,14 +55,8 @@ public class MethodConfig implements Serializable {
      */
     protected String               compress;
 
-    /**
-     * 目标参数（机房/分组）索引，第一个参数从0开始
-     * // TODO 待实现
-     */
-    protected Integer              dstParam;
 
     /*-------------配置项结束----------------*/
-
     /**
      * Gets name.
      *
@@ -239,24 +233,6 @@ public class MethodConfig implements Serializable {
         return this;
     }
 
-    /**
-     * Gets dst param.
-     *
-     * @return the dst param
-     */
-    public Integer getDstParam() {
-        return dstParam;
-    }
-
-    /**
-     * Sets dst param.
-     *
-     * @param dstParam the dst param
-     */
-    public MethodConfig setDstParam(Integer dstParam) {
-        this.dstParam = dstParam;
-        return this;
-    }
 
     /**
      * Sets parameter.
