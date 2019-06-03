@@ -1,4 +1,4 @@
-package org.sirius.rpc.config;
+package org.sirius.config;
 
 import java.nio.charset.Charset;
 

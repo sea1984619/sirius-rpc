@@ -61,7 +61,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 		
 		if(isReconnectNeeded(address,group)) {
 			ReconnectTask task = new ReconnectTask(connector, group, address, 1);
-			connector.timer.newTimeout(task, 2<<1, TimeUnit.MILLISECONDS);
+			connector.timer.newTimeout(task, 2<<1, TimeUnit.SECONDS);
 		}
 		
 		ctx.fireChannelInactive();
@@ -113,8 +113,9 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 						if(!succeed) {
 							attempts ++;
 							long timeOut = 2 << attempts;
+							System.out.println(timeOut);
 							ReconnectTask newTask = new ReconnectTask(connector, group, remoteAddress, attempts);
-							connector.timer.newTimeout(newTask, timeOut, TimeUnit.MILLISECONDS);
+							connector.timer.newTimeout(newTask, timeOut, TimeUnit.SECONDS);
 						}
 					});
 			}

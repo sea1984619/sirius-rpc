@@ -1,26 +1,5 @@
 
-package org.sirius.rpc.config;
-
-
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_ADDRESS_HOLDER;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_ADDRESS_WAIT;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CHECK;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CLUSTER;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CONCURRENTS;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CONNECTION_HOLDER;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CONNECTION_NUM;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_CONNECT_TIMEOUT;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_DISCONNECT_TIMEOUT;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_HEARTBEAT_PERIOD;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_INJVM;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_INVOKE_TYPE;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_LAZY;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_LOAD_BALANCER;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_RECONNECT_PERIOD;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_REPEATED_REFERENCE_LIMIT;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_RETRIES;
-import static org.sirius.rpc.config.RpcOptions.CONSUMER_STICKY;
-import static org.sirius.rpc.config.RpcOptions.DEFAULT_PROTOCOL;
+package org.sirius.config;
 
 import java.io.Serializable;
 import java.util.List;

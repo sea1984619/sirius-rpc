@@ -9,9 +9,7 @@
 		<artifactId>sirius-serialization</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.sirius-rpc</groupId>
 	<artifactId>sirius-serialization-java</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>sirius-serialization-java</name>
 	<dependencies>
 

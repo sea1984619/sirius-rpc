@@ -9,9 +9,7 @@
 		<artifactId>sirius</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.sirius-rpc</groupId>
 	<artifactId>sirius-common</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>sirius-common</name>
 

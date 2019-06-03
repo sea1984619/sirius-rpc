@@ -9,9 +9,7 @@
 		<artifactId>sirius-transport</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.sirius-rpc</groupId>
 	<artifactId>sirius-transport-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>sirius-transport-api</name>
 
 	<properties>

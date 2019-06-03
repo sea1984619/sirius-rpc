@@ -7,9 +7,7 @@
     <artifactId>sirius-serialization</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.sirius-rpc</groupId>
   <artifactId>sirius-serialization-kryo</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>sirius-serialization-kryo</name>
   <dependencies>
      <dependency>

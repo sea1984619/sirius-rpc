@@ -37,7 +37,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	public Response invoke(Request request) {
 		Channel channel = route(request);
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(20000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,7 +55,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	}
 
 	private Channel route(Request request) {
-		UnresolvedAddress address = new UnresolvedSocketAddress("127.0.0.1",18090);
+		UnresolvedAddress address = new UnresolvedSocketAddress("27.22.10.220",18090);
 		return connector.connect(address);
 	}
 	

@@ -11,7 +11,6 @@
 	</parent>
 
 	<artifactId>sirius-transport-netty</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>sirius-transport-netty</name>
 
@@ -23,6 +22,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-transport-api</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-common</artifactId>

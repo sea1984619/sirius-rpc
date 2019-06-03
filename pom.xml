@@ -11,6 +11,7 @@
   	<module>sirius-rpc</module>
     <module>sirius-common</module>
     <module>sirius-registry</module>
+    <module>sirius-config</module>
   </modules>
   
   
@@ -38,6 +39,11 @@
         <dependencies>
             <!-- # sirius module dependency: begin -->
             <!-- ## required dependency: begin -->
+             <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>sirius-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>sirius-common</artifactId>
