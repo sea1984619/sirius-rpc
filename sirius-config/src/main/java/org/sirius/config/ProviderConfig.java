@@ -1,6 +1,8 @@
 package org.sirius.config;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -10,7 +12,7 @@ import org.sirius.common.util.ClassUtil;
 /**
  * 服务提供者配置
  */
-public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfig<T>> implements Serializable {
+public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig<T>> implements Serializable {
 
 	/**
 	 * The constant serialVersionUID.
@@ -24,6 +26,7 @@ public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfi
 	 */
 	protected transient T ref;
 
+	protected List<ServerConfig> server;
 	/**
 	 * 服务发布延迟,单位毫秒，默认0，配置为-1代表spring加载完毕（通过spring才生效）
 	 */
@@ -78,7 +81,6 @@ public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfi
 	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
 	 */
 	protected int concurrents;
-
 
 	/*---------- 参数配置项结束 ------------*/
 
@@ -297,7 +299,6 @@ public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfi
 		return this;
 	}
 
-
 	/**
 	 * Gets client timeout.
 	 *
@@ -307,6 +308,40 @@ public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfi
 		return timeout;
 	}
 
+	 /**
+     * Gets server.
+     *
+     * @return the server
+     */
+    public List<ServerConfig> getServer() {
+        return server;
+    }
+
+    /**
+     * Sets server.
+     *
+     * @param server the server
+     * @return the server
+     */
+    public ProviderConfig<T> setServer(List<ServerConfig> server) {
+        this.server = server;
+        return this;
+    }
+    
+    /**
+     * add server.
+     *
+     * @param server ServerConfig
+     * @return the ProviderConfig
+     */
+    public ProviderConfig<T> setServer(ServerConfig server) {
+        if (this.server == null) {
+            this.server = new ArrayList<ServerConfig>();
+        }
+        this.server.add(server);
+        return this;
+    }
+    
 	/**
 	 * Sets client timeout.
 	 *
@@ -340,73 +375,72 @@ public class ProviderConfig<T>  extends AbstractInterfaceConfig<T, ProviderConfi
 		return this;
 	}
 
-	  @Override
-	    public Class<?> getProxyClass() {
-	        if (proxyClass != null) {
-	            return proxyClass;
-	        }
-	        try {
-	            if ((interfaceId != null)&&!interfaceId.equals("")) {
-	                this.proxyClass = ClassUtil.forName(interfaceId);
-	                if (!proxyClass.isInterface()) {
-	                    throw new RuntimeException("service.interfaceId interfaceId interfaceId must set interface class not implement class");
-	                }
-	            } else {
-	                throw new RuntimeException("service.interfaceId is null interfaceId must be not null");
-	            }
-	        } catch (RuntimeException e) {
-	            throw e;
-	        } catch (Throwable e) {
-	            throw new RuntimeException(e.getMessage(), e);
-	        }
-	        return proxyClass;
-	    }
+	@Override
+	public Class<?> getProxyClass() {
+		if (proxyClass != null) {
+			return proxyClass;
+		}
+		try {
+			if ((interfaceId != null) && !interfaceId.equals("")) {
+				this.proxyClass = ClassUtil.forName(interfaceId);
+				if (!proxyClass.isInterface()) {
+					throw new RuntimeException(
+							"service.interfaceId interfaceId interfaceId must set interface class not implement class");
+				}
+			} else {
+				throw new RuntimeException("service.interfaceId is null interfaceId must be not null");
+			}
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return proxyClass;
+	}
 
-	    /**
-	     * Build key.
-	     *
-	     * @return the string
-	     */
-	    @Override
-	    public String buildKey() {
-	        return interfaceId + ":" + uniqueId;
-	    }
+	/**
+	 * Build key.
+	 *
+	 * @return the string
+	 */
+	@Override
+	public String buildKey() {
+		return interfaceId + ":" + uniqueId;
+	}
 
-	 @Override
-	    public boolean hasTimeout() {
-	        if (timeout > 0) {
-	            return true;
-	        }
-	        if (isNotEmpty(methods)) {
-	            for (MethodConfig methodConfig : methods.values()) {
-	                if (methodConfig.getTimeout() > 0) {
-	                    return true;
-	                }
-	            }
-	        }
-	        return false;
-	    }
+	@Override
+	public boolean hasTimeout() {
+		if (timeout > 0) {
+			return true;
+		}
+		if (isNotEmpty(methods)) {
+			for (MethodConfig methodConfig : methods.values()) {
+				if (methodConfig.getTimeout() > 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-	    /**
-	     * 是否有并发控制需求，有就打开过滤器
-	     * 配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
-	     *
-	     * @return 是否配置了concurrents boolean
-	     */
-	    @Override
-	    public boolean hasConcurrents() {
-	        if (concurrents > 0) {
-	            return true;
-	        }
-	        if (isNotEmpty(methods)) {
-	            for (MethodConfig methodConfig : methods.values()) {
-	                if (methodConfig.getConcurrents() != null
-	                    && methodConfig.getConcurrents() > 0) {
-	                    return true;
-	                }
-	            }
-	        }
-	        return false;
-	    }
+	/**
+	 * 是否有并发控制需求，有就打开过滤器 配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
+	 *
+	 * @return 是否配置了concurrents boolean
+	 */
+	@Override
+	public boolean hasConcurrents() {
+		if (concurrents > 0) {
+			return true;
+		}
+		if (isNotEmpty(methods)) {
+			for (MethodConfig methodConfig : methods.values()) {
+				if (methodConfig.getConcurrents() != null && methodConfig.getConcurrents() > 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

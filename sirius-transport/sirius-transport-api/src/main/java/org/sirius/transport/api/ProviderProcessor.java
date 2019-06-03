@@ -4,7 +4,7 @@ import org.sirius.transport.api.channel.Channel;
 
 public interface ProviderProcessor {
 
-	void handlerRequest(Channel channel, Request request) throws Throwable;
+	void handlerRequest(Channel channel, Request request);
 	
 	void handlerException(Channel channel, Throwable e);
 	

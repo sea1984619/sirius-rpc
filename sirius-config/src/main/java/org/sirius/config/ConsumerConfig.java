@@ -8,7 +8,7 @@ import java.util.List;
  * 服务消费者配置
  * 
  */
-public class ConsumerConfig<T>  implements Serializable {
+public class ConsumerConfig<T>  extends AbstractInterfaceConfig<T, ConsumerConfig<T>> implements Serializable {
 
     /**
      * The constant serialVersionUID.
@@ -612,6 +612,30 @@ public class ConsumerConfig<T>  implements Serializable {
         this.repeatedReferLimit = repeatedReferLimit;
         return this;
     }
+
+	@Override
+	protected Class<?> getProxyClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String buildKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasTimeout() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasConcurrents() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
    
   
