@@ -13,6 +13,7 @@ import org.sirius.transport.netty.SocketChannelProvider.SocketType;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -176,6 +177,9 @@ public abstract class NettyAcceptor extends AbstractAcceptor {
 	/**
 	 * Create a new {@link io.netty.channel.Channel} and bind it.
 	 */
+	
+	public abstract ChannelHandler[] getHandlers();
+	
 	protected abstract ChannelFuture bind(SocketAddress localAddress);
 	
 	@Override

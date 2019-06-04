@@ -62,16 +62,14 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 				ProviderConfig pconfig = (ProviderConfig) param;
 				serviceName = pconfig.getUniqueId();
 				address =(InetSocketAddress) channel.remoteAddress();
-				address.getAddress()
-				ConcurrentHashSet<SocketAddress> addressList =  _registryService.providers.get(serviceName);
+				ConcurrentHashSet<String> addressList =  _registryService.providers.get(serviceName);
 				
 				if(addressList == null) {
-					addressList = new ConcurrentHashSet<SocketAddress>();
+					addressList = new ConcurrentHashSet<String>();
 					_registryService.providers.putIfAbsent(serviceName, addressList);
 				}
 				//重新取一次,避免并发问题
 				addressList = _registryService.providers.get(serviceName);
-				addressList .add(address);
 				
 				
 			}else if(type.equals(ConsumerConfig.class)){
@@ -109,4 +107,6 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 		}
 
 	}
+	
+	
 }

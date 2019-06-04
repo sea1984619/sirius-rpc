@@ -29,7 +29,7 @@ public class DefaultRegistryService implements RegistryService {
 	ConcurrentMap<String, ConcurrentHashSet<Channel>> providerChannels = Maps.newConcurrentMap();
 	// 发布者发布的可用信息 key-> 发布者ip,不包括port
 	ConcurrentMap<String, ConcurrentHashSet<ProviderInfo>> providerToInfoMap = Maps.newConcurrentMap();
-	// 某一服务对应的所有可用信息 key-> 服务标识
+	// 某一服务对应的所有可用信息  key-> 服务标识
 	ConcurrentMap<String, List<ProviderGroup>> providerGroupMap = Maps.newConcurrentMap();
 
 	@Override

@@ -170,12 +170,7 @@ public class NettyTcpConnector extends NettyConnector {
 	            boot.handler(new ChannelInitializer<io.netty.channel.Channel>() {
 	                @Override
 	                protected void initChannel(io.netty.channel.Channel ch) throws Exception {
-	                    ch.pipeline().addLast(reconnectHandler)
-	                                 .addLast(new IdleStateHandler(timer,0,Constants.WRITER_IDLE_TIME_SECONDS ,0))
-	                                 .addLast(writeIdleEventHandler)
-	                                 .addLast(new ResponseDecoder())
-	                                 .addLast(encoder)
-	                                 .addLast(connectorHandler);
+	                    ch.pipeline().addLast(getHandlers());
 	                }
 	            });
 

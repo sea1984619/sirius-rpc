@@ -17,10 +17,12 @@ import org.sirius.transport.netty.handler.acceptor.AcceptorHandler;
 import org.sirius.transport.netty.handler.acceptor.ReadIdleEventHandler;
 import org.sirius.transport.netty.handler.acceptor.RequestDecoder;
 import org.sirius.transport.netty.handler.acceptor.ResponseEncoder;
+import org.sirius.transport.netty.handler.connector.ResponseDecoder;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -223,6 +225,18 @@ public class NettyTcpAcceptor extends NettyAcceptor {
 	}
 
 	@Override
+	public ChannelHandler[] getHandlers() {
+		ChannelHandler[] handler = {
+				new IdleStateHandler(timer,Constants.READER_IDLE_TIME_SECONDS ,0 ,0),
+				readIdleEventHandler,
+				new RequestDecoder(),
+				encoder,
+				acceptorHandler
+				};
+         return handler;
+	}
+	
+	@Override
     public void start() throws InterruptedException {
         start(true);
     }
@@ -253,15 +267,12 @@ public class NettyTcpAcceptor extends NettyAcceptor {
 
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast(new IdleStateHandler(timer,Constants.READER_IDLE_TIME_SECONDS ,0 ,0))
-                             .addLast(readIdleEventHandler)
-                             .addLast(new RequestDecoder())
-                             .addLast(encoder)
-                             .addLast(acceptorHandler);
+                ch.pipeline().addLast(getHandlers());
             }
         });
 
         setOptions();
         return boot.bind(localAddress);
     }
+	
 }
