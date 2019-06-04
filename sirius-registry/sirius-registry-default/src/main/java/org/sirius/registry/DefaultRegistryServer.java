@@ -168,7 +168,8 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 				e.printStackTrace();
 			}
 			try {
-				channel.send(res);
+				if(res.getResult() != null)
+				   channel.send(res);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

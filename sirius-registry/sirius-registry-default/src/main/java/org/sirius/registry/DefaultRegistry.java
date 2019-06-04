@@ -3,10 +3,12 @@ package org.sirius.registry;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.ProviderConfig;
 import org.sirius.registry.api.ProviderGroup;
+import org.sirius.registry.api.ProviderInfo;
 import org.sirius.registry.api.Registry;
 import org.sirius.registry.api.RegistryServer;
 
@@ -28,7 +30,7 @@ public class DefaultRegistry implements Registry{
 	}
 
 	@Override
-	public List<ProviderGroup> subscribe(ConsumerConfig config) {
+	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config) {
 		// TODO Auto-generated method stub
 		return null;
 	}

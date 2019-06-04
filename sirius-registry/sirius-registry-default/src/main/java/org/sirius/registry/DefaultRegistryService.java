@@ -1,17 +1,13 @@
 package org.sirius.registry;
 
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
 import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.ProviderConfig;
 import org.sirius.config.ServerConfig;
-import org.sirius.registry.api.ProviderGroup;
 import org.sirius.registry.api.ProviderInfo;
 import org.sirius.registry.api.RegistryService;
 
@@ -23,20 +19,30 @@ public class DefaultRegistryService implements RegistryService {
 	// 所有的发布者,  key ->服务标识, value -> 所有发布者ip集合,不包括port
 	ConcurrentMap<String, ConcurrentHashSet<String>> providers = Maps.newConcurrentMap();
 	// 发布者发布的可用信息 key-> 发布者ip,不包括port
-	ConcurrentMap<String, ConcurrentHashSet<ProviderInfo>> providerToInfoMap = Maps.newConcurrentMap();
+	ConcurrentMap<String, ConcurrentHashSet<ProviderInfo>> providerInfoMap = Maps.newConcurrentMap();
 	// 某一服务对应的所有可用信息  key-> 服务标识
-	ConcurrentMap<String, List<ProviderGroup>> providerGroupMap = Maps.newConcurrentMap();
+	ConcurrentMap<String, ConcurrentHashSet<ProviderInfo>> AllProviderInfoMap = Maps.newConcurrentMap();
 
 	@Override
 	public void register(ProviderConfig provider) {
 		String uniqueId = provider.getUniqueId();
-		List<ProviderGroup> providerGroup = providerGroupMap.get(uniqueId);
-		if (providerGroup == null) {
-			providerGroup = new ArrayList<ProviderGroup>();
-			providerGroupMap.putIfAbsent(uniqueId, providerGroup);
-			providerGroup = providerGroupMap.get(uniqueId);
-		}
 		List<ProviderInfo> infoList = getInfoFromConfig(provider);
+		ConcurrentHashSet<ProviderInfo> providerInfoSet =  providerInfoMap.get(uniqueId);
+		if (providerInfoSet == null) {
+			providerInfoSet = new ConcurrentHashSet<ProviderInfo>();
+			providerInfoMap.putIfAbsent(uniqueId, providerInfoSet);
+			providerInfoSet = providerInfoMap.get(uniqueId);
+		}
+		
+		providerInfoSet.addAll(infoList);
+		
+		ConcurrentHashSet<ProviderInfo> AllProviderInfoSet = AllProviderInfoMap.get(uniqueId);
+		if (AllProviderInfoSet == null) {
+			AllProviderInfoSet = new ConcurrentHashSet<ProviderInfo>();
+			AllProviderInfoMap.putIfAbsent(uniqueId, providerInfoSet);
+			AllProviderInfoSet = providerInfoMap.get(uniqueId);
+		}
+		AllProviderInfoSet.addAll(infoList);
 	}
 
 	@Override
@@ -44,8 +50,10 @@ public class DefaultRegistryService implements RegistryService {
 	}
 
 	@Override
-	public List<ProviderGroup> subscribe(ConsumerConfig consumer) {
-		return null;
+	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig consumer) {
+		String uniqueId = consumer.getUniqueId();
+		ConcurrentHashSet<ProviderInfo> set  = AllProviderInfoMap.get(uniqueId);
+		return set;
 	}
 
 	@Override
