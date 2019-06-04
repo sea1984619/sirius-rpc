@@ -1,5 +1,6 @@
 package org.sirius.registry;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Set;
@@ -53,15 +54,15 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 			Class type = param.getClass();
 			
 			String serviceName ;
-			SocketAddress address;
+			InetSocketAddress address;
 			DefaultRegistryService _registryService = (DefaultRegistryService) registryService;
 			
 			if (type.equals(ProviderConfig.class)) {
 				
 				ProviderConfig pconfig = (ProviderConfig) param;
 				serviceName = pconfig.getUniqueId();
-				address =channel.remoteAddress();
-				
+				address =(InetSocketAddress) channel.remoteAddress();
+				address.getAddress()
 				ConcurrentHashSet<SocketAddress> addressList =  _registryService.providers.get(serviceName);
 				
 				if(addressList == null) {

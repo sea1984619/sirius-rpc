@@ -19,17 +19,17 @@ import org.sirius.transport.api.channel.Channel;
 @SuppressWarnings("rawtypes")
 public class DefaultRegistryService implements RegistryService {
 
-	// 所有的订阅者,用实际地址表示
-	ConcurrentMap<String, ConcurrentHashSet<SocketAddress>> consumers = Maps.newConcurrentMap();
-	// 所有的发布者,用实际地址表示
-	ConcurrentMap<String, ConcurrentHashSet<SocketAddress>> providers = Maps.newConcurrentMap();
-	// 订阅者持有的链接
-	ConcurrentMap<SocketAddress, List<Channel>> consumerChannels = Maps.newConcurrentMap();
-	// 发布者持有的链接
-	ConcurrentMap<SocketAddress, List<Channel>> providerChannels = Maps.newConcurrentMap();
-	// 发布者发布的可用信息
-	ConcurrentMap<ProviderConfig, ConcurrentHashSet<ProviderInfo>> providerToInfoMap = Maps.newConcurrentMap();
-	// 某一服务对应的所有可用信息
+	// 所有的订阅者 ,  key ->服务标识, value -> 所有订阅者ip集合,不包括port
+	ConcurrentMap<String, ConcurrentHashSet<String>> consumers = Maps.newConcurrentMap();
+	// 所有的发布者,  key ->服务标识, value -> 所有发布者ip集合,不包括port
+	ConcurrentMap<String, ConcurrentHashSet<String>> providers = Maps.newConcurrentMap();
+	// 订阅者保持的链接 , key ->订阅者ip,不包括port
+	ConcurrentMap<String, ConcurrentHashSet<Channel>> consumerChannels = Maps.newConcurrentMap();
+	// 发布者持有的链接, key ->发布者ip,不包括port
+	ConcurrentMap<String, ConcurrentHashSet<Channel>> providerChannels = Maps.newConcurrentMap();
+	// 发布者发布的可用信息 key-> 发布者ip,不包括port
+	ConcurrentMap<String, ConcurrentHashSet<ProviderInfo>> providerToInfoMap = Maps.newConcurrentMap();
+	// 某一服务对应的所有可用信息 key-> 服务标识
 	ConcurrentMap<String, List<ProviderGroup>> providerGroupMap = Maps.newConcurrentMap();
 
 	@Override
