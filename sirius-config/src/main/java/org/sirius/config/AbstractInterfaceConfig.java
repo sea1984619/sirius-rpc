@@ -93,6 +93,10 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 * 默认序列化
 	 */
 	protected String serialization;
+	
+	protected String version;
+	
+	protected String group;
 
 	/**
 	 * 是否注册，如果是false只订阅不注册
@@ -179,6 +183,51 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return castThis();
 	}
 
+	 /**
+     * Gets group.
+     *
+     * @return the group
+     */
+    @Deprecated
+    public String getGroup() {
+        return group;
+    }
+
+    /**
+     * Sets group.
+     *
+     * @param group the group
+     * @return the group
+     * @deprecated Use {@link #setUniqueId(String)} 
+     */
+    @Deprecated
+    public S setGroup(String group) {
+        this.group = group;
+        return castThis();
+    }
+
+    /**
+     * Gets version.
+     *
+     * @return the version
+     */
+    @Deprecated
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Sets version.
+     *
+     * @param version the version
+     * @return the version
+     * @deprecated Use {@link #setUniqueId(String)} 
+     */
+    @Deprecated
+    public S setVersion(String version) {
+        this.version = version;
+        return castThis();
+    }
 	/**
 	 * Gets application.
 	 *
