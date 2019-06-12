@@ -158,6 +158,4 @@
 
 	<xsd:element name="method" type="methodType">
 	</xsd:element>
-
-
-</schema>
+</xsd:schema>
