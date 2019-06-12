@@ -1,7 +1,9 @@
 package org.sirius.registry;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
@@ -10,7 +12,15 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.ProviderConfig;
 import org.sirius.registry.api.RegistryService;
+import org.sirius.rpc.DefaultRpcClient;
+import org.sirius.rpc.RpcClient;
+import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.consumer.DefaultConsumerProcessor;
+import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
+import org.sirius.rpc.provider.Apple;
+import org.sirius.rpc.provider.Test;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
+import org.sirius.rpc.proxy.ConsumerProxyUtil;
 import org.sirius.rpc.proxy.ProviderProxyUtil;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
@@ -30,10 +40,11 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 
 	private ProviderProcessor processor = new RegistryProcessor();
 	private ProviderProxyInvoker<?> registryInvoker;
-	private RegistryService registryService = new DefaultRegistryService();
+	private RegistryService registryService = new DefaultRegistryService(this);
 
 	// 订阅者保持的链接 , key ->订阅者ip,不包括port
 	ConcurrentMap<String, ConcurrentHashSet<Channel>> consumerChannelsMap = Maps.newConcurrentMap();
+
 	// 发布者持有的链接, key ->发布者ip,不包括port
 	ConcurrentMap<String, ConcurrentHashSet<Channel>> providerChannelsMap = Maps.newConcurrentMap();
 
@@ -48,7 +59,15 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 				RegistryService.class);
 	}
 
-	
+	public ConcurrentMap<String, ConcurrentHashSet<Channel>> getConsumerChannelsMap() {
+		return consumerChannelsMap;
+	}
+
+
+	public ConcurrentMap<String, ConcurrentHashSet<Channel>> getProviderChannelsMap() {
+		return providerChannelsMap;
+	}
+
 	class RegistryHandler extends AcceptorHandler {
 
 		@Override
@@ -153,7 +172,7 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 				
 				//添加订阅者的链接
 				ConcurrentHashSet<Channel> consumerChannels = consumerChannelsMap.get(remoteHost);
-				if(consumerChannels != null) {
+				if(consumerChannels == null) {
 					consumerChannels = new ConcurrentHashSet<Channel>();
 					consumerChannelsMap.putIfAbsent(remoteHost, consumerChannels);
 				}
@@ -209,4 +228,9 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 
 	}
 
+	public static void main(String args[]) throws InterruptedException, ExecutionException {
+		
+		DefaultRegistryServer server = new DefaultRegistryServer();
+		server.start();
+	}
 }

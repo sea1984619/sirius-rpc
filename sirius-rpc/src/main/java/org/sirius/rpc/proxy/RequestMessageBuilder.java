@@ -13,7 +13,7 @@ public class RequestMessageBuilder {
 		re.setMethodName(method.getName());
 		re.setParameters(params);
 		re.setParametersType(method.getParameterTypes());
-		re.setSerializerCode(SerializerType.PROTO_STUFF.value());
+		re.setSerializerCode(SerializerType.HESSIAN.value());
 		return re;
 	}
 }

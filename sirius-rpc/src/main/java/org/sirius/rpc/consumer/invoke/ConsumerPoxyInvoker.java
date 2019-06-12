@@ -35,6 +35,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 
 	@Override
 	public Response invoke(Request request) {
+		
 		Channel channel = route(request);
 		try {
 			Thread.sleep(20000);
@@ -48,6 +49,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 		Response res = new Response(request.invokeId());
 		try {
 			channel.send(request);
+			System.out.println("发送成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -55,7 +57,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	}
 
 	private Channel route(Request request) {
-		UnresolvedAddress address = new UnresolvedSocketAddress("27.22.10.220",18090);
+		UnresolvedAddress address = new UnresolvedSocketAddress("27.22.10.51",18090);
 		return connector.connect(address);
 	}
 	

@@ -12,6 +12,7 @@
     <module>sirius-common</module>
     <module>sirius-registry</module>
     <module>sirius-config</module>
+    <module>sirius-spring</module>
   </modules>
   
   

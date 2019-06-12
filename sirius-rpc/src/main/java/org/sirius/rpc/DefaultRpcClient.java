@@ -1,6 +1,12 @@
 package org.sirius.rpc;
 
+import java.rmi.registry.Registry;
+import java.util.concurrent.ConcurrentMap;
+
+import org.sirius.common.util.Maps;
+import org.sirius.config.ConsumerConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
+import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.UnresolvedAddress;
@@ -8,6 +14,11 @@ import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.netty.NettyTcpConnector;
 
 public class DefaultRpcClient implements RpcClient {
+	
+	private ConcurrentMap<Class<?>,ConsumerConfig> configs = Maps.newConcurrentMap();
+	private ConcurrentMap<Class<?>,Invoker>  invokers = Maps.newConcurrentMap();
+	private Registry registry ;
+	private LoadBalancer balancer;
 	
 	private Connector connector;
 	private ConsumerProcessor processor;
