@@ -12,8 +12,7 @@
 	<artifactId>sirius-spring</artifactId>
 	<name>sirius-spring</name>
 	<dependencies>
-	
-	<dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sirius-config</artifactId>
 		</dependency>

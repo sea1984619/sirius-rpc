@@ -1,6 +1,7 @@
 package org.sirius.spring.schema;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
@@ -14,8 +15,13 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser{
 	}
 	@Override
 	public BeanDefinition parse(Element element, ParserContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("开始解析");
+		BeanDefinition rb = new RootBeanDefinition();
+		String inter = element.getAttribute("interface");
+		String className = element.getAttribute("class");
+		rb.setBeanClassName(className);
+		context.getRegistry().registerBeanDefinition("service",rb);
+		return rb;
 	}
 
 }

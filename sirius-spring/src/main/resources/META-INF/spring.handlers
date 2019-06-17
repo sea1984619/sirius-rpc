@@ -1,1 +1,1 @@
-http\://sirius.org/schema/sirius=org.sirius.spring.schema.DubboNamespaceHandler
+http\://sirius.org/schema/sirius=org.sirius.spring.schema.SiriusNamespaceHandler

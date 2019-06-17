@@ -191,14 +191,25 @@
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
-	
-	
+
+
 	<xsd:element name="argument" type="argumentType">
 	</xsd:element>
 
 	<xsd:element name="parameter" type="parameterType">
 	</xsd:element>
+	
 	<xsd:element name="service" type="serviceType">
+	<xsd:annotation>
+			<xsd:documentation><![CDATA[ Export service config ]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports
+						type="org.apache.dubbo.config.ServiceConfig" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		
 	</xsd:element>
 
 	<xsd:element name="reference" type="referenceType">
