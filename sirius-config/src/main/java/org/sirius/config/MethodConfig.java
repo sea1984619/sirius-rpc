@@ -6,7 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MethodConfig implements Serializable {
 
-	 /*-------------配置项开始----------------*/
+    private static final long      serialVersionUID = -8594337650648536897L;
+
+    /*-------------配置项开始----------------*/
     /**
      * 方法名称，无法做到重载方法的配置
      */
@@ -37,10 +39,6 @@ public class MethodConfig implements Serializable {
      */
     protected Boolean              validation;
 
-    /**
-     * 返回值之前的listener
-     */
-    protected SofaResponseCallback onReturn;
 
     /**
      * 最大并发执行（不管服务端还是客户端）
@@ -57,14 +55,8 @@ public class MethodConfig implements Serializable {
      */
     protected String               compress;
 
-    /**
-     * 目标参数（机房/分组）索引，第一个参数从0开始
-     * // TODO 待实现
-     */
-    protected Integer              dstParam;
 
     /*-------------配置项结束----------------*/
-
     /**
      * Gets name.
      *
@@ -221,24 +213,6 @@ public class MethodConfig implements Serializable {
         return validation;
     }
 
-    /**
-     * Gets onReturn.
-     *
-     * @return the onReturn
-     */
-    public SofaResponseCallback getOnReturn() {
-        return onReturn;
-    }
-
-    /**
-     * Sets onReturn.
-     *
-     * @param onReturn the onReturn
-     */
-    public MethodConfig setOnReturn(SofaResponseCallback onReturn) {
-        this.onReturn = onReturn;
-        return this;
-    }
 
     /**
      * Gets compress.
@@ -259,24 +233,6 @@ public class MethodConfig implements Serializable {
         return this;
     }
 
-    /**
-     * Gets dst param.
-     *
-     * @return the dst param
-     */
-    public Integer getDstParam() {
-        return dstParam;
-    }
-
-    /**
-     * Sets dst param.
-     *
-     * @param dstParam the dst param
-     */
-    public MethodConfig setDstParam(Integer dstParam) {
-        this.dstParam = dstParam;
-        return this;
-    }
 
     /**
      * Sets parameter.

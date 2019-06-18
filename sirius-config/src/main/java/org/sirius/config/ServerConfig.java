@@ -31,87 +31,88 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
     /**
      * The constant serialVersionUID.
      */
-	/*------------- 参数配置项开始-----------------*/
+    private static final long                 serialVersionUID = -574374673831680403L;
+
+    /*------------- 参数配置项开始-----------------*/
     /**
      * 配置名称
      */
-    protected String                          protocol         = getStringValue(DEFAULT_PROTOCOL);
+    protected String                          protocol    ;
 
     /**
      * 实际监听IP，与网卡对应
      */
-    protected String                          host             = getStringValue(SERVER_HOST);
+    protected String                          host             ;
 
     /**
      * 监听端口
      */
-    protected int                             port             = getIntValue(SERVER_PORT_START);
+    protected int                             port            ;
 
     /**
      * 基本路径
      */
-    protected String                          contextPath      = getStringValue(SERVER_CONTEXT_PATH);
+    protected String                          contextPath      ;;
 
     /**
      * io线程池大小
      */
-    protected int                             ioThreads        = getIntValue(SERVER_IOTHREADS);
+    protected int                             ioThreads      ;
 
     /**
      * 线程池类型
      */
-    protected String                          threadPoolType   = getStringValue(SERVER_POOL_TYPE);
+    protected String                          threadPoolType  ;
 
     /**
      * 业务线程池大小
      */
-    protected int                             coreThreads      = getIntValue(SERVER_POOL_CORE);
+    protected int                             coreThreads      ;
 
     /**
      * 业务线程池大小
      */
-    protected int                             maxThreads       = getIntValue(SERVER_POOL_MAX);
+    protected int                             maxThreads      ;
 
     /**
      * 是否允许telnet，针对自定义协议
      */
-    protected boolean                         telnet           = getBooleanValue(SERVER_TELNET);
+    protected boolean                         telnet          ;
 
     /**
      * 线程池类型，默认普通线程池
      */
-    protected String                          queueType        = getStringValue(SERVER_POOL_QUEUE_TYPE);
+    protected String                          queueType      ;
 
     /**
      * 业务线程池队列大小
      */
-    protected int                             queues           = getIntValue(SERVER_POOL_QUEUE);
-
+    protected int                             queues         ;
     /**
      * 线程池回收时间
      */
-    protected int                             aliveTime        = getIntValue(SERVER_POOL_ALIVETIME);
+    protected int                             aliveTime       ;
 
     /**
      * 线程池是否初始化核心线程
      */
-    protected boolean                         preStartCore     = getBooleanValue(SERVER_POOL_PRE_START);
+    protected boolean                         preStartCore    ;
 
     /**
      * 服务端允许客户端建立的连接数
      */
-    protected int                             accepts          = getIntValue(SERVER_ACCEPTS);
+    protected int                             accepts         ;
 
     /**
      * 最大数据包大小
      */
     @Deprecated
-    protected int                             payload          = getIntValue(TRANSPORT_PAYLOAD_MAX);
+    protected int                             payload         ;
 
     /**
      * 序列化方式
      */
-    protected String                          serialization    = getStringValue(DEFAULT_SERIALIZATION);
+    protected String                          serialization    ;
 
     /**
      * 事件分发规则。
@@ -134,83 +135,49 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
      */
     protected Integer                         virtualPort;
 
-    /**
-     * 连接事件监听器实例，连接或者断开时触发
-     */
-    protected transient List<ChannelListener> onConnect;
 
     /**
      * 是否启动epoll
      */
-    protected boolean                         epoll            = getBooleanValue(SERVER_EPOLL);
+    protected boolean                         epoll        ;
 
     /**
      * 是否hold住端口，true的话随主线程退出而退出，false的话则要主动退出
      */
-    protected boolean                         daemon           = getBooleanValue(SERVER_DAEMON);
+    protected boolean                         daemon          ;
 
     /**
      * The Adaptive port.
      */
-    protected boolean                         adaptivePort     = getBooleanValue(SEVER_ADAPTIVE_PORT);
+    protected boolean                         adaptivePort    ;
 
     /**
      * 传输层
      */
-    protected String                          transport        = getStringValue(DEFAULT_TRANSPORT);
+    protected String                          transport       ;
 
     /**
      * 是否自动启动
      */
-    protected boolean                         autoStart        = getBooleanValue(SEVER_AUTO_START);
+    protected boolean                         autoStart       ;
 
     /**
      * 服务端关闭超时时间
      */
-    protected int                             stopTimeout      = getIntValue(SERVER_STOP_TIMEOUT);
+    protected int                             stopTimeout     ;
 
     /**
      * 是否维持长连接
      */
-    protected boolean                         keepAlive        = getBooleanValue(TRANSPORT_SERVER_KEEPALIVE);
+    protected boolean                         keepAlive       ;
 
-    /*------------- 参数配置项结束-----------------*/
-    /**
-     * 服务端对象
-     */
-    private transient volatile Server         server;
-
+ ;
     /**
      * 绑定的地址。是某个网卡，还是全部地址
      */
     private transient String                  boundHost;
 
-    /**
-     * 启动服务
-     *
-     * @return the server
-     */
-    public synchronized Server buildIfAbsent() {
-        if (server != null) {
-            return server;
-        }
-        // 提前检查协议+序列化方式
-        // ConfigValueHelper.check(ProtocolType.valueOf(getProtocol()),
-        //                SerializationType.valueOf(getSerialization()));
-
-        server = ServerFactory.getServer(this);
-        return server;
-    }
-
-    /**
-     * 关闭服务
-     */
-    public synchronized void destroy() {
-        if (server != null) {
-            server.destroy();
-        }
-    }
-
+   
     /**
      * Gets protocol.
      *
@@ -268,8 +235,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
      */
     public ServerConfig setPort(int port) {
         if (!NetUtils.isRandomPort(port) && NetUtils.isInvalidPort(port)) {
-            throw ExceptionUtils.buildRuntime("server.port", port + "",
-                "port must between -1 and 65535 (-1 means random port)");
+            throw new RuntimeException("server.port must between -1 and 65535 (-1 means random port)");
         }
         this.port = port;
         return this;
@@ -487,17 +453,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
         return accepts;
     }
 
-    /**
-     * Sets accepts.
-     *
-     * @param accepts the accepts
-     * @return the accepts
-     */
-    public ServerConfig setAccepts(int accepts) {
-        ConfigValueHelper.checkPositiveInteger("server.accept", accepts);
-        this.accepts = accepts;
-        return this;
-    }
+  
 
     /**
      * Gets payload.
@@ -622,25 +578,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
         return this;
     }
 
-    /**
-     * Gets onConnect.
-     *
-     * @return the onConnect
-     */
-    public List<ChannelListener> getOnConnect() {
-        return onConnect;
-    }
-
-    /**
-     * Sets onConnect.
-     *
-     * @param onConnect the onConnect
-     * @return the onConnect
-     */
-    public ServerConfig setOnConnect(List<ChannelListener> onConnect) {
-        this.onConnect = onConnect;
-        return this;
-    }
+   
 
     /**
      * Is epoll boolean.
@@ -762,14 +700,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
         return this;
     }
 
-    /**
-     * Gets server.
-     *
-     * @return the server
-     */
-    public Server getServer() {
-        return server;
-    }
+   
 
     /**
      * Sets bound host.

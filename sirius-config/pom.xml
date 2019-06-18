@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sirius-rpc</artifactId>
+			<artifactId>sirius-common</artifactId>
 		</dependency>
 	</dependencies>
 </project>
