@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.rpc.Filter;
 
 /**
  * 接口级的公共配置
@@ -69,10 +68,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 */
 	protected String uniqueId;
 
-	/**
-	 * 过滤器配置实例
-	 */
-	protected transient List<Filter> filterRef;
+	
 
 	/**
 	 * 过滤器配置别名，多个用逗号隔开
@@ -297,26 +293,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return castThis();
 	}
 
-	/**
-	 * Gets filter ref.
-	 *
-	 * @return the filter ref
-	 */
-	public List<Filter> getFilterRef() {
-		return filterRef;
-	}
-
-	/**
-	 * Sets filter ref.
-	 *
-	 * @param filterRef
-	 *            the filter ref
-	 * @return the filter ref
-	 */
-	public S setFilterRef(List<Filter> filterRef) {
-		this.filterRef = filterRef;
-		return castThis();
-	}
+	
 
 	/**
 	 * Gets filters.

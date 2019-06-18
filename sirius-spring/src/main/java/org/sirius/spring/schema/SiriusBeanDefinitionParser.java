@@ -15,7 +15,6 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser{
 	}
 	@Override
 	public BeanDefinition parse(Element element, ParserContext context) {
-		System.out.println("开始解析");
 		BeanDefinition rb = new RootBeanDefinition();
 		String inter = element.getAttribute("interface");
 		String className = element.getAttribute("class");
