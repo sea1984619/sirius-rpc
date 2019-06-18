@@ -8,8 +8,8 @@ public class SpringTest {
 	public static void main(String[] args) {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext(
 	                "spring.xml");
-		 
-		 System.out.println(ctx.containsBeanDefinition("service"));
-		 System.out.println(ctx.getBeanDefinitionNames());
+//		 
+//		 System.out.println(ctx.containsBeanDefinition("service"));
+//		 System.out.println(ctx.getBeanDefinitionNames());
 	}
 }

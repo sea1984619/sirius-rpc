@@ -63,6 +63,11 @@ public class CommonUtils {
         return b != null && b;
     }
 
+    
+    public static boolean isBlank(String b) {
+        return b == null || (b = b.trim()).equals("");
+    }
+
     /**
      * 不为空，且为false
      *
@@ -273,5 +278,10 @@ public class CommonUtils {
             }
         }
         return sb.length() > 0 ? sb.substring(0, sb.length() - separator.length()) : StringUtils.EMPTY;
+    }
+    
+    public static void main(String args[]) {
+    	String s = "            ";
+    	System.out.println(CommonUtils.isBlank(s));
     }
 }

@@ -39,8 +39,13 @@ public class MethodConfig implements Serializable {
      */
     protected Boolean              validation;
 
-
     /**
+     * 是否异步
+     */
+    protected Boolean              async;
+
+
+	/**
      * 最大并发执行（不管服务端还是客户端）
      */
     protected Integer              concurrents;
@@ -214,6 +219,14 @@ public class MethodConfig implements Serializable {
     }
 
 
+    public Boolean getAsync() {
+		return async;
+	}
+
+	public void setAsync(Boolean async) {
+		this.async = async;
+	}
+	
     /**
      * Gets compress.
      *
