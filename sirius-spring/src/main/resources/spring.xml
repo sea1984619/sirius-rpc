@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sirius="http://sirius.org/schema/sirius"
-    
-    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sirius="http://sirius.org/schema/sirius"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
                         http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://sirius.org/schema/sirius 
                         http://sirius.org/schema/sirius/sirius.xsd ">
-                        
-                        
-    <bean id ="appleService" class = "org.sirius.spring.AppleImpl"></bean>
-   <sirius:service interface = "org.sirius.spring.Apple"  ref = "appleService"></sirius:service>
-   
-   <sirius:reference id ="apple" interface = "org.sirius.spring.Apple">
-     <sirius:method name= "get" async = "true"  timeout = "3000"></sirius:method>
-   </sirius:reference>
+
+
+
+	<sirius:reference id="apple"  interface="org.sirius.spring.Apple">
+		<sirius:method name="get" async="true" timeout="306600"></sirius:method>
+	</sirius:reference>
+
 </beans>

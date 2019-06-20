@@ -18,6 +18,7 @@ package org.sirius.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,7 +84,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	/**
 	 * 方法配置，可配置多个
 	 */
-	protected Map<String, MethodConfig> methods;
+	protected HashMap<String, MethodConfig> methods;
 
 	/**
 	 * 默认序列化
@@ -342,7 +343,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the methods
 	 */
-	public Map<String, MethodConfig> getMethods() {
+	public HashMap<String, MethodConfig> getMethods() {
 		return methods;
 	}
 
@@ -353,7 +354,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the methods
 	 * @return the methods
 	 */
-	public S setMethods(Map<String, MethodConfig> methods) {
+	public S setMethods(HashMap<String, MethodConfig> methods) {
 		this.methods = methods;
 		return castThis();
 	}
@@ -637,17 +638,17 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the methods
 	 * @return the methods
 	 */
-	public S setMethods(List<MethodConfig> methods) {
-		if (this.methods == null) {
-			this.methods = new ConcurrentHashMap<String, MethodConfig>();
-		}
-		if (methods != null) {
-			for (MethodConfig methodConfig : methods) {
-				this.methods.put(methodConfig.getName(), methodConfig);
-			}
-		}
-		return castThis();
-	}
+//	public S setMethods(List<MethodConfig> methods) {
+//		if (this.methods == null) {
+//			this.methods = new ConcurrentHashMap<String, MethodConfig>();
+//		}
+//		if (methods != null) {
+//			for (MethodConfig methodConfig : methods) {
+//				this.methods.put(methodConfig.getName(), methodConfig);
+//			}
+//		}
+//		return castThis();
+//	}
 
 	/**
 	 * 设置注册中心
