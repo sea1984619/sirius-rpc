@@ -84,7 +84,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	/**
 	 * 方法配置，可配置多个
 	 */
-	protected HashMap<String, MethodConfig> methods;
+	protected Map<String, MethodConfig> methods;
 
 	/**
 	 * 默认序列化
@@ -343,7 +343,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the methods
 	 */
-	public HashMap<String, MethodConfig> getMethods() {
+	public Map<String, MethodConfig> getMethods() {
 		return methods;
 	}
 
@@ -354,7 +354,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the methods
 	 * @return the methods
 	 */
-	public S setMethods(HashMap<String, MethodConfig> methods) {
+	public S setMethods(Map<String, MethodConfig> methods) {
 		this.methods = methods;
 		return castThis();
 	}

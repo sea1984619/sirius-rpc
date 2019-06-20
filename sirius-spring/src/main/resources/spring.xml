@@ -10,7 +10,7 @@
 
 
 
-	<sirius:reference id="apple"  interface="org.sirius.spring.Apple">
+	<sirius:reference id="apple" interface="org.sirius.spring.Apple"  timeout="306600">
 		<sirius:method name="get" async="true" timeout="306600"></sirius:method>
 	</sirius:reference>
 

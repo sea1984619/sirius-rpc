@@ -1,9 +1,7 @@
 package org.sirius.spring.schema;
 
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanReference;
-import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -13,12 +11,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.MethodConfig;
-import org.sirius.spring.ConsumerBean;
 
 public class SiriusBeanDefinitionParser implements BeanDefinitionParser{
 	
@@ -29,8 +24,9 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser{
 	}
 	@Override
 	public BeanDefinition parse(Element element, ParserContext context) {
-		RootBeanDefinition rb = new RootBeanDefinition();
-		rb.setBeanClass(ConsumerBean.class);
+		RootBeanDefinition beanDefinition = new RootBeanDefinition();
+		beanDefinition.setBeanClass(clazz);
+		beanDefinition.setLazyInit(false);
 		Element el = element;
 		
 		String id = el.getAttribute("id");

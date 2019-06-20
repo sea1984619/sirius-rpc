@@ -12,10 +12,10 @@ public class SpringTest {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext(
 	                "spring.xml");
 
-		 ConsumerBean bean = (ConsumerBean) ctx.getBean("apple");
-		 ConsumerConfig con = bean.getConsumerConfig();
-		 MethodConfig m = (MethodConfig) con.getMethods().get("get");
-		 System.out.println(m.getTimeout());
+//		 ConsumerBean bean = (ConsumerBean) ctx.getBean("apple");
+//		 ConsumerConfig con = bean.getConsumerConfig();
+//		 MethodConfig m = (MethodConfig) con.getMethods().get("get");
+//		 System.out.println(m.getTimeout());
 		 
 		 
 	}
