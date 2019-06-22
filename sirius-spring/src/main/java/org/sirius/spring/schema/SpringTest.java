@@ -1,5 +1,7 @@
 package org.sirius.spring.schema;
 
+import java.util.Map;
+
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.MethodConfig;
 import org.sirius.spring.ReferenceBean;
@@ -11,11 +13,12 @@ public class SpringTest {
 	public static void main(String[] args) {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 
-		 ReferenceBean bean = (ReferenceBean) ctx.getBean("apple");
-		
-		 System.out.println(bean.getId());
-		 System.out.println(bean.getInterface());
-		 
+		 ReferenceBean apple = (ReferenceBean) ctx.getBean("apple");
+		 Map<String ,MethodConfig> map = apple.getMethods();
+		 System.out.println(map.size());
+		 for(MethodConfig mc : map.values()) {
+			System.out.println(mc.getTimeout()); 
+		 }
 		 
 	}
 }

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ReferenceBean extends ConsumerConfig implements  FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
+public class ReferenceBean extends ConsumerConfig implements   ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private ApplicationContext context;
 	private Class<?> referClass;
@@ -31,24 +31,21 @@ public class ReferenceBean extends ConsumerConfig implements  FactoryBean, Appli
        this.context = context;		
 	}
 
-	@Override
-	public Object getObject() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class getObjectType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isSingleton() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+//	@Override
+//	public Object getObject() throws Exception {
+//		return null;
+//	}
+//
+//	@Override
+//	public Class getObjectType() {
+//		return null;
+//	}
+//
+//	@Override
+//	public boolean isSingleton() {
+//		return false;
+//	}
+//	
 	@Override
 	public void destroy() throws Exception {
 		// TODO Auto-generated method stub

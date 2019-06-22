@@ -41,7 +41,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		beanDefinition.setLazyInit(false);
 		String id = element.getAttribute("id");
 
-		if (CommonUtils.isBlank(id)) {
+		if (CommonUtils.isBlank(id)) { 
 			String generatedBeanName = element.getAttribute("name");
 			if (CommonUtils.isBlank(generatedBeanName)) {
 				generatedBeanName = element.getAttribute("interface");
@@ -60,7 +60,6 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 				throw new IllegalStateException("Duplicate spring bean id " + id);
 			}
 			parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
-			System.out.println(id);
 			beanDefinition.getPropertyValues().addPropertyValue("id", id);
 		}
 
@@ -127,9 +126,9 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 			Node node = childNodes.item(i);
 			if(node instanceof Element) {
 				Element method = (Element) node;
-				String name = node.getLocalName();
-				if(name.equals("method")) {
-					parseMethod(name, method, beanDefinition, parserContext);
+				String nodeName = node.getLocalName();
+				if(nodeName.equals("method")) {
+					parseMethod(method, beanDefinition, parserContext);
 				}
 			}
 		}
@@ -137,20 +136,21 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 	}
 	
 
-	private void parseMethod(String name, Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
+	private void parseMethod(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
 		RootBeanDefinition methodDefinition  = new RootBeanDefinition();
 		methodDefinition.setBeanClass(MethodConfig.class);
-		String innername = "MethodConfig"+ "_" + name;
+		String innername = "MethodConfig"+ "_" + element.getAttribute("name");
 		parserContext.getRegistry().registerBeanDefinition(innername,methodDefinition);
 		parseAttribute(methodDefinition, element, parserContext, MethodConfig.class);
-		ManagedMap<String, RuntimeBeanReference> methodMap = (ManagedMap<String, RuntimeBeanReference>) beanDefinition.getAttribute("methods");
+		ManagedMap<String, RuntimeBeanReference> methodMap = (ManagedMap<String, RuntimeBeanReference>) beanDefinition.getPropertyValues().get("methods");
 		if(methodMap == null) {
 			methodMap = new ManagedMap<String, RuntimeBeanReference>();
 			beanDefinition.getPropertyValues().add("methods", methodMap);
 		}
-		methodMap.put(name,new RuntimeBeanReference(innername));
+		methodMap.put(element.getAttribute("name"),new RuntimeBeanReference(innername));
 	}
 
+	
 	private static boolean isPrimitive(Class<?> cls) {
 		return cls.isPrimitive() || cls == Boolean.class || cls == Byte.class || cls == Character.class
 				|| cls == Short.class || cls == Integer.class || cls == Long.class || cls == Float.class
