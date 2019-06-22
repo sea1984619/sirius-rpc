@@ -149,7 +149,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 */
 	@Override
 	public String buildKey() {
-		return protocol + "://" + interfaceId + ":" + uniqueId;
+		return protocol + "://" + interfaceName + ":" + uniqueId;
 	}
 
 	/**

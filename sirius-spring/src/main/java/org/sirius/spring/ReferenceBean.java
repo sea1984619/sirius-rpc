@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContextAware;
 public class ReferenceBean extends ConsumerConfig implements  FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private ApplicationContext context;
-	private ConsumerConfig consumerConfig;
 	private Class<?> referClass;
 
 	public Class<?> getReferClass() {
@@ -20,14 +19,6 @@ public class ReferenceBean extends ConsumerConfig implements  FactoryBean, Appli
 
 	public void setReferClass(Class<?> referClass) {
 		this.referClass = referClass;
-	}
-
-	public ConsumerConfig getConsumerConfig() {
-		return consumerConfig;
-	}
-
-	public void setConsumerConfig(ConsumerConfig consumerConfig) {
-		this.consumerConfig = consumerConfig;
 	}
 
 	@Override

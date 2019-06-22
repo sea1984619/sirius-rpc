@@ -58,6 +58,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 				throw new IllegalStateException("Duplicate spring bean id " + id);
 			}
 			parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
+			System.out.println(id);
 			beanDefinition.getPropertyValues().addPropertyValue("id", id);
 		}
 
@@ -71,7 +72,6 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		for (int i = 0; i < attrs.getLength(); i++) {
 			Node node = attrs.item(i);
 			attrsNameSet.add(node.getNodeName());
-			System.out.println(node.getNodeName());
 		}
 		Method[] methods = beanClass.getMethods();
 		for (Method method : methods) {
