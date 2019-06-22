@@ -1,6 +1,7 @@
 package org.sirius.spring.schema;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.config.TypedStringValue;
@@ -19,10 +20,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
-import org.sirius.config.ConsumerConfig;
 import org.sirius.config.MethodConfig;
 import org.sirius.spring.ReferenceBean;
+import org.sirius.spring.ServiceBean;
 
 public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 
@@ -62,11 +64,29 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 			beanDefinition.getPropertyValues().addPropertyValue("id", id);
 		}
 
-		parseAttribute(beanDefinition, element, parserContext);
+		if (ServiceBean.class.equals(beanClass)) {
+            String className = element.getAttribute("class");
+            if (className != null && className.length() > 0) {
+                RootBeanDefinition classDefinition = new RootBeanDefinition();
+                classDefinition.setBeanClass(ClassUtil.forName(className));
+                classDefinition.setLazyInit(false);
+                parseProperties(element.getChildNodes(), classDefinition);
+                beanDefinition.getPropertyValues().addPropertyValue("ref", new BeanDefinitionHolder(classDefinition, id + "Impl"));
+            }
+        } 
+		
+		parseAttribute(beanDefinition, element, parserContext,beanClass);
+		
+		if(element.hasChildNodes()) {
+			NodeList childNodes = element.getChildNodes();
+			parseChildNodes(id,beanDefinition, childNodes, parserContext);
+		}
+		
 		return beanDefinition;
 	}
 
-	private void parseAttribute(RootBeanDefinition beanDefinition, Element element, ParserContext parserContext) {
+
+	private void parseAttribute(RootBeanDefinition beanDefinition, Element element, ParserContext parserContext,Class<?> beanClass) {
 		NamedNodeMap attrs = element.getAttributes();
 		Set<String> attrsNameSet = new HashSet<String>();
 		for (int i = 0; i < attrs.getLength(); i++) {
@@ -102,37 +122,31 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		}
 	}
 
-	private Object parseParameters(NodeList nodeList, RootBeanDefinition beanDefinition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private ManagedMap parseArguments(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
-			ParserContext parserContext) {
-		if (nodeList != null && nodeList.getLength() > 0) {
-			ManagedMap parameters = null;
-			for (int i = 0; i < nodeList.getLength(); i++) {
-				Node node = nodeList.item(i);
-				if (node instanceof Element) {
-					if ("parameter".equals(node.getNodeName()) || "parameter".equals(node.getLocalName())) {
-						if (parameters == null) {
-							parameters = new ManagedMap();
-						}
-						String key = ((Element) node).getAttribute("key");
-						String value = ((Element) node).getAttribute("value");
-						parameters.put(key, new TypedStringValue(value, String.class));
-					}
+	private void parseChildNodes(String id, RootBeanDefinition beanDefinition, NodeList childNodes, ParserContext parserContext) {
+		for(int i = 0;i < childNodes.getLength();i++) {
+			Node node = childNodes.item(i);
+			if(node instanceof Element) {
+				Element method = (Element) node;
+				String name = node.getLocalName();
+				if(name.equals("method")) {
+					parseMethod(name, method, beanDefinition, parserContext);
 				}
 			}
-			return parameters;
 		}
-		return null;
+		
 	}
+	
 
-	private void parseMethods(String id, NodeList nodeList, RootBeanDefinition beanDefinition,
-			ParserContext parserContext) {
-		// TODO Auto-generated method stub
-
+	private void parseMethod(String name, Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
+		RootBeanDefinition methodDefinition  = new RootBeanDefinition();
+		methodDefinition.setBeanClass(MethodConfig.class);
+		parseAttribute(methodDefinition, element, parserContext, MethodConfig.class);
+		ManagedMap<String, RuntimeBeanReference> methodMap = (ManagedMap<String, RuntimeBeanReference>) beanDefinition.getAttribute("methods");
+		if(methodMap == null) {
+			methodMap = new ManagedMap<String, RuntimeBeanReference>();
+			beanDefinition.getPropertyValues().add("methods", methodMap);
+		}
+		methodMap.put(name,new RuntimeBeanReference(name));
 	}
 
 	private static boolean isPrimitive(Class<?> cls) {

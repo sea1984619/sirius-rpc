@@ -12,6 +12,7 @@
 
    
 	<sirius:reference id="apple"   interface="org.sirius.spring.Apple"  timeout="306600">
+	  <sirius:method name = "d"></sirius:method>
 	</sirius:reference>
 
 </beans>
