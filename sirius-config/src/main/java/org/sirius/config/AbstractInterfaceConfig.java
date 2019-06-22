@@ -60,7 +60,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @see #uniqueId
 	 */
-	protected String interfaceId;
+	protected String interfaceName;
 
 	/**
 	 * 服务标签：做为服务唯一标识的组成部分
@@ -257,8 +257,8 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the interface id
 	 */
-	public String getInterfaceId() {
-		return interfaceId;
+	public String getInterface() {
+		return interfaceName;
 	}
 
 	/**
@@ -268,8 +268,8 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the interface id
 	 * @return the interface id
 	 */
-	public S setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
+	public S setInterface(String interfaceName) {
+		this.interfaceName = interfaceName;
 		return castThis();
 	}
 
