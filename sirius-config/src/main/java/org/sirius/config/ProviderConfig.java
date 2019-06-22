@@ -381,14 +381,14 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 			return proxyClass;
 		}
 		try {
-			if ((interfaceId != null) && !interfaceId.equals("")) {
-				this.proxyClass = ClassUtil.forName(interfaceId);
+			if ((interfaceName != null) && !interfaceName.equals("")) {
+				this.proxyClass = ClassUtil.forName(interfaceName);
 				if (!proxyClass.isInterface()) {
 					throw new RuntimeException(
-							"service.interfaceId interfaceId interfaceId must set interface class not implement class");
+							"service.interfaceName interfaceName interfaceName must set interface class not implement class");
 				}
 			} else {
-				throw new RuntimeException("service.interfaceId is null interfaceId must be not null");
+				throw new RuntimeException("service.interfaceName is null interfaceName must be not null");
 			}
 		} catch (RuntimeException e) {
 			throw e;
@@ -405,7 +405,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 */
 	@Override
 	public String buildKey() {
-		return interfaceId + ":" + uniqueId;
+		return interfaceName + ":" + uniqueId;
 	}
 
 	@Override

@@ -140,13 +140,15 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 	private void parseMethod(String name, Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
 		RootBeanDefinition methodDefinition  = new RootBeanDefinition();
 		methodDefinition.setBeanClass(MethodConfig.class);
+		String innername = "MethodConfig"+ "_" + name;
+		parserContext.getRegistry().registerBeanDefinition(innername,methodDefinition);
 		parseAttribute(methodDefinition, element, parserContext, MethodConfig.class);
 		ManagedMap<String, RuntimeBeanReference> methodMap = (ManagedMap<String, RuntimeBeanReference>) beanDefinition.getAttribute("methods");
 		if(methodMap == null) {
 			methodMap = new ManagedMap<String, RuntimeBeanReference>();
 			beanDefinition.getPropertyValues().add("methods", methodMap);
 		}
-		methodMap.put(name,new RuntimeBeanReference(name));
+		methodMap.put(name,new RuntimeBeanReference(innername));
 	}
 
 	private static boolean isPrimitive(Class<?> cls) {
