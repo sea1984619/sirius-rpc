@@ -11,9 +11,8 @@
 
 
    
-	<sirius:reference id="apple"   interface="org.sirius.spring.Apple"  timeout="306600">
-	 
-	   <sirius:method name = "get" timeout = "60000"></sirius:method>
+	<sirius:reference id="apple"   interface="org.sirius.spring.Apple" >
+	   <sirius:method name = "get" timeout = "6077000"></sirius:method>
 	   <sirius:method name = "eat" timeout = "30000"></sirius:method>
 	</sirius:reference>
 

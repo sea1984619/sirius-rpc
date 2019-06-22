@@ -136,6 +136,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	private void parseMethod(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
 		RootBeanDefinition methodDefinition  = new RootBeanDefinition();
 		methodDefinition.setBeanClass(MethodConfig.class);

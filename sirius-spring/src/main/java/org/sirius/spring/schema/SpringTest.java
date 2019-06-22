@@ -15,7 +15,6 @@ public class SpringTest {
 
 		 ReferenceBean apple = (ReferenceBean) ctx.getBean("apple");
 		 Map<String ,MethodConfig> map = apple.getMethods();
-		 System.out.println(map.size());
 		 for(MethodConfig mc : map.values()) {
 			System.out.println(mc.getTimeout()); 
 		 }
