@@ -2,7 +2,6 @@ package org.sirius.spring.schema;
 
 import org.sirius.config.ConsumerConfig;
 import org.sirius.config.MethodConfig;
-import org.sirius.spring.ConsumerBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -16,6 +15,7 @@ public class SpringTest {
 //		 ConsumerConfig con = bean.getConsumerConfig();
 //		 MethodConfig m = (MethodConfig) con.getMethods().get("get");
 //		 System.out.println(m.getTimeout());
+		 System.out.println("结束");
 		 
 		 
 	}
