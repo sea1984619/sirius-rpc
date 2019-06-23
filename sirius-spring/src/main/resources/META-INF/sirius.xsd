@@ -189,6 +189,11 @@
                         <xsd:documentation><![CDATA[ The service group. ]]></xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="directUrl" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation><![CDATA[ The directUrl. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
                 <xsd:attribute name="check" type="xsd:string">
                     <xsd:annotation>
                         <xsd:documentation><![CDATA[ Check dependency providers. ]]></xsd:documentation>

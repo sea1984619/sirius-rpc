@@ -11,7 +11,7 @@
 
 
    
-	<sirius:reference id="apple"   interface="org.sirius.spring.Apple" >
+	<sirius:reference id="apple"   interface="org.sirius.spring.Apple" directUrl="127.0.1" >
 	   <sirius:method name = "get" timeout = "6077000">
 	   <sirius:parameter key = "一个" value= "粒子"/>
 	   <sirius:parameter key = "5个" value= "粒d子"/>
@@ -23,5 +23,6 @@
 	     <sirius:argument index ="7"></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
+	
 
 </beans>

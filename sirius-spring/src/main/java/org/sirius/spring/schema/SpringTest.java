@@ -16,22 +16,7 @@ public class SpringTest {
 	public static void main(String[] args) {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 
-		 ReferenceBean apple = (ReferenceBean) ctx.getBean("apple");
-		 Map<String ,MethodConfig> map = apple.getMethods();
-		 for(MethodConfig mc : map.values()) {
-			System.out.println(mc.getTimeout()); 
-			List<ArgumentConfig> acs =  (List) mc.getArguments();
-			for(ArgumentConfig ac:acs ) {
-				System.out.println(ac.getIndex()); 
-			}
-			Map<String,String> p = mc.getParameters();
-
-			for(Entry<String, String> s:p.entrySet()) {
-				System.out.println(s.getKey());
-				System.out.println(s.getValue());
-			}
-			System.out.println("第三方"+p.size());
-		 }
-		 
+		 ReferenceBean apple = (ReferenceBean) ctx.getBean("&apple");
+		 System.out.println(apple.getRegistry()); 
 	}
 }

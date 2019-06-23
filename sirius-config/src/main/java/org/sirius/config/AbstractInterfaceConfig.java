@@ -74,12 +74,9 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	/**
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
-	protected List<String> filter;
+	protected String filter;
 
-	/**
-	 * 注册中心配置，可配置多个
-	 */
-	protected List<RegistryConfig> registry;
+	protected String registry;
 
 	/**
 	 * 方法配置，可配置多个
@@ -301,7 +298,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the filters
 	 */
-	public List<String> getFilter() {
+	public String getFilter() {
 		return filter;
 	}
 
@@ -312,7 +309,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the filter
 	 * @return the filter
 	 */
-	public S setFilter(List<String> filter) {
+	public S setFilter(String filter) {
 		this.filter = filter;
 		return castThis();
 	}
@@ -322,7 +319,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the registry
 	 */
-	public List<RegistryConfig> getRegistry() {
+	public String getRegistry() {
 		return registry;
 	}
 
@@ -333,7 +330,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *            the registry
 	 * @return the registry
 	 */
-	public S setRegistry(List<RegistryConfig> registry) {
+	public S setRegistry(String registry) {
 		this.registry = registry;
 		return castThis();
 	}
@@ -631,39 +628,6 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return false;
 	}
 
-	/**
-	 * Sets methods.
-	 *
-	 * @param methods
-	 *            the methods
-	 * @return the methods
-	 */
-//	public S setMethods(List<MethodConfig> methods) {
-//		if (this.methods == null) {
-//			this.methods = new ConcurrentHashMap<String, MethodConfig>();
-//		}
-//		if (methods != null) {
-//			for (MethodConfig methodConfig : methods) {
-//				this.methods.put(methodConfig.getName(), methodConfig);
-//			}
-//		}
-//		return castThis();
-//	}
-
-	/**
-	 * 设置注册中心
-	 *
-	 * @param registry
-	 *            RegistryConfig
-	 * @return the registry
-	 */
-	public S setRegistry(RegistryConfig registry) {
-		if (this.registry == null) {
-			this.registry = new ArrayList<RegistryConfig>();
-		}
-		this.registry.add(registry);
-		return castThis();
-	}
 
 	/**
 	 * 得到方法名对应的方法配置
