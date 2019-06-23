@@ -36,6 +36,10 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Override
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		return parse(element,parserContext,beanClass);
+	}
+	
+	public BeanDefinition parse(Element element, ParserContext parserContext,Class<?> beanClass) {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition();
 		beanDefinition.setBeanClass(beanClass);
 		beanDefinition.setLazyInit(false);
@@ -129,6 +133,8 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 				String nodeName = node.getLocalName();
 				if(nodeName.equals("method")) {
 					parseMethod(method, beanDefinition, parserContext);
+				}else if(nodeName.equals("argument")) {
+					
 				}
 			}
 		}
@@ -138,17 +144,14 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 
 	@SuppressWarnings("unchecked")
 	private void parseMethod(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
-		RootBeanDefinition methodDefinition  = new RootBeanDefinition();
-		methodDefinition.setBeanClass(MethodConfig.class);
-		String innername = "MethodConfig"+ "_" + element.getAttribute("name");
-		parserContext.getRegistry().registerBeanDefinition(innername,methodDefinition);
-		parseAttribute(methodDefinition, element, parserContext, MethodConfig.class);
-		ManagedMap<String, RuntimeBeanReference> methodMap = (ManagedMap<String, RuntimeBeanReference>) beanDefinition.getPropertyValues().get("methods");
+		
+		RootBeanDefinition methodDefinition = (RootBeanDefinition) parse(element, parserContext, MethodConfig.class);
+		ManagedMap<String, BeanDefinitionHolder> methodMap = (ManagedMap<String, BeanDefinitionHolder>) beanDefinition.getPropertyValues().get("methods");
 		if(methodMap == null) {
-			methodMap = new ManagedMap<String, RuntimeBeanReference>();
+			methodMap = new ManagedMap<String, BeanDefinitionHolder>();
 			beanDefinition.getPropertyValues().add("methods", methodMap);
 		}
-		methodMap.put(element.getAttribute("name"),new RuntimeBeanReference(innername));
+		methodMap.put(element.getAttribute("name"),new BeanDefinitionHolder(methodDefinition, element.getAttribute("name")));
 	}
 
 	

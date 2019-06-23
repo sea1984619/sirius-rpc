@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MethodConfig implements Serializable {
+public class MethodConfig extends AbstractIdConfig implements Serializable {
 
     private static final long      serialVersionUID = -8594337650648536897L;
 
