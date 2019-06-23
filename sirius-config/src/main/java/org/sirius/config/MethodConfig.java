@@ -1,6 +1,7 @@
 package org.sirius.config;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,6 +61,10 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
      */
     protected String               compress;
 
+    
+  
+
+	private List<ArgumentConfig> arguments;
 
     /*-------------配置项结束----------------*/
     /**
@@ -270,4 +275,12 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
     public String getParameter(String key) {
         return parameters == null ? null : parameters.get(key);
     }
+    
+    public List<ArgumentConfig> getArguments() {
+  		return arguments;
+  	}
+
+  	public void setArguments(List<ArgumentConfig> arguments) {
+  		this.arguments = arguments;
+  	}
 }

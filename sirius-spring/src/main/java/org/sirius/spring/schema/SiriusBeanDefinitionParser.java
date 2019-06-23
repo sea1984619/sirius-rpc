@@ -5,6 +5,7 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.config.TypedStringValue;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
@@ -22,6 +23,7 @@ import java.util.Set;
 
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
+import org.sirius.config.ArgumentConfig;
 import org.sirius.config.MethodConfig;
 import org.sirius.spring.ReferenceBean;
 import org.sirius.spring.ServiceBean;
@@ -82,7 +84,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		
 		if(element.hasChildNodes()) {
 			NodeList childNodes = element.getChildNodes();
-			parseChildNodes(id,beanDefinition, childNodes, parserContext);
+			parseChildNodes(beanDefinition, childNodes, parserContext);
 		}
 		
 		return beanDefinition;
@@ -125,22 +127,48 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		}
 	}
 
-	private void parseChildNodes(String id, RootBeanDefinition beanDefinition, NodeList childNodes, ParserContext parserContext) {
+	private void parseChildNodes(RootBeanDefinition beanDefinition, NodeList childNodes, ParserContext parserContext) {
 		for(int i = 0;i < childNodes.getLength();i++) {
 			Node node = childNodes.item(i);
 			if(node instanceof Element) {
-				Element method = (Element) node;
+				Element element = (Element) node;
 				String nodeName = node.getLocalName();
 				if(nodeName.equals("method")) {
-					parseMethod(method, beanDefinition, parserContext);
+					parseMethod(element, beanDefinition, parserContext);
 				}else if(nodeName.equals("argument")) {
-					
+					parseArgument(element, beanDefinition, parserContext);
+				}else if(nodeName.equals("parameter")) {
+					parseParameter(element, beanDefinition, parserContext);
 				}
 			}
 		}
 		
 	}
 	
+
+	@SuppressWarnings("unchecked")
+	private void parseParameter(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
+		 ManagedMap<String, TypedStringValue> parameters = (ManagedMap<String, TypedStringValue>) beanDefinition.getPropertyValues().get("parameters");
+		 if(parameters == null) {
+			    parameters = new ManagedMap<String, TypedStringValue>();
+				beanDefinition.getPropertyValues().add("parameters", parameters);
+			}
+		 String key = element.getAttribute("key");
+         String value = element .getAttribute("value");
+         parameters.put(key, new TypedStringValue(value, String.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void parseArgument(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
+		RootBeanDefinition methodDefinition = (RootBeanDefinition) parse(element, parserContext, ArgumentConfig.class);
+		ManagedList<BeanDefinitionHolder> arguments = (ManagedList<BeanDefinitionHolder>) beanDefinition.getPropertyValues().get("arguments");
+		if(arguments == null) {
+			arguments = new ManagedList<BeanDefinitionHolder>();
+			beanDefinition.getPropertyValues().add("arguments", arguments);
+		}
+		String index = element.getAttribute("index");
+		arguments.add(new BeanDefinitionHolder(methodDefinition, ArgumentConfig.class.getName()+ "_" + index));
+	}
 
 	@SuppressWarnings("unchecked")
 	private void parseMethod(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
@@ -151,7 +179,8 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 			methodMap = new ManagedMap<String, BeanDefinitionHolder>();
 			beanDefinition.getPropertyValues().add("methods", methodMap);
 		}
-		methodMap.put(element.getAttribute("name"),new BeanDefinitionHolder(methodDefinition, element.getAttribute("name")));
+		String name = element.getAttribute("name");
+		methodMap.put(name,new BeanDefinitionHolder(methodDefinition, MethodConfig.class.getName()+ "_" + name));
 	}
 
 	

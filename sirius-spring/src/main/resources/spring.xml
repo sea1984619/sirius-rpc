@@ -12,8 +12,16 @@
 
    
 	<sirius:reference id="apple"   interface="org.sirius.spring.Apple" >
-	   <sirius:method name = "get" timeout = "6077000"></sirius:method>
-	   <sirius:method name = "eat" timeout = "30000"></sirius:method>
+	   <sirius:method name = "get" timeout = "6077000">
+	   <sirius:parameter key = "一个" value= "粒子"/>
+	   <sirius:parameter key = "5个" value= "粒d子"/>
+	 
+	     <sirius:argument index ="4"></sirius:argument>
+	   </sirius:method>
+	   <sirius:method name = "eat" timeout = "30000">
+	   <sirius:parameter key = "第三方5个" value= "水电费粒d子"/>
+	     <sirius:argument index ="7"></sirius:argument>
+	   </sirius:method>
 	</sirius:reference>
 
 </beans>

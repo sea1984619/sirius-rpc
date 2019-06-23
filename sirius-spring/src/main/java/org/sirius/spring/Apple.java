@@ -2,7 +2,7 @@ package org.sirius.spring;
 
 public interface Apple {
 
-	void get();
-	void eat();
+	void get(String  d);
+	void eat(String  d);
    
 }
