@@ -17,6 +17,6 @@ public class SpringTest {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 
 		 ReferenceBean apple = (ReferenceBean) ctx.getBean("&apple");
-		 System.out.println(apple.getRegistry()); 
+		 System.out.println(apple); 
 	}
 }

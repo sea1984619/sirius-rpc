@@ -1,5 +1,6 @@
 package org.sirius.spring;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.sirius.common.util.ClassUtil;
@@ -13,13 +14,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ReferenceBean extends ConsumerConfig
-		implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
+public class ReferenceBean extends ConsumerConfig implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private ApplicationContext context;
 
 	private Class<?> referClass;
-	private List<RegistryConfig> registryList;
+	private List<RegistryConfig> registryList = new ArrayList<RegistryConfig>();
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -40,7 +40,7 @@ public class ReferenceBean extends ConsumerConfig
 			if (registry == null) {
 				String[] names = context.getBeanNamesForType(RegistryConfig.class);
 				if (names.length == 0) {
-					throw new IllegalStateException("<Registry>标签  or directUrl  全部为空,必须指定一个 ");
+					throw new IllegalStateException("<Registry>标签  or directUrl属性,or registry属性全部为空,必须指定一个 ");
 				} else {
 					for (String name : names) {
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
@@ -54,7 +54,7 @@ public class ReferenceBean extends ConsumerConfig
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
 						registryList.add(rc);
 					}else {
-						throw new IllegalStateException("名称为:"+name+"的registry不存在");
+						throw new IllegalStateException("名称为: "+name+" 的registry不存在");
 					}
 					
 				}
@@ -73,12 +73,12 @@ public class ReferenceBean extends ConsumerConfig
 
 	@Override
 	public Class<?> getObjectType() {
-		return null;
+		return this.referClass;
 	}
 
 	@Override
 	public boolean isSingleton() {
-		return false;
+		return true;
 	}
 
 	@Override
