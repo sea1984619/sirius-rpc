@@ -14,6 +14,9 @@ public class ExtensionLoader {
 		if( !(clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))) {
 			throw new RuntimeException(clazz +" must be a interface or a abstract class");
 		}
+		if(clazz.getAnnotation(Extensible.class) == null) {
+			throw new RuntimeException(clazz +" must has @Extensible annotation ");
+		}
 		this.clazz = clazz;
 		load();
 	}
