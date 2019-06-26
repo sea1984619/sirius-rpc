@@ -4,6 +4,7 @@ package org.sirius.rpc.consumer.invoke;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.sirius.config.ConsumerConfig;
 import org.sirius.rpc.DefaultRpcClient;
 import org.sirius.rpc.DefaultRpcServer;
 import org.sirius.rpc.Invoker;
@@ -25,6 +26,7 @@ import org.sirius.transport.netty.NettyTcpConnector;
 
 public  class ConsumerPoxyInvoker implements Invoker {
 
+	private ConsumerConfig config;
 	private RpcClient client;
 	private Connector connector;
 	

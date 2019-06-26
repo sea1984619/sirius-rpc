@@ -234,7 +234,7 @@ public class ExtensionLoader<T> {
 				}
 			}
 		}
-		 all.put(alias, extensionClass);
+		all.put(alias, extensionClass);
 	}
 
 	private ExtensionClass<T> buildClass(Extension extension, Class<? extends T> implClass, String alias) {
