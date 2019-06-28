@@ -1,8 +1,11 @@
 package org.sirius.rpc;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import org.sirius.common.util.Maps;
 import org.sirius.common.util.internal.InternalThreadLocal;
 
 /*
@@ -10,17 +13,37 @@ import org.sirius.common.util.internal.InternalThreadLocal;
  */
 public class RpcContent {
 
-	private static InternalThreadLocal<CompletableFuture<Object>> content = new InternalThreadLocal<CompletableFuture<Object>>() {
-		 @Override
-	        protected CompletableFuture<Object> initialValue() {
-	            return new CompletableFuture<Object>();
-	        }
+	private static InternalThreadLocal<RpcContent> Local = new InternalThreadLocal<RpcContent>() {
+		@Override
+		protected RpcContent initialValue() {
+			return new RpcContent();
+		}
 	};
+
+	private Map values = Maps.newHashMap();
+	private Future future;
 	
-	public static void set(CompletableFuture<Object> future) {
-		content.set(future);
+	public static RpcContent getContent() {
+		return Local.get();
 	}
-	public  static CompletableFuture<Object> get() throws InterruptedException, ExecutionException {
-		return content.get();
+
+	public static void setLocalContent(RpcContent content) {
+		Local.set(content);
+	}
+
+	public void set(Object key, Object value) {
+		values.put(key, value);
+	}
+
+	public Object get(Object key) throws InterruptedException, ExecutionException {
+		return values.get(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Future<T> getFuture() {
+		return (Future<T>) future;
+	}
+	public void setFuture(Future<?> future) {
+		this.future = future;
 	}
 }

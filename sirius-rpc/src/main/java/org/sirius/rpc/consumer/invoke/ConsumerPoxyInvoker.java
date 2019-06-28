@@ -47,7 +47,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 		}
 		CompletableFuture future = new CompletableFuture();
 		ResultFutureContent.add(request.invokeId(), future);
-		RpcContent.set(future);
+		RpcContent.getContent().setFuture(future);
 		Response res = new Response(request.invokeId());
 		try {
 			channel.send(request);
@@ -68,7 +68,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 		ConsumerPoxyInvoker invoker = new ConsumerPoxyInvoker (client);
 		Test test = (Test) ProxyFactory.getProxy(invoker, Test.class);
 		test.getApple();
-		CompletableFuture result = RpcContent.get();
+		CompletableFuture result = (CompletableFuture) RpcContent.getContent().getFuture();
 		Apple apple =(Apple) result.get();
 		System.out.println(apple.getColor());
 		
