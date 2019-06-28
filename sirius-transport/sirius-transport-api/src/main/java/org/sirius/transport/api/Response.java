@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class Response implements Serializable{
 	
-	private static final long serialVersionUID = -9091908161302683663L;
-	private long invokeId;
-	private byte status;
-	private byte serializerCode;
-	private Object result;
+	protected static final long serialVersionUID = -9091908161302683663L;
+	protected long invokeId;
+	protected byte status;
+	protected byte serializerCode;
+	protected Object result;
 	
 	public Response(long invokeId) {
 		this.invokeId = invokeId;

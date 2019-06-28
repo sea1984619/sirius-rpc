@@ -13,6 +13,7 @@ import org.sirius.config.MethodConfig;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
+import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
@@ -53,7 +54,8 @@ public class CallBackFilter implements Filter {
 						callbackInvoker = ProxyFactory.getInvoker(callback, clazz);
 						invokers.putIfAbsent(callback ,callbackInvoker);
 					}
-					
+					callbackInvoker = invokers.get(callback);
+					ResultFutureContent.setCallbackInvoker(request.getClassName(), callbackInvoker);
 				}
 			}
 			if(!newList.isEmpty()) {
