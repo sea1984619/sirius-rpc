@@ -109,7 +109,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 					value = value.trim();
 					if (value.length() > 0) {
 						Object reference = null;
-						if(isPrimitive(paramTypes[0])) {
+						if(ClassUtil.isPrimitive(paramTypes[0])) {
 							reference = value;
 						}else {
 							if("ref".equals(attrName) && parserContext.getRegistry().containsBeanDefinition(value)) {
@@ -181,13 +181,6 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		}
 		String name = element.getAttribute("name");
 		methodMap.put(name,new BeanDefinitionHolder(methodDefinition, MethodConfig.class.getName()+ "_" + name));
-	}
-
-	
-	private static boolean isPrimitive(Class<?> cls) {
-		return cls.isPrimitive() || cls == Boolean.class || cls == Byte.class || cls == Character.class
-				|| cls == Short.class || cls == Integer.class || cls == Long.class || cls == Float.class
-				|| cls == Double.class || cls == String.class || cls == Date.class || cls == Class.class;
 	}
 
 	private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) {

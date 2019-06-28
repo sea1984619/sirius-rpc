@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -380,6 +381,12 @@ public final class ClassUtil {
         }
         return false;
     }
+    
+    public static boolean isPrimitive(Class<?> cls) {
+		return cls.isPrimitive() || cls == Boolean.class || cls == Byte.class || cls == Character.class
+				|| cls == Short.class || cls == Integer.class || cls == Long.class || cls == Float.class
+				|| cls == Double.class || cls == String.class || cls == Date.class || cls == Class.class;
+	}
     public static <T> void forClass(@SuppressWarnings("unused") Class<T> clazz) {}
 
     private ClassUtil() {}

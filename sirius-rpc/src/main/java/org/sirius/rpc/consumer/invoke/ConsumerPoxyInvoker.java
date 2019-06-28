@@ -15,7 +15,6 @@ import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.provider.Apple;
 import org.sirius.rpc.provider.Test;
 import org.sirius.rpc.proxy.ProxyFactory;
-import org.sirius.rpc.proxy.bytecode.ConsumerProxyUtil;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;

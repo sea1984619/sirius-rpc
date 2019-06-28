@@ -8,7 +8,6 @@ public interface Filter {
 	Response invoke(Invoker invoker, Request request) throws Throwable;
 	
 	default  Response onResponse(Response res) {
-		
 		return res;
 	}
 }
