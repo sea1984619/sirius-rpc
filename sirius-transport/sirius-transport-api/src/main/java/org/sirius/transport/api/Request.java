@@ -4,20 +4,18 @@ import java.io.Serializable;
 
 import org.sirius.common.util.LongSequencer;
 
-public final class Request implements Serializable{
+public class Request implements Serializable{
 	
-	private static final long serialVersionUID = 6826443474660576589L;
-	private static final LongSequencer sequencer = new LongSequencer();
-	private long invokeId;
-	private byte serializerCode;
-	private String className;
-	private String methodName;
-    private Class<?>[] ParametersType;
-    private Object[] parameters;
-    
-	private transient long timestamp;
+	protected static final long serialVersionUID = 6826443474660576589L;
+	protected static final LongSequencer sequencer = new LongSequencer();
+	protected long invokeId;
+	protected byte serializerCode;
+	protected String className;
+	protected String methodName;
+    protected Class<?>[] ParametersType;
+    protected Object[] parameters;
+	protected transient long timestamp;
 	
-
 	public Request() {
 		this.invokeId = sequencer.next();
 	}
