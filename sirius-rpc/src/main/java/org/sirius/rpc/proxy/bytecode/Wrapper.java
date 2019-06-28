@@ -15,10 +15,6 @@ import java.util.regex.Matcher;
 
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
-import org.sirius.rpc.provider.Test;
-import org.sirius.rpc.provider.TestImpl;
-import org.sirius.rpc.proxy.ProviderProxyUtil;
-
 /**
  * Wrapper.
  */

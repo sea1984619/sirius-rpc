@@ -14,7 +14,8 @@ import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.provider.Apple;
 import org.sirius.rpc.provider.Test;
-import org.sirius.rpc.proxy.ConsumerProxyUtil;
+import org.sirius.rpc.proxy.ProxyFactory;
+import org.sirius.rpc.proxy.bytecode.ConsumerProxyUtil;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
@@ -66,7 +67,7 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	public static void main(String args[]) throws InterruptedException, ExecutionException {
 		RpcClient client = new DefaultRpcClient(new NettyTcpConnector(),new DefaultConsumerProcessor());
 		ConsumerPoxyInvoker invoker = new ConsumerPoxyInvoker (client);
-		Test test = (Test) ConsumerProxyUtil.getProxy(invoker, Test.class);
+		Test test = (Test) ProxyFactory.getProxy(invoker, Test.class);
 		test.getApple();
 		CompletableFuture result = RpcContent.get();
 		Apple apple =(Apple) result.get();

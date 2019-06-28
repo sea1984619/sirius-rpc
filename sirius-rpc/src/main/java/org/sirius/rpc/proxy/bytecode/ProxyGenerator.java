@@ -1,4 +1,4 @@
-package org.sirius.rpc.proxy;
+package org.sirius.rpc.proxy.bytecode;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -16,19 +16,20 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
 import org.sirius.rpc.Invoker;
-import org.sirius.rpc.proxy.bytecode.ClassGenerator;
+import org.sirius.rpc.proxy.RequestMessageBuilder;
+import org.sirius.serialization.api.SerializerType;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
-public class ConsumerProxyUtil {
+public class ProxyGenerator {
 
 	private static final AtomicLong PROXY_CLASS_COUNTER = new AtomicLong(0);
-	private static final String PACKAGE_NAME = ConsumerProxyUtil.class.getPackage().getName();
+	private static final String PACKAGE_NAME = ProxyGenerator.class.getPackage().getName();
 	private static final Map<ClassLoader, Map<String, Object>> ProxyCacheMap = new WeakHashMap<ClassLoader, Map<String, Object>>();
 
 	private static final Object PendingGenerationMarker = new Object();
 
-	protected ConsumerProxyUtil() {
+	protected ProxyGenerator() {
 	}
 
 	/**
@@ -39,7 +40,7 @@ public class ConsumerProxyUtil {
 	 * @return Proxy instance.
 	 */
 	public static Object getProxy(Invoker invoker, Class<?>... ics) {
-		return getProxy(ClassHelper.getClassLoader(ConsumerProxyUtil.class), invoker, ics);
+		return getProxy(ClassHelper.getClassLoader(ProxyGenerator.class), invoker, ics);
 	}
 
 	/**
@@ -155,8 +156,7 @@ public class ConsumerProxyUtil {
 					}
 
 					methods.add(method);
-					ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(),
-							code.toString());
+					ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(),code.toString());
 				}
 			}
 
@@ -228,7 +228,9 @@ public class ConsumerProxyUtil {
 		return "(" + ReflectUtils.getName(cl) + ")" + name;
 	}
 
+	
 	public static void main(String args[]) {
 		
 	} 
 }
+
