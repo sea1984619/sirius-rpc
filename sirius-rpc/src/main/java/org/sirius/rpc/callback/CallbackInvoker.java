@@ -8,11 +8,13 @@ import org.sirius.transport.api.channel.Channel;
 public class CallbackInvoker implements Invoker {
 
 	private final Channel channel;
-	public CallbackInvoker(Channel channel) {
+	private final long id;
+	public CallbackInvoker(Channel channel ,long id) {
 		this.channel = channel;
+		this.id = id;
 	}
 	public Response invoke(Request request) throws Throwable {
-		ArgumentCallbackResponse response = new ArgumentCallbackResponse(request.invokeId());
+		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
 		channel.send(response);
 		return null;

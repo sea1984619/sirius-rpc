@@ -55,7 +55,7 @@ public class CallBackFilter implements Filter {
 						invokers.putIfAbsent(callback ,callbackInvoker);
 					}
 					callbackInvoker = invokers.get(callback);
-					ResultFutureContent.setCallbackInvoker(request.getClassName(), callbackInvoker);
+					ResultFutureContent.setCallbackInvoker(request.invokeId(), callbackInvoker);
 				}
 			}
 			if(!newList.isEmpty()) {

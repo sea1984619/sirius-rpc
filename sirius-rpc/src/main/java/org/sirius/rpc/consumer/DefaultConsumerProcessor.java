@@ -26,8 +26,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 	private void handleArgumentCallbackResponse(Response response) {
 		ArgumentCallbackResponse argResponse = (ArgumentCallbackResponse) response;
 		Request request = (Request) argResponse.getResult();
-		String className = request.getClassName();
-		Invoker invoker = ResultFutureContent.getCallbackInvoker(className);
+		Invoker invoker = ResultFutureContent.getCallbackInvoker(response.invokeId());
 		try {
 			invoker.invoke(request);
 		} catch (Throwable e) {
