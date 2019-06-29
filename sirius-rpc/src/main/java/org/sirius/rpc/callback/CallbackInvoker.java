@@ -19,5 +19,4 @@ public class CallbackInvoker implements Invoker {
 		channel.send(response);
 		return null;
 	}
-
 }
