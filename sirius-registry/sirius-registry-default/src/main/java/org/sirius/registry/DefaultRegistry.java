@@ -5,12 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.ProviderConfig;
-import org.sirius.registry.api.ProviderGroup;
-import org.sirius.registry.api.ProviderInfo;
-import org.sirius.registry.api.Registry;
-import org.sirius.registry.api.RegistryServer;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.ProviderConfig;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.Registry;
+import org.sirius.rpc.registry.RegistryServer;
+
 
 public class DefaultRegistry implements Registry{
 	

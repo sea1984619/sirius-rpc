@@ -9,9 +9,6 @@ import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.ProviderConfig;
-import org.sirius.registry.api.RegistryService;
 import org.sirius.rpc.DefaultRpcClient;
 import org.sirius.rpc.RpcClient;
 import org.sirius.rpc.RpcContent;
@@ -20,16 +17,10 @@ import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
 import org.sirius.rpc.provider.Apple;
 import org.sirius.rpc.provider.Test;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
-import org.sirius.rpc.proxy.ConsumerProxyUtil;
-import org.sirius.rpc.proxy.ProviderProxyUtil;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
-import org.sirius.transport.netty.NettyTcpAcceptor;
-import org.sirius.transport.netty.channel.NettyChannel;
-import org.sirius.transport.netty.handler.acceptor.AcceptorHandler;
-
 import io.netty.channel.ChannelHandlerContext;
 
 public class DefaultRegistryServer extends NettyTcpAcceptor {

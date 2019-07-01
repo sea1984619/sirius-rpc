@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sirius-registry-api</artifactId>
+			<artifactId>sirius-rpc</artifactId>
 		</dependency>
 	</dependencies>
 </project>

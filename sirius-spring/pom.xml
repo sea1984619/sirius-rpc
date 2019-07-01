@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sirius-config</artifactId>
+			<artifactId>sirius-rpc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
