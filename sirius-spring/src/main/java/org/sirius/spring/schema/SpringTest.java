@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.sirius.config.ArgumentConfig;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.MethodConfig;
+
 import org.sirius.spring.ReferenceBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

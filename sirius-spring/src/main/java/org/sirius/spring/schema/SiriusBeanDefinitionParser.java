@@ -23,8 +23,8 @@ import java.util.Set;
 
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
-import org.sirius.config.ArgumentConfig;
-import org.sirius.config.MethodConfig;
+import org.sirius.rpc.config.ArgumentConfig;
+import org.sirius.rpc.config.MethodConfig;
 import org.sirius.spring.ReferenceBean;
 import org.sirius.spring.ServiceBean;
 

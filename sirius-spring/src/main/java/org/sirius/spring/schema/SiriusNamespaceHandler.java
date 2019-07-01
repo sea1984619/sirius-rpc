@@ -1,8 +1,8 @@
 package org.sirius.spring.schema;
 
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.ProviderConfig;
-import org.sirius.config.RegistryConfig;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.ProviderConfig;
+import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.spring.ReferenceBean;
 import org.sirius.spring.ServiceBean;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;

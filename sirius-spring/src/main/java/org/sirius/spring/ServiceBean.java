@@ -1,6 +1,6 @@
 package org.sirius.spring;
 
-import org.sirius.config.ProviderConfig;
+import org.sirius.rpc.config.ProviderConfig;
 
 public class ServiceBean extends ProviderConfig {
 

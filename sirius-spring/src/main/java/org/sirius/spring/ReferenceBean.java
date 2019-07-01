@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sirius.common.util.ClassUtil;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.RegistryConfig;
 import org.sirius.common.util.StringUtils;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.RegistryConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
