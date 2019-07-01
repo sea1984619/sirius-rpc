@@ -1,7 +1,7 @@
 package org.sirius.rpc.callback;
 import java.util.List;
 
-import org.sirius.config.ArgumentConfig;
+import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.transport.api.Request;
 
 public class ArgumentCallbackRequest extends Request {

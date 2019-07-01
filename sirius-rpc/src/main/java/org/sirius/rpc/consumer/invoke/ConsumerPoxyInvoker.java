@@ -4,12 +4,12 @@ package org.sirius.rpc.consumer.invoke;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.sirius.config.ConsumerConfig;
 import org.sirius.rpc.DefaultRpcClient;
 import org.sirius.rpc.DefaultRpcServer;
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.RpcClient;
 import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.provider.Apple;

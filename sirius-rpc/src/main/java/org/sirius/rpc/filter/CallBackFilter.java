@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
-import org.sirius.config.ArgumentConfig;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.MethodConfig;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.Invoker;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
+import org.sirius.rpc.config.ArgumentConfig;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.MethodConfig;
 import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;

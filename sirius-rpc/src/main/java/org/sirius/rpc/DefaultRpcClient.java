@@ -4,7 +4,7 @@ import java.rmi.registry.Registry;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.Maps;
-import org.sirius.config.ConsumerConfig;
+import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.transport.api.Connector;
