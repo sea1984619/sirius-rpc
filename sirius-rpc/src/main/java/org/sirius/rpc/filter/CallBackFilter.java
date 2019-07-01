@@ -24,11 +24,13 @@ public class CallBackFilter implements Filter {
 	private Map<String, MethodConfig> methods;
 	private Map<Object, Invoker> invokers = Maps.newConcurrentMap();
 
-	public CallBackFilter(ConsumerConfig consumerConfig) {
+	public ConsumerConfig getConsumerConfig() {
+		return consumerConfig;
+	}
+	public void setConsumerConfig(ConsumerConfig consumerConfig) {
 		this.consumerConfig = consumerConfig;
 		methods = consumerConfig.getMethods();
 	}
-	
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
 		String methodName = request.getMethodName();

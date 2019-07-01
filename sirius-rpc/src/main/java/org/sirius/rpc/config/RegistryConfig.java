@@ -1,4 +1,4 @@
-package org.sirius.config;
+package org.sirius.rpc.config;
 
 import java.io.Serializable;
 import java.util.Map;
