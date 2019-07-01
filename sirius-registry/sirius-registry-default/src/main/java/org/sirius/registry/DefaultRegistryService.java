@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutionException;
 
 import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
-import org.sirius.config.ConsumerConfig;
-import org.sirius.config.ProviderConfig;
-import org.sirius.config.ServerConfig;
-import org.sirius.registry.api.ProviderInfo;
-import org.sirius.registry.api.RegistryService;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.ProviderConfig;
+import org.sirius.rpc.config.ServerConfig;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.RegistryService;
 
 @SuppressWarnings("rawtypes")
 public class DefaultRegistryService implements RegistryService {

@@ -12,15 +12,23 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.DefaultRpcClient;
 import org.sirius.rpc.RpcClient;
 import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
 import org.sirius.rpc.provider.Apple;
 import org.sirius.rpc.provider.Test;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
+import org.sirius.rpc.proxy.ProxyFactory;
+import org.sirius.rpc.registry.RegistryService;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
+import org.sirius.transport.netty.NettyTcpAcceptor;
+import org.sirius.transport.netty.channel.NettyChannel;
+import org.sirius.transport.netty.handler.acceptor.AcceptorHandler;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class DefaultRegistryServer extends NettyTcpAcceptor {
@@ -31,7 +39,7 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 
 	private ProviderProcessor processor = new RegistryProcessor();
 	private ProviderProxyInvoker<?> registryInvoker;
-	private RegistryService registryService = new DefaultRegistryService(this);
+	private RegistryService registryService = (RegistryService) new DefaultRegistryService(this);
 
 	// 订阅者保持的链接 , key ->订阅者ip,不包括port
 	ConcurrentMap<String, ConcurrentHashSet<Channel>> consumerChannelsMap = Maps.newConcurrentMap();
@@ -46,7 +54,7 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 	DefaultRegistryServer(int port) {
 		super(port);
 		this.setProcessor(processor);
-		registryInvoker = (ProviderProxyInvoker<?>) ProviderProxyUtil.getInvoker(registryService,
+		registryInvoker = (ProviderProxyInvoker<?>) ProxyFactory.getInvoker(registryService,
 				RegistryService.class);
 	}
 
