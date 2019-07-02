@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.Filter;
 
 /**
  * 接口级的公共配置
@@ -75,8 +76,13 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
 	protected String filter;
-
+	
 	protected String registry;
+	
+	protected List<Filter> filterRef;
+	
+	protected List<RegistryConfig> registryRef;
+	
 
 	/**
 	 * 方法配置，可配置多个
@@ -292,6 +298,21 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	}
 
 	
+	public List<Filter> getFilterRef() {
+		return filterRef;
+	}
+
+	public void setFilterRef(List<Filter> filterRef) {
+		this.filterRef = filterRef;
+	}
+
+	public List<RegistryConfig> getRegistryRef() {
+		return registryRef;
+	}
+
+	public void setRegistryRef(List<RegistryConfig> registryRef) {
+		this.registryRef = registryRef;
+	}
 
 	/**
 	 * Gets filters.

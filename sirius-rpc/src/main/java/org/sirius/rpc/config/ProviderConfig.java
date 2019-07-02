@@ -81,6 +81,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
 	 */
 	protected int concurrents;
+	
 
 	/*---------- 参数配置项结束 ------------*/
 

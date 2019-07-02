@@ -30,7 +30,6 @@ public class ReferenceBean extends ConsumerConfig implements FactoryBean, Applic
 	public void afterPropertiesSet() throws Exception {
 		initReferClass();
 		initRegistry();
-
 	}
 
 	private void initRegistry() {

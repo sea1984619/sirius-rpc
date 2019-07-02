@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.sirius.common.util.CommonUtils;
+import org.sirius.rpc.consumer.cluster.router.Router;
 
 /**
  * 服务消费者配置
@@ -20,6 +21,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * 调用的协议
 	 */
 	protected String protocol;
+	
 
 	/**
 	 * 直连调用地址
@@ -109,6 +111,8 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * 路由配置别名
 	 */
 	protected List<String> router;
+	
+	private List<Router> routerRef;
 
 	/**
 	 * 启动器
@@ -123,7 +127,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 同一个服务（接口协议uniqueId相同）的最大引用次数，防止由于代码bug导致重复引用，每次引用都会生成一个代理类对象，-1表示不检查
 	 *
-	 * @since 5.2.0
 	 */
 	protected int repeatedReferLimit;
 	/*-------- 下面是方法级可覆盖配置 --------*/
@@ -141,6 +144,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
 	 */
 	protected int concurrents;
+
 
 	/**
 	 * Build key.
@@ -243,6 +247,27 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return this;
 	}
 
+	
+	 /**
+     * Gets routerRef.
+     *
+     * @return the routerRef
+     */
+    public List<Router> getRouterRef() {
+        return routerRef;
+    }
+
+    /**
+     * Sets routerRef.
+     *
+     * @param routerRef the routerRef
+     * @return the routerRef
+     */
+    public ConsumerConfig<T> setRouterRef(List<Router> routerRef) {
+        this.routerRef = routerRef;
+        return this;
+    }
+    
 	/**
 	 * Gets connect timeout.
 	 *
