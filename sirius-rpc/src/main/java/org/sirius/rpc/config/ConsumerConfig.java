@@ -4,7 +4,9 @@ package org.sirius.rpc.config;
 import java.io.Serializable;
 import java.util.List;
 
+import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
+import org.sirius.common.util.StringUtils;
 import org.sirius.rpc.consumer.cluster.router.Router;
 
 /**
@@ -775,7 +777,25 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 
 	@Override
 	protected Class<?> getProxyClass() {
-		// TODO Auto-generated method stub
+		 if (proxyClass != null) {
+	            return proxyClass;
+	        }
+	        try {
+	            if (StringUtils.isNotBlank(interfaceName)) {
+	                this.proxyClass = ClassUtil.forName(interfaceName);
+	                if (!proxyClass.isInterface()) {
+	                    throw new RuntimeException("consumer.interface + interfaceName +  must set interface class, not implement class");
+	                }
+	            } else {
+	                throw new RuntimeException("consumerConfig.interfaceName must be not null");
+	            }
+	        } catch (RuntimeException t) {
+	            throw new IllegalStateException(t.getMessage(), t);
+	        }
+	        return proxyClass;
+	}
+
+	public T refer() {
 		return null;
 	}
 

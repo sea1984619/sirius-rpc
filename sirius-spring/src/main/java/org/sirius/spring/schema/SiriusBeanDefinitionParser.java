@@ -145,7 +145,6 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		
 	}
 	
-
 	@SuppressWarnings("unchecked")
 	private void parseParameter(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
 		 ManagedMap<String, TypedStringValue> parameters = (ManagedMap<String, TypedStringValue>) beanDefinition.getPropertyValues().get("parameters");

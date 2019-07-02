@@ -1,8 +1,5 @@
 package org.sirius.spring;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.StringUtils;
 import org.sirius.rpc.config.ConsumerConfig;
@@ -14,12 +11,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ReferenceBean extends ConsumerConfig implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
-
+public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T>, ApplicationContextAware, InitializingBean, DisposableBean {
+	
+	private static final long serialVersionUID = 6747208266832553385L;
 	private ApplicationContext context;
-
-	private Class<?> referClass;
-	private List<RegistryConfig> registryList = new ArrayList<RegistryConfig>();
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -28,7 +23,6 @@ public class ReferenceBean extends ConsumerConfig implements FactoryBean, Applic
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		initReferClass();
 		initRegistry();
 	}
 
@@ -43,7 +37,7 @@ public class ReferenceBean extends ConsumerConfig implements FactoryBean, Applic
 				} else {
 					for (String name : names) {
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
-						registryList.add(rc);
+						registryRef.add(rc);
 					}
 				}
 			} else {
@@ -51,7 +45,7 @@ public class ReferenceBean extends ConsumerConfig implements FactoryBean, Applic
 				for (String name : names) {
 					if(context.containsBean(name)) {
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
-						registryList.add(rc);
+						registryRef.add(rc);
 					}else {
 						throw new IllegalStateException("名称为: "+name+" 的registry不存在");
 					}
@@ -61,18 +55,14 @@ public class ReferenceBean extends ConsumerConfig implements FactoryBean, Applic
 		}
 	}
 
-	private void initReferClass() {
-		referClass = ClassUtil.forName(getInterface());
-	}
-
 	@Override
-	public Object getObject() throws Exception {
-		return null;
+	public T getObject() throws Exception {
+		return  refer();
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return this.referClass;
+		return proxyClass;
 	}
 
 	@Override
