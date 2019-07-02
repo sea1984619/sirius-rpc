@@ -1,12 +1,10 @@
 package org.sirius.common.ext;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,7 +26,6 @@ public class ExtensionLoader<T> {
 
 	// 全部的加载的实现类 {"alias":ExtensionClass}
 	protected final ConcurrentMap<String, ExtensionClass<T>> all;
-	protected final ConcurrentMap<String, T> factory;
 	private Extensible extensible;
 
 	public ExtensionLoader(Class<T> clazz) {
@@ -43,7 +40,6 @@ public class ExtensionLoader<T> {
 					"Error when load extensible interface " + className + ", must add annotation @Extensible. ");
 		}
 		this.clazz = clazz;
-		this.factory = extensible.singleton() ? new ConcurrentHashMap<String, T>() : null;
 		this.all = new ConcurrentHashMap<String, ExtensionClass<T>>();
 		load();
 	}
@@ -240,7 +236,7 @@ public class ExtensionLoader<T> {
 	private ExtensionClass<T> buildClass(Extension extension, Class<? extends T> implClass, String alias) {
 		ExtensionClass<T> extensionClass = new ExtensionClass<T>(implClass, alias);
 		extensionClass.setCode(extension.code());
-		extensionClass.setSingleton(extensible.singleton());
+		extensionClass.setSingleton(extension.singleton());
 		extensionClass.setOrder(extension.order());
 		extensionClass.setOverride(extension.override());
 		extensionClass.setRejection(extension.rejection());
@@ -274,26 +270,13 @@ public class ExtensionLoader<T> {
 	 *            别名
 	 * @return 扩展实例（已判断是否单例）
 	 */
+
 	public T getExtension(String alias) {
 		ExtensionClass<T> extensionClass = getExtensionClass(alias);
 		if (extensionClass == null) {
 			throw new RuntimeException("Not found extension of " + className + " named: \"" + alias + "\"!");
 		} else {
-			if (extensible.singleton() && factory != null) {
-				T t = factory.get(alias);
-				if (t == null) {
-					synchronized (this) {
-						t = factory.get(alias);
-						if (t == null) {
-							t = extensionClass.getExtInstance();
-							factory.put(alias, t);
-						}
-					}
-				}
-				return t;
-			} else {
 				return extensionClass.getExtInstance();
-			}
 		}
 	}
 
@@ -313,21 +296,7 @@ public class ExtensionLoader<T> {
 		if (extensionClass == null) {
 			throw new RuntimeException("Not found extension of " + className + " named: \"" + alias + "\"!");
 		} else {
-			if (extensible.singleton() && factory != null) {
-				T t = factory.get(alias);
-				if (t == null) {
-					synchronized (this) {
-						t = factory.get(alias);
-						if (t == null) {
-							t = extensionClass.getExtInstance(argTypes, args);
-							factory.put(alias, t);
-						}
-					}
-				}
-				return t;
-			} else {
 				return extensionClass.getExtInstance(argTypes, args);
-			}
 		}
 	}
 

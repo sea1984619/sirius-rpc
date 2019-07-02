@@ -23,6 +23,13 @@ public @interface Extension {
     String value();
 
     /**
+     * 扩展类是否使用单例，默认使用
+     *
+     * @return 是否使用单例
+     */
+    boolean singleton() default true;
+    
+    /**
      * 扩展点编码，默认不需要，当接口需要编码的时候需要
      *
      * @return 扩展点编码

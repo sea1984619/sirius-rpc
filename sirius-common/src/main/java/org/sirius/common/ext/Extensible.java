@@ -38,12 +38,6 @@ public @interface Extensible {
      */
     String file() default "";
 
-    /**
-     * 扩展类是否使用单例，默认使用
-     *
-     * @return 是否使用单例
-     */
-    boolean singleton() default true;
 
     /**
      * 扩展类是否需要编码，默认不需要
