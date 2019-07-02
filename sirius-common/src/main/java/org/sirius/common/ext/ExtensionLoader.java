@@ -20,7 +20,7 @@ public class ExtensionLoader<T> {
 
 	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ExtensionLoader.class);
 
-	private static final String PREFIX = "META-INF/services/";
+	private static final String PREFIX = "META-INF/extension/";
 	private Class<T> clazz;
 	private String className;
 
