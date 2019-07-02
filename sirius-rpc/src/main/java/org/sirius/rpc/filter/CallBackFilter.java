@@ -8,31 +8,26 @@ import java.util.Map;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.Filter;
-import org.sirius.rpc.Invoker;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.MethodConfig;
 import org.sirius.rpc.consumer.ResultFutureContent;
+import org.sirius.rpc.invoker.AbstractInvoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
 public class CallBackFilter implements Filter {
 
-	private ConsumerConfig consumerConfig;
-	private Map<String, MethodConfig> methods;
 	private Map<Object, Invoker> invokers = Maps.newConcurrentMap();
 
-	public ConsumerConfig getConsumerConfig() {
-		return consumerConfig;
-	}
-	public void setConsumerConfig(ConsumerConfig consumerConfig) {
-		this.consumerConfig = consumerConfig;
-		methods = consumerConfig.getMethods();
-	}
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
+		AbstractInvoker _invoker = (AbstractInvoker) invoker;
+		ConsumerConfig consumerConfig = (ConsumerConfig) _invoker.getConfig();
+		Map<String, MethodConfig> methods =  consumerConfig.getMethods();
 		String methodName = request.getMethodName();
 		MethodConfig method = methods.get(methodName);
 		List<ArgumentConfig> arguments;

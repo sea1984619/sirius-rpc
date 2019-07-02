@@ -5,20 +5,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.sirius.rpc.Invoker;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.MethodConfig;
+import org.sirius.rpc.invoker.AbstractInvoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
-public class ConsumerProxyInvoker implements Invoker{
+public class ConsumerProxyInvoker extends AbstractInvoker{
 
 	private ConsumerConfig consumerConfig;
 	private Map<String, MethodConfig> methods;
 	
 	public ConsumerProxyInvoker(ConsumerConfig consumerConfig) {
-		this.consumerConfig = consumerConfig;
+		super(consumerConfig);
 		methods = consumerConfig.getMethods();
 		
 	}

@@ -4,7 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.Maps;
-import org.sirius.rpc.Invoker;
+import org.sirius.rpc.invoker.Invoker;
 
 public class ResultFutureContent {
 

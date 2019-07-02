@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.sirius.common.util.ClassHelper;
 import org.sirius.common.util.ReflectUtils;
-import org.sirius.rpc.Invoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.RequestMessageBuilder;
 import org.sirius.serialization.api.SerializerType;
 import org.sirius.transport.api.Request;

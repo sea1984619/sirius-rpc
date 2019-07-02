@@ -1,6 +1,6 @@
 package org.sirius.rpc.provider.invoke;
 
-import org.sirius.rpc.Invoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 

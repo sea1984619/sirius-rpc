@@ -1,4 +1,4 @@
-package org.sirius.rpc;
+package org.sirius.rpc.invoker;
 
 
 import org.sirius.transport.api.Request;

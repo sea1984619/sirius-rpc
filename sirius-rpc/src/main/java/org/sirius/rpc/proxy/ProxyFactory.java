@@ -1,6 +1,6 @@
 package org.sirius.rpc.proxy;
 
-import org.sirius.rpc.Invoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.bytecode.ProxyGenerator;
 import org.sirius.rpc.proxy.bytecode.Wrapper;

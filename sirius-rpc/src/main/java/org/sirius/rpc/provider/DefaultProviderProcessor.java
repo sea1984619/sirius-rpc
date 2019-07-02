@@ -3,9 +3,9 @@ package org.sirius.rpc.provider;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.Maps;
-import org.sirius.rpc.Invoker;
 import org.sirius.rpc.executor.InnerExecutor;
 import org.sirius.rpc.executor.disruptor.DisruptorExecutor;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.ProviderProcessor;

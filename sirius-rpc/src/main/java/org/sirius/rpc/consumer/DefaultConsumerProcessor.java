@@ -2,8 +2,8 @@ package org.sirius.rpc.consumer;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.sirius.rpc.Invoker;
 import org.sirius.rpc.callback.ArgumentCallbackResponse;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
