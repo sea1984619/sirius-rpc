@@ -1,6 +1,5 @@
 package org.sirius.spring;
 
-import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.StringUtils;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RegistryConfig;
