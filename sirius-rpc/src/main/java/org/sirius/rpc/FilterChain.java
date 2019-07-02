@@ -6,14 +6,7 @@ import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
 public class FilterChain {
-	private Invoker invoker;
-	private Filter[] filters;
-	private int i = 0;
-
-	public FilterChain(Invoker invoker, Filter[] filters) {
-		this.invoker = invoker;
-		this.filters = filters;
-	}
+	
 
 	public static Invoker buildeFilterChain(Invoker invoker, Filter[] filters) {
 

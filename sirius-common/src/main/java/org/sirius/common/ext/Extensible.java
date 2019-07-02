@@ -34,7 +34,6 @@ public @interface Extensible {
 
     /**
      * 指定自定义扩展文件名称，默认就是全类名
-     *
      * @return 自定义扩展文件名称
      */
     String file() default "";

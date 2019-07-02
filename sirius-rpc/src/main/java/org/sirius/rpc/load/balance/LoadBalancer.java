@@ -2,6 +2,9 @@ package org.sirius.rpc.load.balance;
 
 import java.util.List;
 
+import org.sirius.common.ext.Extensible;
+
+@Extensible
 public interface LoadBalancer<T>{
 
 	T select(List<T> list);
