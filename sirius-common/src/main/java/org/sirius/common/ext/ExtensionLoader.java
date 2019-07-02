@@ -20,7 +20,7 @@ public class ExtensionLoader<T> {
 
 	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ExtensionLoader.class);
 
-	private static final String PREFIX = "META-INF/extension/";
+	private static final String PREFIX = "META-INF/services/";
 	private Class<T> clazz;
 	private String className;
 
@@ -62,6 +62,7 @@ public class ExtensionLoader<T> {
 	private void load(String fileName, ClassLoader classLoader) throws Throwable {
 		Enumeration<URL> urls = classLoader == null ? classLoader.getResources(fileName)
 				: ClassLoader.getSystemResources(fileName);
+		
 		if (urls != null) {
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
@@ -69,7 +70,7 @@ public class ExtensionLoader<T> {
 				try {
 					reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
 					String line = null;
-					while (reader.readLine() != null) {
+					while ((line = reader.readLine()) != null) {
 						readLine(url, line);
 					}
 				} catch (Throwable t) {

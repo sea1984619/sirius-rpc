@@ -1,5 +1,7 @@
 package org.sirius.rpc;
 
+import org.sirius.common.ext.ExtensionLoader;
+import org.sirius.common.ext.ExtensionLoaderFactory;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
@@ -24,5 +26,15 @@ public class FilterChain {
 			};
 		}
 		return last;
+	}
+	
+	public static void loadFilter() {
+		ExtensionLoader<Filter> loader = ExtensionLoaderFactory.getExtensionLoader(Filter.class);
+		Filter filter = loader.getExtension("callback");
+		System.out.println(filter);
+		
+	}
+	public static void main(String args[]) {
+		FilterChain.loadFilter();
 	}
 }

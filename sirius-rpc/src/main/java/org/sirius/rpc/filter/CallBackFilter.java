@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.Filter;
@@ -19,6 +20,7 @@ import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
+@Extension(value = "callback")
 public class CallBackFilter implements Filter {
 
 	private Map<Object, Invoker> invokers = Maps.newConcurrentMap();
