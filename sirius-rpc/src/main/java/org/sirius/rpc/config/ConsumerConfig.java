@@ -8,6 +8,9 @@ import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
 import org.sirius.common.util.StringUtils;
 import org.sirius.rpc.consumer.cluster.router.Router;
+import org.sirius.rpc.consumer.invoke.ConsumerProxyInvoker;
+import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.proxy.ProxyFactory;
 
 /**
  * 服务消费者配置
@@ -18,7 +21,10 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 4244077707655448146L;
+	
 
+	
+	private transient volatile T proxy;
 	/**
 	 * 调用的协议
 	 */
@@ -796,8 +802,19 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	}
 
 	public T refer() {
-		return null;
+		if(proxy != null) {
+			return proxy;
+		}
+		try {
+				synchronized(this) {
+					if(proxy == null) {
+						Invoker invoker = new ConsumerProxyInvoker(this);
+						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
+					}
+				}
+		}catch(Throwable t) {
+			throw new RuntimeException("error ! creation of consumerProxy failed", t);
+		}
+		return  proxy;
 	}
-
-
 }

@@ -13,7 +13,7 @@ import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
-public class ConsumerProxyInvoker extends AbstractInvoker{
+public class ConsumerProxyInvoker extends AbstractInvoker {
 
 	private ConsumerConfig consumerConfig;
 	private Map<String, MethodConfig> methods;
