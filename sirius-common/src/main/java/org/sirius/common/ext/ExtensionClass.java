@@ -57,6 +57,13 @@ public class ExtensionClass<T> implements Sortable {
     protected boolean                  override;
 
     /**
+     * 是否自动装配
+     */
+    
+    private boolean                    autoActive = false;
+    
+
+	/**
      * 排斥其它扩展，可以排斥掉其它低{@link #order}的扩展
      */
     protected String[]                 rejection;
@@ -66,6 +73,7 @@ public class ExtensionClass<T> implements Sortable {
      */
     private volatile transient T       instance;
 
+    
     /**
      * 构造函数
      *
@@ -232,6 +240,13 @@ public class ExtensionClass<T> implements Sortable {
         return this;
     }
 
+    public boolean isAutoActive() {
+		return autoActive;
+	}
+
+	public void setAutoActive(boolean autoActive) {
+		this.autoActive = autoActive;
+	}
     @Override
     public String toString() {
         return "ExtensionClass{" +

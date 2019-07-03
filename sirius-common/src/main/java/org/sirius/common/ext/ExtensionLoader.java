@@ -4,14 +4,18 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.ClassLoaderUtils;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
+import org.sirius.common.util.Maps;
 import org.sirius.common.util.StringUtils;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -235,7 +239,11 @@ public class ExtensionLoader<T> {
 	}
 
 	private ExtensionClass<T> buildClass(Extension extension, Class<? extends T> implClass, String alias) {
+		
 		ExtensionClass<T> extensionClass = new ExtensionClass<T>(implClass, alias);
+        if(implClass.isAnnotationPresent(AutoActive.class)) {
+        	extensionClass.setAutoActive(true);
+		}
 		extensionClass.setCode(extension.code());
 		extensionClass.setSingleton(extension.singleton());
 		extensionClass.setOrder(extension.order());
@@ -254,11 +262,78 @@ public class ExtensionLoader<T> {
 	}
 
 	/**
+	 * 返回全部自动装配的扩展类
+	 *
+	 * @return 自动装配的扩展类
+	 */
+	public ConcurrentMap<String, ExtensionClass<T>> getAutoActiveExtensions() {
+		if(all == null)
+			return null;
+		Map<String, ExtensionClass<T>> autoActive = Maps.newConcurrentMap();
+		for(Map.Entry<String, ExtensionClass<T>> entry : all.entrySet()) {
+			if(entry.getValue().isAutoActive()) {
+				autoActive.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return (ConcurrentMap<String, ExtensionClass<T>>) autoActive;
+	}
+	/**
 	 * 返回符合 values定义的全部扩展类
 	 *
 	 * @return 扩展类对象
 	 */
-	public ConcurrentMap<String, ExtensionClass<T>> getAllExtensions(String[] values,boolean isConsumerSide) {
+	public ConcurrentMap<String, ExtensionClass<T>> getAllExtensions(String[] values,boolean needConsumerSide) {
+		
+		Set<String> aotuActive = getAutoActiveExtensions().keySet();
+		if(aotuActive == null || aotuActive.size() == 0)
+			return null;
+		
+		//先处理需要剔除的扩展
+		for(String name :values) {
+			name = name.toLowerCase();
+			if(name.startsWith("-")) {
+				name = name.substring(name.lastIndexOf("-") + 1);
+				if(name.equals("default")) {
+					aotuActive.clear();
+				}else {
+					aotuActive.remove(name);
+				}
+			}
+		}
+		for(String name : aotuActive) {
+			 ExtensionClass<T> extension = getExtensionClass(name);
+			 AutoActive  auto = extension.getClass().getAnnotation(AutoActive.class);
+			 boolean consumerSide = auto.consumerSide();
+			 boolean providerSide = auto.providerSide();
+			 if(needConsumerSide) {
+				 if(consumerSide) {
+					 continue;
+				 }else {
+					 aotuActive.remove(name);
+				 }
+			 }else {
+				 if(providerSide) {
+					 continue;
+				 }else {
+					 aotuActive.remove(name);
+				 }
+			 }
+		}
+		
+		List<String> tem = new ArrayList<String>();
+		for(String name :values) {
+			name = name.toLowerCase();
+			if(name.startsWith("-")) {
+				 continue;
+			}else {
+				if(name.equals("default")) {
+					tem.addAll(aotuActive);
+				}else {
+					tem.add(name);
+				}
+			}
+		}
+		
 		
 		return all;
 	}
