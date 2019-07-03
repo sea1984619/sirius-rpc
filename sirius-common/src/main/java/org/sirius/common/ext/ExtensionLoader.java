@@ -325,6 +325,10 @@ public class ExtensionLoader<T> {
 		System.out.println("autoList:"+autoList.size());
 		Collections.sort(autoList, new ExtensionComparetor<T>());
 
+		//自定义的扩展默认在default后面
+		if(!aliasList.contains("default")) {
+			actualExt.addAll(autoList);
+		}
 		for (String alias : aliasList) {
 			if (alias.equals("default")) {
 				actualExt.addAll(autoList);
