@@ -5,9 +5,13 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -66,7 +70,7 @@ public class ExtensionLoader<T> {
 	private void load(String fileName, ClassLoader classLoader) throws Throwable {
 		Enumeration<URL> urls = classLoader == null ? classLoader.getResources(fileName)
 				: ClassLoader.getSystemResources(fileName);
-		
+
 		if (urls != null) {
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
@@ -239,10 +243,10 @@ public class ExtensionLoader<T> {
 	}
 
 	private ExtensionClass<T> buildClass(Extension extension, Class<? extends T> implClass, String alias) {
-		
+
 		ExtensionClass<T> extensionClass = new ExtensionClass<T>(implClass, alias);
-        if(implClass.isAnnotationPresent(AutoActive.class)) {
-        	extensionClass.setAutoActive(true);
+		if (implClass.isAnnotationPresent(AutoActive.class)) {
+			extensionClass.setAutoActive(true);
 		}
 		extensionClass.setCode(extension.code());
 		extensionClass.setSingleton(extension.singleton());
@@ -267,76 +271,74 @@ public class ExtensionLoader<T> {
 	 * @return 自动装配的扩展类
 	 */
 	public ConcurrentMap<String, ExtensionClass<T>> getAutoActiveExtensions() {
-		if(all == null)
+		if (all == null)
 			return null;
 		Map<String, ExtensionClass<T>> autoActive = Maps.newConcurrentMap();
-		for(Map.Entry<String, ExtensionClass<T>> entry : all.entrySet()) {
-			if(entry.getValue().isAutoActive()) {
+		for (Map.Entry<String, ExtensionClass<T>> entry : all.entrySet()) {
+			if (entry.getValue().isAutoActive()) {
 				autoActive.put(entry.getKey(), entry.getValue());
 			}
 		}
 		return (ConcurrentMap<String, ExtensionClass<T>>) autoActive;
 	}
+
 	/**
 	 * 返回符合 values定义的全部扩展类
 	 *
 	 * @return 扩展类对象
 	 */
-	public ConcurrentMap<String, ExtensionClass<T>> getAllExtensions(String[] values,boolean needConsumerSide) {
+	public List<T> getAllExtensions(String[] values, boolean needConsumerSide) {
+
+		ConcurrentMap<String, ExtensionClass<T>> aotuActiveMap = getAutoActiveExtensions();
 		
-		Set<String> aotuActive = getAutoActiveExtensions().keySet();
-		if(aotuActive == null || aotuActive.size() == 0)
-			return null;
+		List<T> autoExt = new ArrayList<T>();
+		List<T> actualExt = new ArrayList<T>();
+		List<String> aliasList = Arrays.asList(values);
 		
-		//先处理需要剔除的扩展
-		for(String name :values) {
-			name = name.toLowerCase();
-			if(name.startsWith("-")) {
-				name = name.substring(name.lastIndexOf("-") + 1);
-				if(name.equals("default")) {
-					aotuActive.clear();
-				}else {
-					aotuActive.remove(name);
-				}
+		if (aliasList.contains("-default")) {
+			aliasList.remove("-default");
+			for (String alias : aliasList) {
+				ExtensionClass<T> extension = getExtensionClass(alias);
+				T t = extension.getExtInstance();
+				actualExt.add(t);
+			}
+			return actualExt;
+		}
+
+		for (Entry<String, ExtensionClass<T>> entry : aotuActiveMap.entrySet()) {
+			String alias = entry.getKey();
+			if(aliasList.contains("-" + alias)) {
+				aliasList.remove("-" + alias);
+				continue;
+			}
+			ExtensionClass<T> extension = getExtensionClass(alias);
+			T t = extension.getExtInstance();
+			AutoActive auto = entry.getValue().getClass().getAnnotation(AutoActive.class);
+			boolean consumerSide = auto.consumerSide();
+			boolean providerSide = auto.providerSide();
+			if (needConsumerSide) {
+				if (consumerSide) 
+					autoExt.add(t);
+			} else {
+				if (providerSide)
+					autoExt.add(t);
 			}
 		}
-		for(String name : aotuActive) {
-			 ExtensionClass<T> extension = getExtensionClass(name);
-			 AutoActive  auto = extension.getClass().getAnnotation(AutoActive.class);
-			 boolean consumerSide = auto.consumerSide();
-			 boolean providerSide = auto.providerSide();
-			 if(needConsumerSide) {
-				 if(consumerSide) {
-					 continue;
-				 }else {
-					 aotuActive.remove(name);
-				 }
-			 }else {
-				 if(providerSide) {
-					 continue;
-				 }else {
-					 aotuActive.remove(name);
-				 }
-			 }
-		}
+
+		Collections.sort(autoExt, new ExtensionComparetor<T>());
 		
-		List<String> tem = new ArrayList<String>();
-		for(String name :values) {
-			name = name.toLowerCase();
-			if(name.startsWith("-")) {
-				 continue;
-			}else {
-				if(name.equals("default")) {
-					tem.addAll(aotuActive);
-				}else {
-					tem.add(name);
-				}
+		for (String alias : aliasList) {
+			if (alias.equals("default")) {
+				actualExt.addAll(autoExt);
+			} else {
+				ExtensionClass<T> extension = getExtensionClass(alias);
+				T t = extension.getExtInstance();
+				actualExt.add(t);
 			}
 		}
-		
-		
-		return all;
+    	return actualExt;
 	}
+
 	/**
 	 * 根据服务别名查找扩展类
 	 *
@@ -361,7 +363,7 @@ public class ExtensionLoader<T> {
 		if (extensionClass == null) {
 			throw new RuntimeException("Not found extension of " + className + " named: \"" + alias + "\"!");
 		} else {
-				return extensionClass.getExtInstance();
+			return extensionClass.getExtInstance();
 		}
 	}
 
@@ -381,7 +383,7 @@ public class ExtensionLoader<T> {
 		if (extensionClass == null) {
 			throw new RuntimeException("Not found extension of " + className + " named: \"" + alias + "\"!");
 		} else {
-				return extensionClass.getExtInstance(argTypes, args);
+			return extensionClass.getExtInstance(argTypes, args);
 		}
 	}
 
