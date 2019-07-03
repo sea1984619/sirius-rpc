@@ -289,12 +289,9 @@ public class ExtensionLoader<T> {
 	 */
 	public List<T> getAllExtensions(String[] values, boolean needConsumerSide) {
 
-		ConcurrentMap<String, ExtensionClass<T>> aotuActiveMap = getAutoActiveExtensions();
-		
-		List<T> autoExt = new ArrayList<T>();
 		List<T> actualExt = new ArrayList<T>();
 		List<String> aliasList = Arrays.asList(values);
-		
+
 		if (aliasList.contains("-default")) {
 			aliasList.remove("-default");
 			for (String alias : aliasList) {
@@ -304,10 +301,12 @@ public class ExtensionLoader<T> {
 			}
 			return actualExt;
 		}
-
+		ConcurrentMap<String, ExtensionClass<T>> aotuActiveMap = getAutoActiveExtensions();
+		List<T> autoList = new ArrayList<T>();
+		
 		for (Entry<String, ExtensionClass<T>> entry : aotuActiveMap.entrySet()) {
 			String alias = entry.getKey();
-			if(aliasList.contains("-" + alias)) {
+			if (aliasList.contains("-" + alias)) {
 				aliasList.remove("-" + alias);
 				continue;
 			}
@@ -317,26 +316,26 @@ public class ExtensionLoader<T> {
 			boolean consumerSide = auto.consumerSide();
 			boolean providerSide = auto.providerSide();
 			if (needConsumerSide) {
-				if (consumerSide) 
-					autoExt.add(t);
+				if (consumerSide)
+					autoList.add(t);
 			} else {
 				if (providerSide)
-					autoExt.add(t);
+					autoList.add(t);
 			}
 		}
 
-		Collections.sort(autoExt, new ExtensionComparetor<T>());
-		
+		Collections.sort(autoList, new ExtensionComparetor<T>());
+
 		for (String alias : aliasList) {
 			if (alias.equals("default")) {
-				actualExt.addAll(autoExt);
+				actualExt.addAll(autoList);
 			} else {
 				ExtensionClass<T> extension = getExtensionClass(alias);
 				T t = extension.getExtInstance();
 				actualExt.add(t);
 			}
 		}
-    	return actualExt;
+		return actualExt;
 	}
 
 	/**
