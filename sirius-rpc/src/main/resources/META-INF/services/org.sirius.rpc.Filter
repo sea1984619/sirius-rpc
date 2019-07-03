@@ -1,1 +1,2 @@
 org.sirius.rpc.filter.CallBackFilter
+org.sirius.rpc.filter.ProviderSideArgumentCallbackInvoker

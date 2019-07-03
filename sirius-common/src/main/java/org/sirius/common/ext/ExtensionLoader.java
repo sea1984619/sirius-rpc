@@ -254,6 +254,15 @@ public class ExtensionLoader<T> {
 	}
 
 	/**
+	 * 返回符合 values定义的全部扩展类
+	 *
+	 * @return 扩展类对象
+	 */
+	public ConcurrentMap<String, ExtensionClass<T>> getAllExtensions(String[] values,boolean isConsumerSide) {
+		
+		return all;
+	}
+	/**
 	 * 根据服务别名查找扩展类
 	 *
 	 * @param alias
