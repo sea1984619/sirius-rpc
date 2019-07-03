@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
@@ -21,6 +22,7 @@ import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
 @Extension(value = "callback")
+@AutoActive(consumerSide = true)
 public class CallBackFilter implements Filter {
 
 	private Map<Object, Invoker> invokers = Maps.newConcurrentMap();

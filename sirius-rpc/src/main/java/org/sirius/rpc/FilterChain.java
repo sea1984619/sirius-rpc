@@ -15,15 +15,13 @@ import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
 public class FilterChain {
-	
-	private final static String[] defaultFilter = {"aa","bb" ,"cc" ,"dd"};
 
-	public static Invoker buildeFilterChain(Invoker invoker, Filter[] filters) {
+	public static Invoker buildeFilterChain(Invoker invoker, List<Filter> filters) {
 
 		AbstractInvoker last = (AbstractInvoker) invoker;
-		for (int i = filters.length - 1; i >= 0; i--) {
+		for (int i = filters.size() - 1; i >= 0; i--) {
 			Invoker next = last;
-			Filter filter = filters[i];
+			Filter filter = filters.get(i);
 			last = new AbstractInvoker(last.getConfig()) {
 				@Override
 				public Response invoke(Request request) throws Throwable {
@@ -38,49 +36,20 @@ public class FilterChain {
 	
 	
 	@SuppressWarnings("unchecked")
-	public static Filter[] loadFilter(String filter) {
-		List<String>  oldFilter = new ArrayList<String>();
-		for(String name : defaultFilter) {
-			oldFilter.add(name);
-		}
-		List<String>  temFilter = new ArrayList<String>();
+	public static List<Filter> loadFilter(String filter,boolean needConsumerSide) {
 		String[] filters = StringUtils.splitWithCommaOrSemicolon(filter);
-		//先处理需要剔除的filter
-		for(String name :filters) {
-			name = name.toLowerCase();
-			if(name.startsWith("-")) {
-				name = name.substring(name.lastIndexOf("-") + 1);
-				if(name.equals("default")) {
-					oldFilter.clear();
-				}else {
-					oldFilter.remove(name);
-				}
-			}
+		for(String s :filters) {
+			s.toLowerCase();
 		}
-		
-		for(String name :filters) {
-			name = name.toLowerCase();
-			if(name.startsWith("-")) {
-				 continue;
-			}else {
-				if(name.equals("default")) {
-					temFilter.addAll(oldFilter);
-				}else {
-					temFilter.add(name);
-				}
-			}
-		}
-		
-		ExtensionLoader<Filter> loader = ExtensionLoaderFactory.getExtensionLoader(Filter.class);
-		Filter[] newFilter = new Filter[temFilter.size()];
-		for(int i = 0; i< temFilter.size() ; i++) {
-			String name = temFilter.get(i);
-			newFilter[i] = loader.getExtension(name);
-		}
-		return newFilter;
+		ExtensionLoader<Filter>  filterloader = ExtensionLoaderFactory.getExtensionLoader(Filter.class);
+		return filterloader.getAllExtensions(filters, needConsumerSide);
 	}
+	
 	public static void main(String args[]) {
-		String name = "zz,-default,kk,cc";
-		FilterChain.loadFilter(name);
+		String filter = "";
+		List<Filter>  filters = FilterChain.loadFilter(filter,true);
+		for(Filter f : filters) {
+			System.out.println(f.getClass().getName());
+		}
 	}
 }

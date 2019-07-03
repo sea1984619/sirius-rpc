@@ -6,13 +6,11 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -201,7 +199,7 @@ public class ExtensionLoader<T> {
 		if (extensionClass != null) {
 			// 检查是否有互斥的扩展点
 			for (Map.Entry<String, ExtensionClass<T>> entry : all.entrySet()) {
-				ExtensionClass existed = entry.getValue();
+				ExtensionClass<T> existed = entry.getValue();
 				if (extensionClass.getOrder() >= existed.getOrder()) {
 					// 新的优先级 >= 老的优先级，检查新的扩展是否排除老的扩展
 					String[] rejection = extensionClass.getRejection();
@@ -211,7 +209,7 @@ public class ExtensionLoader<T> {
 							if (existed == null || extensionClass.getOrder() < existed.getOrder()) {
 								continue;
 							}
-							ExtensionClass removed = all.remove(rej);
+							ExtensionClass<T> removed = all.remove(rej);
 							if (removed != null) {
 								if (LOGGER.isInfoEnabled()) {
 									LOGGER.info(
@@ -312,7 +310,7 @@ public class ExtensionLoader<T> {
 			}
 			ExtensionClass<T> extension = getExtensionClass(alias);
 			T t = extension.getExtInstance();
-			AutoActive auto = entry.getValue().getClass().getAnnotation(AutoActive.class);
+			AutoActive auto = entry.getValue().getClazz().getAnnotation(AutoActive.class);
 			boolean consumerSide = auto.consumerSide();
 			boolean providerSide = auto.providerSide();
 			if (needConsumerSide) {
@@ -324,6 +322,7 @@ public class ExtensionLoader<T> {
 			}
 		}
 
+		System.out.println("autoList:"+autoList.size());
 		Collections.sort(autoList, new ExtensionComparetor<T>());
 
 		for (String alias : aliasList) {
