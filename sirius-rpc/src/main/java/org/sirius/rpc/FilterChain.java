@@ -46,7 +46,7 @@ public class FilterChain {
 	}
 	
 	public static void main(String args[]) {
-		String filter = "";
+		String filter = "callback2,-callback";
 		List<Filter>  filters = FilterChain.loadFilter(filter,true);
 		for(Filter f : filters) {
 			System.out.println(f.getClass().getName());

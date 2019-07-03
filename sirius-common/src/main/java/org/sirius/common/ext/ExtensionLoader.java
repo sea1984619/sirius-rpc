@@ -288,7 +288,7 @@ public class ExtensionLoader<T> {
 	public List<T> getAllExtensions(String[] values, boolean needConsumerSide) {
 
 		List<T> actualExt = new ArrayList<T>();
-		List<String> aliasList = Arrays.asList(values);
+		List<String> aliasList = new ArrayList<String>(Arrays.asList(values));
 
 		if (aliasList.contains("-default")) {
 			aliasList.remove("-default");
@@ -322,7 +322,6 @@ public class ExtensionLoader<T> {
 			}
 		}
 
-		System.out.println("autoList:"+autoList.size());
 		Collections.sort(autoList, new ExtensionComparetor<T>());
 
 		//自定义的扩展默认在default后面
