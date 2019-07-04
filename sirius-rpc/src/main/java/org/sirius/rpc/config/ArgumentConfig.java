@@ -41,7 +41,7 @@ public class ArgumentConfig extends AbstractIdConfig implements Serializable {
     /**
      * Whether the argument is the callback interface
      */
-    private Boolean callback;
+    private Boolean callback = false;
 
     public Integer getIndex() {
         return index;

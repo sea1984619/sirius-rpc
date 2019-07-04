@@ -79,9 +79,8 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	
 	protected String registry;
 	
-	protected List<Filter> filterRef;
 	
-	protected List<RegistryConfig> registryRef;
+	protected List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
 	
 
 	/**
@@ -295,15 +294,6 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	public S setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 		return castThis();
-	}
-
-	
-	public List<Filter> getFilterRef() {
-		return filterRef;
-	}
-
-	public void setFilterRef(List<Filter> filterRef) {
-		this.filterRef = filterRef;
 	}
 
 	public List<RegistryConfig> getRegistryRef() {

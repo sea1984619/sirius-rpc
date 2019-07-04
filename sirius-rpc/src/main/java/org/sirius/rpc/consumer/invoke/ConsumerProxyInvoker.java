@@ -23,7 +23,7 @@ public class ConsumerProxyInvoker extends AbstractInvoker {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Response invoke(Request request) throws Throwable {
-		
+		System.out.println("代理invoker调用........");
 		return null;
 	}
 	

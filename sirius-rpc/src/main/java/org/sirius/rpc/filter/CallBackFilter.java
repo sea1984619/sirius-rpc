@@ -29,13 +29,14 @@ public class CallBackFilter implements Filter {
 
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
+		System.out.println("callback调用.....");
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;
 		ConsumerConfig consumerConfig = (ConsumerConfig) _invoker.getConfig();
 		Map<String, MethodConfig> methods =  consumerConfig.getMethods();
 		String methodName = request.getMethodName();
 		MethodConfig method = methods.get(methodName);
-		List<ArgumentConfig> arguments;
-		if((arguments = method.getArguments()) != null) {
+		List<ArgumentConfig> arguments = method.getArguments();
+		if(arguments != null) {
 			List<ArgumentConfig> newList = new ArrayList<>();
 			for(ArgumentConfig argument : arguments) {
 				if(argument.isCallback()) {

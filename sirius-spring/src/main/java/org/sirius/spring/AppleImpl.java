@@ -12,7 +12,7 @@ public class AppleImpl implements Apple {
 	}
 
 	@Override
-	public void eat(String d) {
+	public void eat(Apple d) {
 		// TODO Auto-generated method stub
 		
 	}

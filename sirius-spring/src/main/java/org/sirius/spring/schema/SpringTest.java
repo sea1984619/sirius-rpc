@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
+import org.sirius.spring.Apple;
+import org.sirius.spring.AppleImpl;
 import org.sirius.spring.ReferenceBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,7 +15,7 @@ public class SpringTest {
 	public static void main(String[] args) {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 
-		 ReferenceBean apple = (ReferenceBean) ctx.getBean("&apple");
-		 System.out.println(apple); 
+		 Apple apple = (Apple) ctx.getBean("apple");
+		 apple.eat(new AppleImpl());
 	}
 }

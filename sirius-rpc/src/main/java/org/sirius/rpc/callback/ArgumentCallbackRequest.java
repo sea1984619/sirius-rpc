@@ -6,6 +6,8 @@ import org.sirius.transport.api.Request;
 
 public class ArgumentCallbackRequest extends Request {
 
+	private static final long serialVersionUID = -1599291269995568269L;
+	
 	private List<ArgumentConfig> argumentconfig;
 	private Request requset;
 	
@@ -23,7 +25,7 @@ public class ArgumentCallbackRequest extends Request {
 	
 	private void copy(Request request) {
 		this.className = request.getClassName();
-		this.invokeId = requset.invokeId();
+		this.invokeId = request.invokeId();
 		this.methodName = request.getMethodName();
 		this.parameters = request.getParameters();
 		this.ParametersType = request.getParametersType();
