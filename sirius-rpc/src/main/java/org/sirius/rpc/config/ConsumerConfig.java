@@ -7,6 +7,8 @@ import java.util.List;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
 import org.sirius.common.util.StringUtils;
+import org.sirius.rpc.Filter;
+import org.sirius.rpc.FilterChain;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.consumer.invoke.ConsumerProxyInvoker;
 import org.sirius.rpc.invoker.Invoker;
@@ -808,8 +810,10 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		try {
 				synchronized(this) {
 					if(proxy == null) {
+						List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
 						Invoker invoker = new ConsumerProxyInvoker(this);
-						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
+						Invoker chain = FilterChain.buildeFilterChain(invoker, filter);
+						proxy = (T) ProxyFactory.getProxy(chain, getProxyClass());
 					}
 				}
 		}catch(Throwable t) {
