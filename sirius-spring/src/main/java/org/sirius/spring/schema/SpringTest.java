@@ -16,6 +16,7 @@ public class SpringTest {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
 
 		 Apple apple = (Apple) ctx.getBean("apple");
-		 apple.eat(new AppleImpl());
+		 AppleImpl d = new AppleImpl();
+		 apple.eat(d);
 	}
 }

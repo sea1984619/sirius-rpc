@@ -386,10 +386,10 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 				this.proxyClass = ClassUtil.forName(interfaceName);
 				if (!proxyClass.isInterface()) {
 					throw new RuntimeException(
-							"service.interfaceName interfaceName interfaceName must set interface class not implement class");
+							"service.interfaceName " + interfaceName +" must set interface class not implement class");
 				}
 			} else {
-				throw new RuntimeException("service.interfaceName is null interfaceName must be not null");
+				throw new RuntimeException("service.interfaceName is null ,interfaceName must be not null");
 			}
 		} catch (RuntimeException e) {
 			throw e;
@@ -443,5 +443,8 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		}
 		return false;
 	}
-
+	
+	public void export() {
+		
+	}
 }
