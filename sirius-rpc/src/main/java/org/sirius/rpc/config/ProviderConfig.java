@@ -33,6 +33,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	protected String server;
 	
 	protected List<ServerConfig> serverRef = new ArrayList<ServerConfig>();
+	
 	/**
 	 * 服务发布延迟,单位毫秒，默认0，配置为-1代表spring加载完毕（通过spring才生效）
 	 */
@@ -117,6 +118,14 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		return this;
 	}
 
+	public List<ServerConfig> getServerRef() {
+		return serverRef;
+	}
+
+	public void setServerRef(List<ServerConfig> serverRef) {
+		this.serverRef = serverRef;
+	}
+	
 	/**
 	 * Gets delay.
 	 *
