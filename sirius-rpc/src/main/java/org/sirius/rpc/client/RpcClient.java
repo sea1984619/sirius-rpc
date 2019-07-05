@@ -1,4 +1,4 @@
-package org.sirius.rpc;
+package org.sirius.rpc.client;
 
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;

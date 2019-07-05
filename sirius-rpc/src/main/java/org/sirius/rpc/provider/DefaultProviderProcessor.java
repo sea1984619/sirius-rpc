@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.executor.InnerExecutor;
 import org.sirius.rpc.executor.disruptor.DisruptorExecutor;
+import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.ProxyFactory;
@@ -15,15 +16,12 @@ import org.sirius.transport.api.channel.Channel;
 
 public class DefaultProviderProcessor  implements ProviderProcessor{
 
-	public  ConcurrentMap<String ,ProviderProxyInvoker> invokers = Maps.newConcurrentMap();
+	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
 	
 	private InnerExecutor executor;
 	
 	public DefaultProviderProcessor() {
 		executor = new DisruptorExecutor(8,null);
-		TestImpl impl = new TestImpl();
-		System.out.println("服务名"+Test.class.getName());
-		invokers.put(Test.class.getName(), (ProviderProxyInvoker) ProxyFactory.getInvoker(impl, Test.class));
 	}
 	
 	@Override
@@ -36,7 +34,12 @@ public class DefaultProviderProcessor  implements ProviderProcessor{
 		
 	}
 	
-	public ProviderProxyInvoker lookupInvoker(Request request) {
+	public void registerInvoker(Invoker invoker) {
+		AbstractInvoker _invoker = (AbstractInvoker) invoker;
+		String interfaceName = _invoker.getConfig().getInterface();
+		invokers.putIfAbsent(interfaceName, _invoker);
+	}
+	public Invoker lookupInvoker(Request request) {
 		String serviceName = request.getClassName();
 		System.out.println("请求服务名:"+serviceName);
 		return invokers.get(serviceName);

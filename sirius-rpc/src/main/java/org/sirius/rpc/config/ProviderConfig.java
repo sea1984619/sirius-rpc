@@ -8,6 +8,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.sirius.common.util.ClassUtil;
+import org.sirius.rpc.Filter;
+import org.sirius.rpc.FilterChain;
+import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.proxy.ProxyFactory;
 
 /**
  * 服务提供者配置
@@ -377,7 +381,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	}
 
 	@Override
-	public Class<?> getProxyClass() {
+	public Class<T> getProxyClass() {
 		if (proxyClass != null) {
 			return proxyClass;
 		}
@@ -445,6 +449,9 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	}
 	
 	public void export() {
+		List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
+		Invoker invoker = ProxyFactory.getInvoker(ref, getProxyClass());
+		Invoker chain = FilterChain.buildeFilterChain(invoker, filter);
 		
 	}
 }

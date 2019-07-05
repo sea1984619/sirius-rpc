@@ -1,4 +1,4 @@
-package org.sirius.rpc;
+package org.sirius.rpc.server;
 
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;

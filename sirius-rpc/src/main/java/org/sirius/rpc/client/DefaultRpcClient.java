@@ -1,4 +1,4 @@
-package org.sirius.rpc;
+package org.sirius.rpc.client;
 
 import java.rmi.registry.Registry;
 import java.util.concurrent.ConcurrentMap;

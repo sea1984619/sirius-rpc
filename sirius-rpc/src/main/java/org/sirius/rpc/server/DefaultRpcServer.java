@@ -1,9 +1,9 @@
-package org.sirius.rpc;
+package org.sirius.rpc.server;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
@@ -28,6 +28,10 @@ public class DefaultRpcServer implements RpcServer {
 	@Override
 	public ProviderProcessor getProviderPorcessor() {
 		return this.processor;
+	}
+	
+	public void export(Invoker invoker) {
+		
 	}
 
 	@Override

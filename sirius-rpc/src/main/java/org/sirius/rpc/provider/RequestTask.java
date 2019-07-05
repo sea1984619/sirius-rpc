@@ -1,7 +1,7 @@
 package org.sirius.rpc.provider;
 
 import org.sirius.rpc.RpcContent;
-import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
@@ -24,7 +24,7 @@ public class RequestTask implements Runnable{
 		Request _request = request;
 		Channel _channel = channel;
 		RpcContent.getContent().set("channel", _channel);
-		ProviderProxyInvoker invoker =  _processor.lookupInvoker(_request);
+		Invoker invoker =  _processor.lookupInvoker(_request);
 		Response response = null;
 		try {
 			response  = invoker.invoke(_request);
