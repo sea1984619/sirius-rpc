@@ -52,7 +52,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
     /**
      * 基本路径
      */
-    protected String                          contextPath      ;;
+    protected String                          contextPath      ;
 
     /**
      * io线程池大小

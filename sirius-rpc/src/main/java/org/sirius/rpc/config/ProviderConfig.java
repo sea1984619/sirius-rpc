@@ -30,7 +30,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 */
 	protected transient T ref;
 
-	protected List<ServerConfig> server;
+	protected String server;
 	/**
 	 * 服务发布延迟,单位毫秒，默认0，配置为-1代表spring加载完毕（通过spring才生效）
 	 */
@@ -318,7 +318,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
      *
      * @return the server
      */
-    public List<ServerConfig> getServer() {
+    public String getServer() {
         return server;
     }
 
@@ -328,22 +328,8 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
      * @param server the server
      * @return the server
      */
-    public ProviderConfig<T> setServer(List<ServerConfig> server) {
+    public ProviderConfig<T> setServer(String server) {
         this.server = server;
-        return this;
-    }
-    
-    /**
-     * add server.
-     *
-     * @param server ServerConfig
-     * @return the ProviderConfig
-     */
-    public ProviderConfig<T> setServer(ServerConfig server) {
-        if (this.server == null) {
-            this.server = new ArrayList<ServerConfig>();
-        }
-        this.server.add(server);
         return this;
     }
     
