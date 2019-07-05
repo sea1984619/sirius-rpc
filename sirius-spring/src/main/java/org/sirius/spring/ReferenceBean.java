@@ -32,7 +32,8 @@ public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T
 			if (registry == null) {
 				String[] names = context.getBeanNamesForType(RegistryConfig.class);
 				if (names.length == 0) {
-					throw new IllegalStateException("<Registry>标签  or directUrl属性,or registry属性全部为空,必须指定一个 ");
+					throw new IllegalStateException("<sirius:Registry> element , or the  directUrl attribute ,"
+	                          + "or the registry attribute in <reference> element  are all null,must specify one");
 				} else {
 					for (String name : names) {
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
@@ -46,7 +47,7 @@ public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T
 						RegistryConfig rc = (RegistryConfig) context.getBean(name);
 						registryRef.add(rc);
 					}else {
-						throw new IllegalStateException("名称为: "+name+" 的registry不存在");
+						throw new IllegalStateException("the registry bean of "+ name + " didn't exist");
 					}
 					
 				}

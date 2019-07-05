@@ -810,7 +810,7 @@
 			<xsd:documentation><![CDATA[ The service method config ]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
-					<tool:exports type="org.siris.configMethodConfig" />
+					<tool:exports type="org.siris.config.MethodConfig" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>

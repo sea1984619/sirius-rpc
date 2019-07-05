@@ -20,6 +20,7 @@
 	     <sirius:argument index ="0" callback = "true"></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
+	<sirius:server  port ="2000" protocol = "netty"></sirius:server>
 	<sirius:registry id = "第一个"></sirius:registry>
 	<sirius:registry id = "第二个"></sirius:registry>
 
