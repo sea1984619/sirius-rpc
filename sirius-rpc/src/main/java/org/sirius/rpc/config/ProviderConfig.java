@@ -12,6 +12,8 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.FilterChain;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
+import org.sirius.rpc.server.RpcServer;
+import org.sirius.rpc.server.ServerFactory;
 
 /**
  * 服务提供者配置
@@ -449,6 +451,10 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
 		Invoker invoker = ProxyFactory.getInvoker(ref, getProxyClass());
 		Invoker chain = FilterChain.buildeFilterChain(invoker, filter);
-		
+		List<ServerConfig> serverConfigs = getServerRef();
+		for(ServerConfig serverConfig :serverConfigs) {
+			RpcServer server = ServerFactory.getServer(serverConfig);
+			server.registerInvoker(chain);
+		}
 	}
 }

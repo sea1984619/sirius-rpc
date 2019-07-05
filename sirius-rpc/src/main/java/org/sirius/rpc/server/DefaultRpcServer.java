@@ -4,8 +4,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.Maps;
+import org.sirius.rpc.config.ServerConfig;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
@@ -13,14 +15,23 @@ import org.sirius.transport.api.Request;
 @Extension(value = "default")
 public class DefaultRpcServer implements RpcServer {
 
+	private ServerConfig serverConfig;
 	private Acceptor acceptor;
 	private ProviderProcessor processor;
 	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
 
-	public DefaultRpcServer(Acceptor acceptor, ProviderProcessor processor) {
-		this.acceptor = acceptor;
-		this.processor = processor;
-		this.acceptor.setProcessor(processor);
+	public DefaultRpcServer(ServerConfig serverConfig) {
+		this.serverConfig = serverConfig;
+		init();
+	}
+
+	@Override
+	public void init(ServerConfig serverConfig) {
+		// TODO Auto-generated method stub
+		
+	}
+	private void init() {
+		processor = new DefaultProviderProcessor(this);
 	}
 
 	@Override
