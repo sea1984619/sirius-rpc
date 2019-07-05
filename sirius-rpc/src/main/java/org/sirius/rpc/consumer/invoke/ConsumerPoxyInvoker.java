@@ -21,8 +21,6 @@ import org.sirius.transport.api.Response;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.api.channel.Channel;
-import org.sirius.transport.netty.NettyTcpConnector;
-
 
 public  class ConsumerPoxyInvoker implements Invoker {
 
@@ -64,13 +62,13 @@ public  class ConsumerPoxyInvoker implements Invoker {
 	}
 	
 	public static void main(String args[]) throws InterruptedException, ExecutionException {
-		RpcClient client = new DefaultRpcClient(new NettyTcpConnector(),new DefaultConsumerProcessor());
-		ConsumerPoxyInvoker invoker = new ConsumerPoxyInvoker (client);
-		Test test = (Test) ProxyFactory.getProxy(invoker, Test.class);
-		test.getApple();
-		CompletableFuture result = (CompletableFuture) RpcContent.getContent().getFuture();
-		Apple apple =(Apple) result.get();
-		System.out.println(apple.getColor());
+//		RpcClient client = new DefaultRpcClient(new NettyTcpConnector(),new DefaultConsumerProcessor());
+//		ConsumerPoxyInvoker invoker = new ConsumerPoxyInvoker (client);
+//		Test test = (Test) ProxyFactory.getProxy(invoker, Test.class);
+//		test.getApple();
+//		CompletableFuture result = (CompletableFuture) RpcContent.getContent().getFuture();
+//		Apple apple =(Apple) result.get();
+//		System.out.println(apple.getColor());
 		
 		
 	}

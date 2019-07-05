@@ -12,7 +12,6 @@ import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.UnresolvedSocketAddress;
-import org.sirius.transport.netty.NettyTcpConnector;
 
 public class DefaultRpcClient implements RpcClient {
 	
@@ -25,7 +24,7 @@ public class DefaultRpcClient implements RpcClient {
 	private ConsumerProcessor processor;
 	
 	public DefaultRpcClient(Connector connector, ConsumerProcessor processor) {
-		this.connector = (NettyTcpConnector) connector;
+		this.connector = connector;
 		this.processor =  (DefaultConsumerProcessor) processor;
 		this.connector.setConsumerProcessor(processor);
 	}
