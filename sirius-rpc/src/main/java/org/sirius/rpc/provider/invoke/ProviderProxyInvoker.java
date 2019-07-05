@@ -26,7 +26,6 @@ public abstract class ProviderProxyInvoker<T> implements Invoker {
 		response.setSerializerCode(_request.getSerializerCode());
 		Object result =  doInvoke(provider,methodName,types,args);
 		response.setResult(result);
-		System.out.println("结果为"+result);
 		return response;
 	}
 	

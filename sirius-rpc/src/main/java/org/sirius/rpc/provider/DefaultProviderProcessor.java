@@ -1,53 +1,62 @@
 package org.sirius.rpc.provider;
 
-import java.util.concurrent.ConcurrentMap;
-
-import org.sirius.common.util.Maps;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.RpcException;
 import org.sirius.rpc.executor.InnerExecutor;
 import org.sirius.rpc.executor.disruptor.DisruptorExecutor;
-import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
-import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
-import org.sirius.rpc.proxy.ProxyFactory;
+import org.sirius.rpc.server.RpcServer;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 
 public class DefaultProviderProcessor  implements ProviderProcessor{
 
-	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
-	
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultProviderProcessor.class);
 	private InnerExecutor executor;
+	private RpcServer server;
 	
-	public DefaultProviderProcessor() {
+	public DefaultProviderProcessor(RpcServer server) {
+		this.server = server;
 		executor = new DisruptorExecutor(8,null);
+	}
+	
+	public Invoker lookupInvoker(Request request) {
+		return server.lookupInvoker(request);
 	}
 	
 	@Override
 	public void handlerRequest(Channel channel, Request request) {
-		executor.execute(new RequestTask(this,channel,request));
+		if(logger.isDebugEnabled()) {
+			logger.debug("the requestID is {}, the request interface is {},"
+					         + " method is {}, params is {}", 
+					         request.invokeId(),request.getClassName(),request.getMethodName(),request.getParameters());
+		}
+		Invoker invoker  = server.lookupInvoker(request);
+		if(invoker == null) {
+			throw new RpcException("the invoker for interface " + request.getClassName() + " is not founded,");
+		}
+		executor.execute(new RequestTask(this,invoker,channel,request));
 	}
 
 	@Override
-	public void handlerException(Channel channel, Throwable e) {
-		
+	public void handlerException(Channel channel, Request request,Throwable t) {
+		 logger.error("the request of {} processing failed ,the reasons maybe {}",request.invokeId(),t);
+		 Response response = new Response(request.invokeId());
+		 response.setResult(t);
+		 try {
+			channel.send(response);
+		} catch (Exception e) {
+			logger.error("the response of {} sended failed,the reasons maybe {}",request.invokeId(),e);
+		}
 	}
 	
-	public void registerInvoker(Invoker invoker) {
-		AbstractInvoker _invoker = (AbstractInvoker) invoker;
-		String interfaceName = _invoker.getConfig().getInterface();
-		invokers.putIfAbsent(interfaceName, _invoker);
-	}
-	public Invoker lookupInvoker(Request request) {
-		String serviceName = request.getClassName();
-		System.out.println("请求服务名:"+serviceName);
-		return invokers.get(serviceName);
-	}
 	@Override
 	public void shutdown() {
 		executor.shutdown();
 	}
-
 	
 }

@@ -1,18 +1,23 @@
 package org.sirius.rpc.provider;
 
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.RpcContent;
 import org.sirius.rpc.invoker.Invoker;
+import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 public class RequestTask implements Runnable{
 
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(RequestTask.class);
 	private Channel channel;
 	private Request request;
-	private DefaultProviderProcessor processor;
+	private ProviderProcessor processor;
+	private Invoker invoker;
 	
-	public RequestTask(DefaultProviderProcessor processor,Channel channel,Request request) {
+	public RequestTask(ProviderProcessor processor,Invoker invoker ,Channel channel,Request request) {
 		this.processor = processor;
 		this.channel = channel;
 		this.request = request;
@@ -20,23 +25,17 @@ public class RequestTask implements Runnable{
 
 	@Override
 	public void run() {
-		DefaultProviderProcessor _processor = processor;
-		Request _request = request;
-		Channel _channel = channel;
-		RpcContent.getContent().set("channel", _channel);
-		Invoker invoker =  _processor.lookupInvoker(_request);
+		RpcContent.getContent().set("channel", channel);
 		Response response = null;
 		try {
-			response  = invoker.invoke(_request);
+			response = invoker.invoke(request);
 		} catch (Throwable e) {
-			System.out.println("异常为"+e);
-			_processor.handlerException(_channel, e);
+			 processor.handlerException(channel,request, e);
 		}
 		try {
-			_channel.send(response);
+			channel.send(response);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("the response of {} sended failed,the reasons maybe {}",request.invokeId(),e);
 		}
 	}
 }

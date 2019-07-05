@@ -1,18 +1,21 @@
 package org.sirius.rpc.server;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.util.concurrent.ConcurrentMap;
 
+import org.sirius.common.util.Maps;
+import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
-import org.sirius.transport.netty.NettyTcpAcceptor;
+import org.sirius.transport.api.Request;
 
 public class DefaultRpcServer implements RpcServer {
 
 	private Acceptor acceptor;
 	private ProviderProcessor processor;
+	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
 
 	public DefaultRpcServer(Acceptor acceptor, ProviderProcessor processor) {
 		this.acceptor = acceptor;
@@ -30,10 +33,17 @@ public class DefaultRpcServer implements RpcServer {
 		return this.processor;
 	}
 	
-	public void export(Invoker invoker) {
-		
+	public void registerInvoker(Invoker invoker) {
+		AbstractInvoker _invoker = (AbstractInvoker) invoker;
+		String interfaceName = _invoker.getConfig().getInterface();
+		invokers.putIfAbsent(interfaceName, _invoker);
 	}
-
+	
+	public Invoker lookupInvoker(Request request) {
+		String serviceName = request.getClassName();
+		return invokers.get(serviceName);
+	}
+	
 	@Override
 	public void start() {
 		try {
@@ -48,12 +58,9 @@ public class DefaultRpcServer implements RpcServer {
 
 	}
 
-	public static void main(String args[]) throws UnknownHostException {
+	@Override
+	public void removeInvoker(Invoker invoker) {
+		// TODO Auto-generated method stub
 		
-		InetSocketAddress ad = new InetSocketAddress("192.168.1.108", 18090);
-		Acceptor acceptor = new NettyTcpAcceptor(ad);
-		ProviderProcessor providerProcessor = new DefaultProviderProcessor();
-		DefaultRpcServer server = new DefaultRpcServer(acceptor,providerProcessor);
-		server.start();
 	}
 }
