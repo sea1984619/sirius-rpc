@@ -33,7 +33,7 @@ public class ServiceBean extends ProviderConfig implements ApplicationContextAwa
 		if (server == null) {
 			String[] names = context.getBeanNamesForType(ServerConfig.class);
 			if (names.length == 0) {
-				throw new IllegalStateException("<sirius:srever> element are null,must specify one");
+				throw new IllegalStateException("<sirius:srever> element ,or server attribute in <sirius:service> element are both null,must specify one");
 			} else {
 				for (String name : names) {
 					ServerConfig rc = (ServerConfig) context.getBean(name);
@@ -58,7 +58,7 @@ public class ServiceBean extends ProviderConfig implements ApplicationContextAwa
 		if (registry == null) {
 			String[] names = context.getBeanNamesForType(RegistryConfig.class);
 			if (names.length == 0) {
-				throw new IllegalStateException("<sirius:Registry> element are null,must specify one");
+				throw new IllegalStateException("<sirius:Registry> element ,or registry attribute in <sirius:service> element are both null,must specify one");
 			} else {
 				for (String name : names) {
 					RegistryConfig rc = (RegistryConfig) context.getBean(name);
