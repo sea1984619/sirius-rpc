@@ -812,8 +812,8 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 					if(proxy == null) {
 						List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
 						Invoker invoker = new ConsumerProxyInvoker(this);
-						Invoker chain = FilterChain.buildeFilterChain(invoker, filter);
-						proxy = (T) ProxyFactory.getProxy(chain, getProxyClass());
+						invoker = FilterChain.buildeFilterChain(invoker, filter);
+						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
 					}
 				}
 		}catch(Throwable t) {

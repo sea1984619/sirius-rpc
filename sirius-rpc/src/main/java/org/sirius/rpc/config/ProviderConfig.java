@@ -8,8 +8,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.sirius.common.util.ClassUtil;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.FilterChain;
+import org.sirius.rpc.RpcException;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.rpc.server.RpcServer;
@@ -25,6 +28,8 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 */
 	private static final long serialVersionUID = -3058073881775315962L;
 
+	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ProviderConfig.class);
+
 	/*---------- 参数配置项开始 ------------*/
 
 	/**
@@ -33,9 +38,9 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	protected transient T ref;
 
 	protected String server;
-	
+
 	protected List<ServerConfig> serverRef = new ArrayList<ServerConfig>();
-	
+
 	/**
 	 * 服务发布延迟,单位毫秒，默认0，配置为-1代表spring加载完毕（通过spring才生效）
 	 */
@@ -90,7 +95,6 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 * 接口下每方法的最大可并行执行请求数，配置-1关闭并发过滤器，等于0表示开启过滤但是不限制
 	 */
 	protected int concurrents;
-	
 
 	/*---------- 参数配置项结束 ------------*/
 
@@ -127,7 +131,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	public void setServerRef(List<ServerConfig> serverRef) {
 		this.serverRef = serverRef;
 	}
-	
+
 	/**
 	 * Gets delay.
 	 *
@@ -326,26 +330,27 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		return timeout;
 	}
 
-	 /**
-     * Gets server.
-     *
-     * @return the server
-     */
-    public String getServer() {
-        return server;
-    }
+	/**
+	 * Gets server.
+	 *
+	 * @return the server
+	 */
+	public String getServer() {
+		return server;
+	}
 
-    /**
-     * Sets server.
-     *
-     * @param server the server
-     * @return the server
-     */
-    public ProviderConfig<T> setServer(String server) {
-        this.server = server;
-        return this;
-    }
-    
+	/**
+	 * Sets server.
+	 *
+	 * @param server
+	 *            the server
+	 * @return the server
+	 */
+	public ProviderConfig<T> setServer(String server) {
+		this.server = server;
+		return this;
+	}
+
 	/**
 	 * Sets client timeout.
 	 *
@@ -389,7 +394,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 				this.proxyClass = ClassUtil.forName(interfaceName);
 				if (!proxyClass.isInterface()) {
 					throw new RuntimeException(
-							"service.interfaceName " + interfaceName +" must set interface class not implement class");
+							"service.interfaceName " + interfaceName + " must set interface class not implement class");
 				}
 			} else {
 				throw new RuntimeException("service.interfaceName is null ,interfaceName must be not null");
@@ -446,15 +451,27 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		}
 		return false;
 	}
-	
+
 	public void export() {
-		List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
-		Invoker invoker = ProxyFactory.getInvoker(ref, getProxyClass());
-		Invoker chain = FilterChain.buildeFilterChain(invoker, filter);
-		List<ServerConfig> serverConfigs = getServerRef();
-		for(ServerConfig serverConfig :serverConfigs) {
-			RpcServer server = ServerFactory.getServer(serverConfig);
-			server.registerInvoker(chain);
+		try {
+			List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
+			Invoker invoker = ProxyFactory.getInvoker(ref, getProxyClass());
+			invoker = FilterChain.buildeFilterChain(invoker, filter);
+			List<ServerConfig> serverConfigs = getServerRef();
+			for (ServerConfig serverConfig : serverConfigs) {
+				try {
+					RpcServer server = ServerFactory.getServer(serverConfig);
+					server.registerInvoker(invoker);
+					LOGGER.info("export service {} on host {} ,port {} sucessed.", getInterface(),
+							serverConfig.getBoundHost(), serverConfig.getPort());
+				} catch (Throwable e) {
+					LOGGER.info("export service {} on host {} ,port {} failed.", getInterface(),
+							serverConfig.getBoundHost(), serverConfig.getPort());
+					throw e;
+				}
+			}
+		} catch (Throwable e) {
+			throw new RpcException("export service " + getInterface() + "failed", e);
 		}
 	}
 }
