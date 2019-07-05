@@ -12,7 +12,7 @@ import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
 
-@Extension(value = "default")
+@Extension(value = "netty")
 public class DefaultRpcServer implements RpcServer {
 
 	private ServerConfig serverConfig;
@@ -20,9 +20,8 @@ public class DefaultRpcServer implements RpcServer {
 	private ProviderProcessor processor;
 	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
 
-	public DefaultRpcServer(ServerConfig serverConfig) {
-		this.serverConfig = serverConfig;
-		init();
+	public DefaultRpcServer() {
+		
 	}
 
 	@Override
@@ -30,10 +29,7 @@ public class DefaultRpcServer implements RpcServer {
 		// TODO Auto-generated method stub
 		
 	}
-	private void init() {
-		processor = new DefaultProviderProcessor(this);
-	}
-
+	
 	@Override
 	public Acceptor getAcceptor() {
 		return this.acceptor;

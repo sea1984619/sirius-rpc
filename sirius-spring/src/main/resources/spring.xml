@@ -10,7 +10,7 @@
 
 
 
-   
+   <bean id= "appleImpl" class = "org.sirius.spring.AppleImpl"/>
 	<sirius:reference id="apple"   interface="org.sirius.spring.Apple" registry ="第一个" >
 	   <sirius:method name = "get" timeout = "6077000">
 	   <sirius:parameter key = "5个" value= "粒d子"/>
@@ -20,6 +20,7 @@
 	     <sirius:argument index ="0" callback = "true"></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
+	<sirius:service interface="org.sirius.spring.Apple" ref = "appleImpl"></sirius:service>
 	<sirius:server  port ="2000" protocol = "netty"></sirius:server>
 	<sirius:registry id = "第一个"></sirius:registry>
 	<sirius:registry id = "第二个"></sirius:registry>

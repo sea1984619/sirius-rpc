@@ -13,6 +13,7 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.FilterChain;
 import org.sirius.rpc.RpcException;
+import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.rpc.server.RpcServer;
@@ -455,8 +456,9 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	public void export() {
 		try {
 			List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
-			Invoker invoker = ProxyFactory.getInvoker(ref, getProxyClass());
-			invoker = FilterChain.buildeFilterChain(invoker, filter);
+			AbstractInvoker invoker = (AbstractInvoker) ProxyFactory.getInvoker(ref, getProxyClass());
+			invoker.setConfig(this);
+			invoker = (AbstractInvoker) FilterChain.buildeFilterChain(invoker, filter);
 			List<ServerConfig> serverConfigs = getServerRef();
 			for (ServerConfig serverConfig : serverConfigs) {
 				try {
@@ -471,7 +473,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 				}
 			}
 		} catch (Throwable e) {
-			throw new RpcException("export service " + getInterface() + "failed", e);
+			throw new RpcException("export service " + getInterface() + " failed", e);
 		}
 	}
 }

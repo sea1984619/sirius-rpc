@@ -9,6 +9,9 @@ public abstract class AbstractInvoker implements Invoker{
 		this.config = config;
 	}
 	
+	public void setConfig(AbstractInterfaceConfig config) {
+		this.config = config;
+	}
 	public AbstractInterfaceConfig getConfig() {
 		return this.config;
 	}

@@ -1,18 +1,25 @@
 package org.sirius.rpc.provider.invoke;
 
+import org.sirius.rpc.config.AbstractInterfaceConfig;
+import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
-public abstract class ProviderProxyInvoker<T> implements Invoker {
+public abstract class ProviderProxyInvoker<T> extends AbstractInvoker implements Invoker {
 
+	
 	private T provider;
 
 	private Class<T> type;
-	
+
 	public ProviderProxyInvoker(T provider,Class<T> type) {
+		this(null,provider,type);
+	}
+	public ProviderProxyInvoker(AbstractInterfaceConfig config ,T provider,Class<T> type) {
+		super(config);
 		this.provider = provider;
-		this.type = type;
+		this.type = type; 
 	}
 	@Override
 	public Response invoke(Request request) throws Throwable {
