@@ -194,7 +194,6 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 
 		}
 
-		@Override
 		public void handlerException(Channel channel, Throwable e) {
 			// TODO Auto-generated method stub
 
@@ -223,6 +222,12 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 				logger.warn("无效的参数个数 或者 类型 .");
 				return;
 			}
+		}
+
+		@Override
+		public void handlerException(Channel channel, Request request, Throwable e) {
+			// TODO Auto-generated method stub
+			
 		}
 
 	}

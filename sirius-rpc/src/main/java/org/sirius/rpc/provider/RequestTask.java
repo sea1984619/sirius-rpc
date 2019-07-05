@@ -25,8 +25,8 @@ public class RequestTask implements Runnable{
 
 	@Override
 	public void run() {
-		RpcContent.getContent().set("channel", channel);
 		Response response = null;
+		RpcContent.getContent().set("channel", channel);
 		try {
 			response = invoker.invoke(request);
 		} catch (Throwable e) {

@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentMap;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
-import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;

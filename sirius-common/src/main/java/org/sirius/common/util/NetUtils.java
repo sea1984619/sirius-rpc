@@ -23,6 +23,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -494,5 +495,8 @@ public class NetUtils {
         } finally {
             IOUtils.closeQuietly(socket);
         }
+    }
+    public static void main(String args[]) throws UnknownHostException {
+    	System.out.println(InetAddress.getLocalHost().toString());
     }
 }

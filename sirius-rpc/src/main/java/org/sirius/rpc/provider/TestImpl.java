@@ -1,7 +1,11 @@
 package org.sirius.rpc.provider;
 
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+
 public class TestImpl implements Test {
 
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(TestImpl.class);
 	public TestImpl() {
 		
 	}
@@ -10,4 +14,11 @@ public class TestImpl implements Test {
 		return new Apple();
 	}
 
+	public static void main (String args[]) {
+		TestImpl t = new TestImpl();
+//        logger.info("Method:Hello");
+		
+		t.getApple();
+		System.out.println("dfds");
+	}
 }

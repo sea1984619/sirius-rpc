@@ -21,7 +21,6 @@ public abstract class ProviderProxyInvoker<T> implements Invoker {
 		String methodName = _request.getMethodName();
 		Class<?>[] types = _request.getParametersType();
 		Object[] args = _request.getParameters();
-		
 		Response response = new Response(_request.invokeId());
 		response.setSerializerCode(_request.getSerializerCode());
 		Object result =  doInvoke(provider,methodName,types,args);
