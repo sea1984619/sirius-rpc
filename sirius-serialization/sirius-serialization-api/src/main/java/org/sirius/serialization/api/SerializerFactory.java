@@ -1,7 +1,12 @@
 
 package org.sirius.serialization.api;
 
-import org.sirius.common.util.ServiceLoader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
+import org.sirius.common.ext.ExtensionClass;
+import org.sirius.common.ext.ExtensionLoader;
+import org.sirius.common.ext.ExtensionLoaderFactory;
 import org.sirius.common.util.collection.ByteObjectHashMap;
 import org.sirius.common.util.collection.ByteObjectMap;
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -15,11 +20,13 @@ public final class SerializerFactory {
     private static final ByteObjectMap<Serializer> serializers = new ByteObjectHashMap<>();
 
     static {
-        Iterable<Serializer> all = ServiceLoader.load(Serializer.class);
-        for (Serializer s : all) {
-            serializers.put(s.code(), s);
-        }
-        logger.info("Supported serializers: {}.", serializers);
+    	ExtensionLoader<Serializer>  serializerloader = ExtensionLoaderFactory.getExtensionLoader(Serializer.class);
+    	ConcurrentMap<String, ExtensionClass<Serializer>> serializerMap = serializerloader.getAllExtensions();
+    	for(Map.Entry<String, ExtensionClass<Serializer>> entry : serializerMap.entrySet()) {
+    		Serializer s = entry.getValue().getExtInstance();
+    		serializers.put(s.code(), s);
+    	}
+    	logger.info("the supported serializer name is : {}.", serializers);
     }
 
     public static Serializer getSerializer(byte code) {

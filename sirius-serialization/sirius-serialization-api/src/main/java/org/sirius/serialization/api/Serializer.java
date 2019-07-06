@@ -1,8 +1,10 @@
 package org.sirius.serialization.api;
 
+import org.sirius.common.ext.Extensible;
 import org.sirius.serialization.api.io.InputBuf;
 import org.sirius.serialization.api.io.OutputBuf;
 
+@Extensible
 public abstract class Serializer {
 
 	/**

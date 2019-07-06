@@ -3,6 +3,7 @@ package org.sirius.serialization.protostuff;
 
 import java.io.IOException;
 
+import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.SystemPropertyUtil;
 import org.sirius.common.util.ThrowUtil;
@@ -21,11 +22,10 @@ import io.protostuff.Schema;
 import io.protostuff.runtime.IdStrategy;
 import io.protostuff.runtime.RuntimeSchema;
 
-
 /**
  * Protostuff的序列化/反序列化实现
- 
  */
+@Extension(value = "protoStuff")
 public class ProtoStuffSerializer extends Serializer {
 
     static {

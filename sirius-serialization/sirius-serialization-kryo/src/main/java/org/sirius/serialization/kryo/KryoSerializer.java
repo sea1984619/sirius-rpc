@@ -3,6 +3,7 @@ package org.sirius.serialization.kryo;
 
 import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.sirius.common.concurrent.ConcurrentSet;
+import org.sirius.common.ext.Extension;
 import org.sirius.common.util.internal.InternalThreadLocal;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerType;
@@ -23,6 +24,7 @@ import com.esotericsoftware.kryo.serializers.JavaSerializer;
  * 可以通过 {@link #setJavaSerializer(Class)} 设置该类型使用Java的序列化/反序列化机制,
  * 对性能有一点影响, 但只是影响一个'点', 不影响'面'.
  */
+@Extension(value = "kryo")
 public class KryoSerializer extends Serializer {
 
     private static ConcurrentSet<Class<?>> useJavaSerializerTypes = new ConcurrentSet<>();

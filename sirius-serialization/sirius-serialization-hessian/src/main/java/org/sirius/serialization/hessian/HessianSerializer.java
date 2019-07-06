@@ -4,6 +4,7 @@ package org.sirius.serialization.hessian;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerType;
@@ -16,7 +17,7 @@ import org.sirius.serialization.hessian.io.Outputs;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
-
+@Extension(value = "hessian")
 public class HessianSerializer extends Serializer {
 
     @Override

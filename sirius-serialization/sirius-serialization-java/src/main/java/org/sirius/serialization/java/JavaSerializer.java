@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.serialization.api.Serializer;
 import org.sirius.serialization.api.SerializerType;
@@ -15,7 +16,7 @@ import org.sirius.serialization.api.io.OutputStreams;
 import org.sirius.serialization.java.io.Inputs;
 import org.sirius.serialization.java.io.Outputs;
 
-
+@Extension(value = "java")
 public class JavaSerializer extends Serializer {
 
     @Override
