@@ -2,6 +2,7 @@ package org.sirius.rpc.filter;
 
 import java.util.List;
 
+import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcContent;
@@ -15,6 +16,7 @@ import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 @Extension(value = "callback2")
+@AutoActive(providerSide = true)
 public class ProviderSideArgumentCallbackInvoker implements Filter{
 
 	@Override

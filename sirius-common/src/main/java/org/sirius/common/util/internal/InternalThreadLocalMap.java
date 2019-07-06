@@ -1,25 +1,9 @@
-/*
- * Copyright (c) 2015 The Jupiter Project
- *
- * Licensed under the Apache License, version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.sirius.common.util.internal;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.sirius.common.util.SystemPropertyUtil;
-
 
 /**
  * 利用对象继承的内存布局规则来padding避免false sharing, 注意其中对象头会至少占用8个字节
@@ -59,9 +43,9 @@ public final class InternalThreadLocalMap extends RhsPadding {
             UnsafeUpdater.newReferenceFieldUpdater(StringBuilder.class.getSuperclass(), "value");
 
     private static final int DEFAULT_STRING_BUILDER_MAX_CAPACITY =
-            SystemPropertyUtil.getInt("jupiter.internal.thread.local.string_builder_max_capacity", 1024 << 6);
+            SystemPropertyUtil.getInt("internal.thread.local.string_builder_max_capacity", 1024 << 6);
     private static final int DEFAULT_STRING_BUILDER_INITIAL_CAPACITY =
-            SystemPropertyUtil.getInt("jupiter.internal.thread.local.string_builder_initial_capacity", 512);
+            SystemPropertyUtil.getInt("internal.thread.local.string_builder_initial_capacity", 512);
 
     private static final ThreadLocal<InternalThreadLocalMap> slowThreadLocalMap = new ThreadLocal<>();
     private static final AtomicInteger nextIndex = new AtomicInteger();

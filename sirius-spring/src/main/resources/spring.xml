@@ -21,7 +21,7 @@
 	   </sirius:method>
 	</sirius:reference>
 	<sirius:service interface="org.sirius.spring.Apple" ref = "appleImpl"></sirius:service>
-	<sirius:server  port ="2000" protocol = "netty"></sirius:server>
+	<sirius:server  port ="18090" protocol = "netty"></sirius:server>
 	<sirius:registry id = "第一个"></sirius:registry>
 	<sirius:registry id = "第二个"></sirius:registry>
 

@@ -12,7 +12,7 @@ public interface RpcServer {
 
 	Acceptor getAcceptor();
 	
-	ProviderProcessor getProviderPorcessor();
+	ProviderProcessor getProviderProcessor();
 	
 	void registerInvoker(Invoker invoker);
 	

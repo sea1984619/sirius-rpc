@@ -30,6 +30,8 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	private static final long serialVersionUID = -3058073881775315962L;
 
 	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ProviderConfig.class);
+	
+	private volatile boolean isExport = false;
 
 	/*---------- 参数配置项开始 ------------*/
 
@@ -453,7 +455,10 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		return false;
 	}
 
-	public void export() {
+	public synchronized void  export() {
+		if(isExport)
+			return ;
+		
 		try {
 			List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
 			AbstractInvoker invoker = (AbstractInvoker) ProxyFactory.getInvoker(ref, getProxyClass());
@@ -464,16 +469,17 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 				try {
 					RpcServer server = ServerFactory.getServer(serverConfig);
 					server.registerInvoker(invoker);
-					LOGGER.info("export service {} on host {} ,port {} sucessed.", getInterface(),
+					LOGGER.info("export service : {} on host {} ,port {} sucessed.", getInterface(),
 							serverConfig.getBoundHost(), serverConfig.getPort());
 				} catch (Throwable e) {
-					LOGGER.info("export service {} on host {} ,port {} failed.", getInterface(),
+					LOGGER.info("export service : {} on host {} ,port {} failed.", getInterface(),
 							serverConfig.getBoundHost(), serverConfig.getPort());
 					throw e;
 				}
 			}
 		} catch (Throwable e) {
-			throw new RpcException("export service " + getInterface() + " failed", e);
+			throw new RpcException("export service : " + getInterface() + " failed", e);
 		}
+		isExport = true;
 	}
 }

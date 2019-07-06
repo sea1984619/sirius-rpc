@@ -20,6 +20,5 @@ public class SpringTest {
 //		 AppleImpl d = new AppleImpl();
 //		 apple.eat(d);
 		 ServerConfig sc = ctx.getBean(ServerConfig.class);
-		 System.out.println(sc.getPort());
 	}
 }

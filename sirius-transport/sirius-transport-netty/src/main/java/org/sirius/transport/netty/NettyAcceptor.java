@@ -48,8 +48,8 @@ public abstract class NettyAcceptor extends AbstractAcceptor {
 	}
 
 	protected void init() {
-		ThreadFactory bossFactory = bossThreadFactory("jupiter.acceptor.boss");
-		ThreadFactory workerFactory = workerThreadFactory("jupiter.acceptor.worker");
+		ThreadFactory bossFactory = bossThreadFactory("sirius.acceptor.boss");
+		ThreadFactory workerFactory = workerThreadFactory("sirius.acceptor.worker");
 		boss = initEventLoopGroup(nBosses, bossFactory);
 		worker = initEventLoopGroup(nWorkers, workerFactory);
 		bootstrap = new ServerBootstrap().group(boss, worker);

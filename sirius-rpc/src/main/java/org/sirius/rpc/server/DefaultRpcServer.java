@@ -11,6 +11,7 @@ import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Acceptor;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.netty.NettyTcpAcceptor;
 
 @Extension(value = "netty")
 public class DefaultRpcServer implements RpcServer {
@@ -19,14 +20,15 @@ public class DefaultRpcServer implements RpcServer {
 	private Acceptor acceptor;
 	private ProviderProcessor processor;
 	public  ConcurrentMap<String ,Invoker> invokers = Maps.newConcurrentMap();
-
-	public DefaultRpcServer() {
-		
-	}
+	private volatile boolean started = false;
 
 	@Override
 	public void init(ServerConfig serverConfig) {
-		// TODO Auto-generated method stub
+		this.serverConfig = serverConfig;
+		processor = new DefaultProviderProcessor(this);
+		acceptor = new NettyTcpAcceptor(serverConfig.getPort());
+		acceptor.setProcessor(processor);
+		start();
 		
 	}
 	
@@ -36,7 +38,7 @@ public class DefaultRpcServer implements RpcServer {
 	}
 
 	@Override
-	public ProviderProcessor getProviderPorcessor() {
+	public ProviderProcessor getProviderProcessor() {
 		return this.processor;
 	}
 	
@@ -52,10 +54,13 @@ public class DefaultRpcServer implements RpcServer {
 	}
 	
 	@Override
-	public void start() {
+	public synchronized void start() {
 		try {
+			if(started)
+				return ;
 			acceptor.start();
-		} catch (InterruptedException e) {
+			started = true;
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
