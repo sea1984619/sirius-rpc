@@ -10,7 +10,6 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.netty.channel.NettyChannel;
-import org.sirius.transport.netty.handler.connector.ConnectorHandler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelConfig;
@@ -22,7 +21,7 @@ import io.netty.handler.codec.DecoderException;
 @ChannelHandler.Sharable
 public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConnectorHandler.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AcceptorHandler.class);
 	private ProviderProcessor providerProcessor;
 	private static final AtomicInteger channelCounter = new AtomicInteger(0);
 
