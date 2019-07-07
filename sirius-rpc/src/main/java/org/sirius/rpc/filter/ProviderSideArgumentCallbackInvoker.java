@@ -22,6 +22,7 @@ public class ProviderSideArgumentCallbackInvoker implements Filter{
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
 		if(request instanceof ArgumentCallbackRequest) {
+			System.out.println("收到callback调用");
 			ArgumentCallbackRequest callbackRequest  = (ArgumentCallbackRequest) request;
 			List<ArgumentConfig> arguments = callbackRequest.getArguments();
 			for(ArgumentConfig argument : arguments) {
@@ -34,6 +35,7 @@ public class ProviderSideArgumentCallbackInvoker implements Filter{
 				Object proxy = ProxyFactory.getProxy(callbackInvoker, interfaces);
 				//将参数替换为callback代理
 				request.getParameters()[index] = clazz.cast(proxy);
+				System.out.println("处理callback调用完毕");
 			}
 		}
 		return invoker.invoke(request);

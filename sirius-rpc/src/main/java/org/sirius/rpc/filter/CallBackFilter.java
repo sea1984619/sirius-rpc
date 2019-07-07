@@ -29,7 +29,6 @@ public class CallBackFilter implements Filter {
 
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
-		System.out.println("callback调用.....");
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;
 		ConsumerConfig consumerConfig = (ConsumerConfig) _invoker.getConfig();
 		Map<String, MethodConfig> methods =  consumerConfig.getMethods();

@@ -19,7 +19,6 @@ public class WriteIdleEventHandler extends ChannelInboundHandlerAdapter {
 			IdleState state = ((IdleStateEvent) evt).state();
 			if (state == IdleState.WRITER_IDLE) {
 				ctx.writeAndFlush(Heartbeats.heartbeatContent());
-				System.out.println("心跳......");
 			} else
 				ctx.fireUserEventTriggered(evt);
 		}

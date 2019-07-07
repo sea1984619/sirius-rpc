@@ -1,5 +1,6 @@
 package org.sirius.rpc.provider;
 
+import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.RpcException;
@@ -46,15 +47,16 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 
 	@Override
 	public void handlerException(Channel channel, Request request, Throwable t) {
-		logger.error("the request of {} processing failed ,the reasons maybe {}", request.invokeId(), t);
-		Response response = new Response(request.invokeId());
-		response.setSerializerCode(request.getSerializerCode());
-		response.setResult(t);
-		try {
-			channel.send(response);
-		} catch (Exception e) {
-			logger.error("the response of {} sended failed,the reasons maybe {}", request.invokeId(), e);
-		}
+//		logger.error("the request of {} processing failed ,the reasons maybe {}", request.invokeId(), t);
+//		Response response = new Response(request.invokeId());
+//		response.setSerializerCode(request.getSerializerCode());
+//		response.setResult(t);
+//		try {
+//			channel.send(response);
+//		} catch (Exception e) {
+//			logger.error("the response of {} sended failed,the reasons maybe {}", request.invokeId(), e);
+//		}
+		ThrowUtil.throwException(t);
 	}
 
 	@Override

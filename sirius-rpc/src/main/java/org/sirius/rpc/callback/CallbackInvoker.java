@@ -16,7 +16,8 @@ public class CallbackInvoker implements Invoker {
 	public Response invoke(Request request) throws Throwable {
 		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
+		response.setSerializerCode(request.getSerializerCode());
 		channel.send(response);
-		return null;
+		return response;
 	}
 }

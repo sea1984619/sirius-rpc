@@ -21,6 +21,7 @@ public class RequestTask implements Runnable{
 		this.processor = processor;
 		this.channel = channel;
 		this.request = request;
+		this.invoker = invoker;
 	}
 
 	@Override
