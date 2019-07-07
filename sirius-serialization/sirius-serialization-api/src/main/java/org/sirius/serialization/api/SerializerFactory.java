@@ -12,7 +12,6 @@ import org.sirius.common.util.collection.ByteObjectMap;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 
-
 public final class SerializerFactory {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(SerializerFactory.class);
@@ -45,8 +44,4 @@ public final class SerializerFactory {
     }
 
     public SerializerFactory() {}
-    public static void main(String args[]) {
-    	SerializerFactory s= new SerializerFactory();
-    	
-    }
 }

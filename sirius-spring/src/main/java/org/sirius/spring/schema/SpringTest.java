@@ -1,13 +1,7 @@
 package org.sirius.spring.schema;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.sirius.rpc.config.ServerConfig;
-import org.sirius.spring.Apple;
-import org.sirius.spring.AppleImpl;
-import org.sirius.spring.ReferenceBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

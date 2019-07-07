@@ -45,7 +45,6 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 			group.add(channel);
 		
 		logger.info("connects to {}", ch);
-		
 		ctx.fireChannelActive();
 	}
 

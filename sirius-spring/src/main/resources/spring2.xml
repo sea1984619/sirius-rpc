@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sirius="http://sirius.org/schema/sirius"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://sirius.org/schema/sirius 
+                        http://sirius.org/schema/sirius/sirius.xsd ">
+
+
+
+	<sirius:reference id="apple"   interface=" org.sirius.rpc.provider.Apple" registry ="第一个" >
+	   <sirius:method name = "eat" timeout = "30000">
+	     <sirius:argument index ="0" callback = "true"></sirius:argument>
+	   </sirius:method>
+	</sirius:reference>
+
+</beans>
