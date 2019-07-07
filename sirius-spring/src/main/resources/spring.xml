@@ -12,7 +12,7 @@
 
    <bean id= "personImpl" class = "org.sirius.spring.schema.PersonImpl"/>
 	<sirius:service interface="org.sirius.spring.schema.Person" ref = "personImpl"></sirius:service>
-	<sirius:server  port ="18090" protocol = "netty"></sirius:server>
+	<sirius:server  port ="18090" protocol = "netty" ></sirius:server>
 	<sirius:registry id = "one"></sirius:registry>
 
 </beans>

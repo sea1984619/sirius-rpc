@@ -670,6 +670,11 @@
 				<xsd:documentation><![CDATA[ The argument is callback. ]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="adaptivePort" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ The argument is callback. ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 

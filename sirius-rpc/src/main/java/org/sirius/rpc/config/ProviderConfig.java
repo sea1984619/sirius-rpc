@@ -458,7 +458,6 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	public synchronized void  export() {
 		if(isExport)
 			return ;
-		
 		try {
 			List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
 			AbstractInvoker invoker = (AbstractInvoker) ProxyFactory.getInvoker(ref, getProxyClass());

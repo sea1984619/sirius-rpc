@@ -274,5 +274,4 @@ public class NettyTcpAcceptor extends NettyAcceptor {
         setOptions();
         return boot.bind(localAddress);
     }
-	
 }

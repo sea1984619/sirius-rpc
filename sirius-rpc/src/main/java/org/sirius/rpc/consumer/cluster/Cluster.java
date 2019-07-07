@@ -48,7 +48,6 @@ public class Cluster implements Invoker ,ProviderInfoListener {
 
 	@Override
 	public Response invoke(Request request) throws Throwable {
-		
 		channel.send(request);
 		CompletableFuture future = new CompletableFuture();
 		ResultFutureContent.add(request.invokeId(), future);

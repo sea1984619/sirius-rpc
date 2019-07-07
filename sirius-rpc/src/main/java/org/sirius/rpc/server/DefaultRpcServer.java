@@ -4,6 +4,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.Maps;
+import org.sirius.common.util.ThrowUtil;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.ServerConfig;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
@@ -16,6 +20,7 @@ import org.sirius.transport.netty.NettyTcpAcceptor;
 @Extension(value = "netty")
 public class DefaultRpcServer implements RpcServer {
 
+	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ProviderConfig.class);
 	private ServerConfig serverConfig;
 	private Acceptor acceptor;
 	private ProviderProcessor processor;
@@ -29,7 +34,6 @@ public class DefaultRpcServer implements RpcServer {
 		acceptor = new NettyTcpAcceptor(serverConfig.getPort());
 		acceptor.setProcessor(processor);
 		start();
-		
 	}
 	
 	@Override
@@ -46,6 +50,7 @@ public class DefaultRpcServer implements RpcServer {
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;
 		String interfaceName = _invoker.getConfig().getInterface();
 		invokers.putIfAbsent(interfaceName, _invoker);
+		LOGGER.info("register invoker ,the name is {}" ,interfaceName);
 	}
 	
 	public Invoker lookupInvoker(Request request) {
@@ -54,14 +59,15 @@ public class DefaultRpcServer implements RpcServer {
 	}
 	
 	@Override
-	public synchronized void start() {
+	public synchronized void start(){
 		try {
 			if(started)
 				return ;
-			acceptor.start();
+			acceptor.start(false);
 			started = true;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			LOGGER.error("acceptor starts failed ,the reason maybe :",e);
+			ThrowUtil.throwException(e);
 		}
 	}
 
