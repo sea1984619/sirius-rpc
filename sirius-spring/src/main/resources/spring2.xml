@@ -10,10 +10,10 @@
 
 
 
-	<sirius:reference id="apple"   interface=" org.sirius.rpc.provider.Apple" registry ="第一个" >
+	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person" registry ="one" >
 	   <sirius:method name = "eat" timeout = "30000">
 	     <sirius:argument index ="0" callback = "true"></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
-
+	<sirius:registry id = "one"></sirius:registry>
 </beans>
