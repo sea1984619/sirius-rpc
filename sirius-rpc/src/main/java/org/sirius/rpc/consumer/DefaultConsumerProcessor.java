@@ -13,21 +13,26 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 
 	@Override
 	public void handleResponse(Channel channel, Response response) {
-		if(response instanceof ArgumentCallbackResponse) {
-			handleArgumentCallbackResponse(response);
+
+		if (response instanceof ArgumentCallbackResponse) {
+			handleArgumentCallbackResponse(channel, response);
 		}
+
 		Object result = response.getResult();
 		CompletableFuture<Object> future = ResultFutureContent.get(response.invokeId());
-		if(future != null) {
+		if (future != null) {
 			future.complete(result);
 		}
 	}
 
-	private void handleArgumentCallbackResponse(Response response) {
+	private void handleArgumentCallbackResponse(Channel channel, Response response) {
 		ArgumentCallbackResponse argResponse = (ArgumentCallbackResponse) response;
+		// 获取回调参数
 		Request request = (Request) argResponse.getResult();
-		Invoker invoker = ResultFutureContent.getCallbackInvoker(response.invokeId());
+		long invokeId = response.invokeId();
+		Invoker invoker = ResultFutureContent.getCallbackInvoker(invokeId);
 		try {
+			//暂时不考虑返回结果,后续再加入
 			invoker.invoke(request);
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -36,7 +41,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 
 	@Override
 	public void shutdown() {
-		
+
 	}
 
 }
