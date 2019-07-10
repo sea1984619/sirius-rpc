@@ -18,11 +18,15 @@ package org.sirius.rpc.config;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.sirius.common.util.BeanUtils;
+import org.sirius.common.util.CommonUtils;
+import org.sirius.common.util.StringUtils;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
@@ -70,18 +74,14 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 */
 	protected String uniqueId;
 
-	
-
 	/**
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
 	protected String filter;
-	
+
 	protected String registry;
-	
-	
+
 	protected List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
-	
 
 	/**
 	 * 方法配置，可配置多个
@@ -92,9 +92,9 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 * 默认序列化
 	 */
 	protected String serialization;
-	
+
 	protected String version;
-	
+
 	protected String group;
 
 	/**
@@ -182,51 +182,54 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return castThis();
 	}
 
-	 /**
-     * Gets group.
-     *
-     * @return the group
-     */
-    @Deprecated
-    public String getGroup() {
-        return group;
-    }
+	/**
+	 * Gets group.
+	 *
+	 * @return the group
+	 */
+	@Deprecated
+	public String getGroup() {
+		return group;
+	}
 
-    /**
-     * Sets group.
-     *
-     * @param group the group
-     * @return the group
-     * @deprecated Use {@link #setUniqueId(String)} 
-     */
-    @Deprecated
-    public S setGroup(String group) {
-        this.group = group;
-        return castThis();
-    }
+	/**
+	 * Sets group.
+	 *
+	 * @param group
+	 *            the group
+	 * @return the group
+	 * @deprecated Use {@link #setUniqueId(String)}
+	 */
+	@Deprecated
+	public S setGroup(String group) {
+		this.group = group;
+		return castThis();
+	}
 
-    /**
-     * Gets version.
-     *
-     * @return the version
-     */
-    @Deprecated
-    public String getVersion() {
-        return version;
-    }
+	/**
+	 * Gets version.
+	 *
+	 * @return the version
+	 */
+	@Deprecated
+	public String getVersion() {
+		return version;
+	}
 
-    /**
-     * Sets version.
-     *
-     * @param version the version
-     * @return the version
-     * @deprecated Use {@link #setUniqueId(String)} 
-     */
-    @Deprecated
-    public S setVersion(String version) {
-        this.version = version;
-        return castThis();
-    }
+	/**
+	 * Sets version.
+	 *
+	 * @param version
+	 *            the version
+	 * @return the version
+	 * @deprecated Use {@link #setUniqueId(String)}
+	 */
+	@Deprecated
+	public S setVersion(String version) {
+		this.version = version;
+		return castThis();
+	}
+
 	/**
 	 * Gets application.
 	 *
@@ -639,7 +642,6 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return false;
 	}
 
-
 	/**
 	 * 得到方法名对应的方法配置
 	 *
@@ -748,4 +750,44 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	public static boolean isNotEmpty(Map map) {
 		return map != null && !map.isEmpty();
 	}
+
+	public synchronized void initConfigValueCache() {
+		Map<String, Object> context = new HashMap<String, Object>(32);
+		Map<String, String> providerParams = getParameters();
+		if (providerParams != null) {
+			context.putAll(providerParams); // 复制接口的自定义参数
+		}
+		Map<String, MethodConfig> methodConfigs = getMethods();
+		if (CommonUtils.isNotEmpty(methodConfigs)) {
+			for (MethodConfig methodConfig : methodConfigs.values()) {
+				String prefix = RpcConstants.HIDE_KEY_PREFIX + methodConfig.getName() + RpcConstants.HIDE_KEY_PREFIX;
+				Map<String, String> methodparam = methodConfig.getParameters();
+				if (methodparam != null) { // 复制方法级自定义参数
+					for (Map.Entry<String, String> entry : methodparam.entrySet()) {
+						context.put(prefix + entry.getKey(), entry.getValue());
+					}
+				}
+				// 复制方法级参数属性
+				BeanUtils.copyPropertiesToMap(methodConfig, prefix, context);
+			}
+		}
+		// 复制接口级参数属性
+		BeanUtils.copyPropertiesToMap(this, StringUtils.EMPTY, context);
+		configValueCache = Collections.unmodifiableMap(context);
+	}
+	
+	public  Map<String, Object> getConfigValueCache(boolean rebuild) {
+		if (configValueCache != null && !rebuild) {
+			return configValueCache;
+		}
+		
+		synchronized(this) {
+			if (configValueCache != null ) {
+				return configValueCache;
+			}
+			initConfigValueCache();
+		}
+		return configValueCache;
+	}
+
 }

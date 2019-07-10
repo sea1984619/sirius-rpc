@@ -2,8 +2,12 @@
 package org.sirius.rpc.config;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.sirius.common.util.BeanUtils;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
 import org.sirius.common.util.StringUtils;
@@ -770,6 +774,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return (String) getMethodConfigValue(methodName, RpcConstants.CONFIG_KEY_INVOKE_TYPE, getInvokeType());
 	}
 
+	
 	/**
 	 * Sets serialization.
 	 *

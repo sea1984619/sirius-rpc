@@ -1032,4 +1032,45 @@ public final class ReflectUtils {
 
         return properties;
     }
+    
+    /**
+     * 得到set方法
+     *
+     * @param clazz         类
+     * @param property      属性
+     * @param propertyClazz 属性
+     * @return Method 方法对象
+     */
+    public static Method getPropertySetterMethod(Class clazz, String property, Class propertyClazz) {
+        String methodName = "set" + property.substring(0, 1).toUpperCase() + property.substring(1);
+        try {
+            return clazz.getMethod(methodName, propertyClazz);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("No setter method for " + clazz.getName() + "#" + property, e);
+        }
+    }
+
+    /**
+     * 得到get/is方法
+     *
+     * @param clazz    类
+     * @param property 属性
+     * @return Method 方法对象
+     */
+    public static Method getPropertyGetterMethod(Class clazz, String property) {
+        String methodName = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
+        Method method;
+        try {
+            method = clazz.getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            try {
+                methodName = "is" + property.substring(0, 1).toUpperCase() + property.substring(1);
+                method = clazz.getMethod(methodName);
+            } catch (NoSuchMethodException e1) {
+                throw new RuntimeException("No getter method for " + clazz.getName() + "#" + property, e);
+            }
+        }
+        return method;
+    }
+
 }
