@@ -3,13 +3,15 @@ package org.sirius.rpc.consumer.cluster;
 import java.util.concurrent.CompletableFuture;
 
 import org.sirius.common.ext.Extensible;
-import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.ResultFutureContent;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Request;
@@ -51,12 +53,8 @@ public class Cluster implements Invoker ,ProviderInfoListener {
 		channel.send(request);
 		CompletableFuture future = new CompletableFuture();
 		ResultFutureContent.add(request.invokeId(), future);
-		RpcContent.getContent().setFuture(future);
+		RpcInvokeContent.getContent().setFuture(future);
 		return new Response(request.invokeId());
 	}
 	
-	@Override
-	public void received(ProviderInfo providerInfo) {
-		
-	}
 }

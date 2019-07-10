@@ -15,9 +15,7 @@ import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
-import org.sirius.rpc.consumer.invoke.ConsumerPoxyInvoker;
-import org.sirius.rpc.provider.Apple;
-import org.sirius.rpc.provider.Test;
+
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.rpc.registry.RegistryService;

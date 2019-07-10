@@ -5,7 +5,7 @@ import java.util.List;
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.rpc.Filter;
-import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
 import org.sirius.rpc.callback.CallbackInvoker;
 import org.sirius.rpc.config.ArgumentConfig;
@@ -29,7 +29,7 @@ public class ProviderSideArgumentCallbackFilter implements Filter{
 				Object callbackObject = request.getParameters()[index];
 				Class<?> clazz = request.getParametersType()[index];
 				Class<?>[] interfaces = callbackObject.getClass().getInterfaces();
-				Channel channel = (Channel) RpcContent.getContent().get("channel");
+				Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
 				CallbackInvoker callbackInvoker = new CallbackInvoker(channel,request.invokeId());
 				Object proxy = ProxyFactory.getProxy(callbackInvoker, interfaces);
 				//将参数替换为callback代理

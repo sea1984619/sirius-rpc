@@ -2,7 +2,7 @@ package org.sirius.rpc.provider;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.rpc.RpcContent;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
@@ -27,7 +27,7 @@ public class RequestTask implements Runnable{
 	@Override
 	public void run() {
 		Response response = null;
-		RpcContent.getContent().set("channel", channel);
+		RpcInvokeContent.getContent().set("channel", channel);
 		try {
 			response = invoker.invoke(request);
 		} catch (Throwable e) {

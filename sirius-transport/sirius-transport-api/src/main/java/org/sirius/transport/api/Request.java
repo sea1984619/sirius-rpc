@@ -14,7 +14,9 @@ public class Request implements Serializable{
 	protected String methodName;
     protected Class<?>[] ParametersType;
     protected Object[] parameters;
+    protected String invokeType;
 	protected transient long timestamp;
+	
 	
 	public Request() {
 		this.invokeId = sequencer.next();
@@ -73,14 +75,11 @@ public class Request implements Serializable{
 	public void setSerializerCode(byte serializerCode) {
 		this.serializerCode = serializerCode;
 	}
-	
-	public int test(int e) {
-		if(e==3) {
-			return 5;
-		}else {
-			e=6;
-		}
-		return e;
+	public String getInvokeType() {
+		return invokeType;
+	}
+	public void setInvokeType(String invokeType) {
+		this.invokeType = invokeType;
 	}
 
 }

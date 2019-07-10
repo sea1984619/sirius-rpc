@@ -1,7 +1,8 @@
 package org.sirius.registry;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.Maps;
@@ -14,11 +15,17 @@ import org.sirius.rpc.registry.RegistryServer;
 
 public class DefaultRegistry implements Registry{
 	
-	private  RegistryServer server;
-	private  ConcurrentHashMap  listeners =  (ConcurrentHashMap) Maps.newConcurrentMap();
-	        
+	private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
 	@Override
 	public void register(ProviderConfig config) {
+		try {
+			doRegister();
+			}catch(Throwable t) {
+				
+			}
+	}
+
+	private void doRegister() {
 		// TODO Auto-generated method stub
 		
 	}
