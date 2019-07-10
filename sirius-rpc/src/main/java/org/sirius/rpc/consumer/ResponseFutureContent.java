@@ -6,13 +6,16 @@ import java.util.concurrent.ConcurrentMap;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.invoker.Invoker;
 
-public class ResultFutureContent {
+public class ResponseFutureContent {
 
 	@SuppressWarnings("rawtypes")
-	private static ConcurrentMap<Long,CompletableFuture> futureContent = Maps.newConcurrentMap();
+	//{key -> invokeId  : value -> 对应的future}
+	private static ConcurrentMap<Long,ResponseFuture> futureContent = Maps.newConcurrentMap();
+	
+	//参数回调invoker map   {key ->invokeId : value ->回调参数对象生成的invoker} 
 	private static ConcurrentMap<Long,Invoker> callbackInvokers = Maps.newConcurrentMap();
 	
-	public static void add(Long invokerId ,CompletableFuture future) {
+	public static void add(Long invokerId ,ResponseFuture future) {
 		futureContent.putIfAbsent(invokerId, future);
 	}
 	
