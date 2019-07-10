@@ -12,7 +12,7 @@ import org.sirius.rpc.callback.ArgumentCallbackRequest;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.MethodConfig;
-import org.sirius.rpc.consumer.ResultFutureContent;
+import org.sirius.rpc.consumer.ResponseFutureContent;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
@@ -61,7 +61,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 						invokers.putIfAbsent(callbackArument, callbackInvoker);
 						callbackInvoker = invokers.get(callbackArument);
 					}
-					ResultFutureContent.setCallbackInvoker(request.invokeId(), callbackInvoker);
+					ResponseFutureContent.setCallbackInvoker(request.invokeId(), callbackInvoker);
 				}
 			}
 			ArgumentCallbackRequest argRequset = new ArgumentCallbackRequest(request, arguments);

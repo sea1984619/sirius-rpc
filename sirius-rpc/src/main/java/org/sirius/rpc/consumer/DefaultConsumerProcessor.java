@@ -24,7 +24,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		}
 
 		Object result = response.getResult();
-		CompletableFuture<Object> future = ResultFutureContent.get(response.invokeId());
+		CompletableFuture<Object> future = ResponseFutureContent.get(response.invokeId());
 		if (future != null) {
 			future.complete(result);
 		}
@@ -35,7 +35,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		// 获取回调参数
 		Request request = (Request) argResponse.getResult();
 		long invokeId = response.invokeId();
-		Invoker invoker = ResultFutureContent.getCallbackInvoker(invokeId);
+		Invoker invoker = ResponseFutureContent.getCallbackInvoker(invokeId);
 		try {
 			// 暂时不考虑返回结果,后续再加入
 			invoker.invoke(request);
