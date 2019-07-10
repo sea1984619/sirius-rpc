@@ -2,14 +2,19 @@ package org.sirius.rpc.consumer;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.callback.ArgumentCallbackResponse;
 import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 public class DefaultConsumerProcessor implements ConsumerProcessor {
+
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultProviderProcessor.class);
 
 	@Override
 	public void handleResponse(Channel channel, Response response) {
@@ -32,7 +37,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		long invokeId = response.invokeId();
 		Invoker invoker = ResultFutureContent.getCallbackInvoker(invokeId);
 		try {
-			//暂时不考虑返回结果,后续再加入
+			// 暂时不考虑返回结果,后续再加入
 			invoker.invoke(request);
 		} catch (Throwable e) {
 			e.printStackTrace();
