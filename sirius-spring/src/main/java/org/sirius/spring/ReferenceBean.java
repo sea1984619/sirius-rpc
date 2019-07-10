@@ -23,6 +23,7 @@ public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		initRegistry();
+		initConfigValueCache();
 	}
 
 	private void initRegistry() {

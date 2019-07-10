@@ -25,6 +25,7 @@ public class ServiceBean extends ProviderConfig implements ApplicationContextAwa
 	public void afterPropertiesSet() throws Exception {
 		initRegistry();
 		initServer();
+		initConfigValueCache();
 		export();
 	}
 
