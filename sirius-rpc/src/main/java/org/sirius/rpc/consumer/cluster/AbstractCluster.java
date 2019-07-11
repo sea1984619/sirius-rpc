@@ -1,10 +1,13 @@
 package org.sirius.rpc.consumer.cluster;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.sirius.common.ext.Extensible;
+import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
@@ -56,37 +59,55 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 		this.consumerConfig = consumerConfig;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Response invoke(Request request) throws Throwable {
 
 		Response response = null;
 		long invokeId = request.invokeId();
-		ResponseFuture future = new ResponseFuture();
+		String invokeType = request.getInvokeType();
+		ResponseFuture<Response> future = new ResponseFuture<Response>();
 		ResponseFutureContent.add(invokeId, future);
 		try {
 			channel.send(request);
 			// 同步调用
-			if (request.getInvokeType().equals(RpcConstants.INVOKER_TYPE_SYNC)) {
+			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
 				int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
 				try {
-					Object result = future.get(timeout, TimeUnit.MILLISECONDS);
-					response = new Response(invokeId);
-					response.setResult(result);
+					response = future.get(timeout, TimeUnit.MILLISECONDS);
+					RpcInvokeContent.getContent().setFuture(null);
 				}catch (Exception e) {
 					logger.error("invocation of {} get result failed, the reason maybe {}",
 							request.getClassName() + request.getMethodName(), e.getCause());
+					throw e;
 				}
 				
-			} else if (request.getInvokeType().equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
-
+			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
+				response = buildEmptyResponse(request);
+				//对返回的结果调用过滤链
+				List<Filter> filters = consumerConfig.getFilterRef();
+				 future.whenComplete((res, ex) -> {
+					 for(Filter filter :filters) {
+						 filter.onResponse(res);
+					 }
+					 future.isFilted = true;
+					 future.notifyAll();
+				 });
+				RpcInvokeContent.getContent().setFuture(future);
 			}
 
 		} catch (Throwable t) {
 			logger.error("invocation of {} sended failed, the reason maybe {}",
 					request.getClassName() + request.getMethodName(), t.getCause());
+			throw t;
 		}
 
 		return response;
 	}
 
+	 private Response buildEmptyResponse(Request request) {
+	        Response response = new Response(request.invokeId());
+	        response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
+	        return response;
+	    }
 }

@@ -23,10 +23,9 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 			handleArgumentCallbackResponse(channel, response);
 		}
 
-		Object result = response.getResult();
-		CompletableFuture<Object> future = ResponseFutureContent.get(response.invokeId());
+		ResponseFuture<Response> future = (ResponseFuture<Response>) ResponseFutureContent.get(response.invokeId());
 		if (future != null) {
-			future.complete(result);
+			future.complete(response);
 		}
 	}
 

@@ -260,7 +260,7 @@ public final class ClassUtil {
      * @param clazz Class类
      * @return 默认值
      */
-    public static Object getDefaultPrimitiveValue(Class clazz) {
+    public static Object getDefaultPrimitiveValue(Class<?> clazz) {
         if (clazz == int.class) {
             return 0;
         } else if (clazz == boolean.class) {

@@ -16,8 +16,15 @@ public class Request implements Serializable{
     protected Object[] parameters;
     protected String invokeType;
 	protected transient long timestamp;
+	protected transient Class<?> returnType;
 	
 	
+	public Class<?> getReturnType() {
+		return returnType;
+	}
+	public void setReturnType(Class<?> returnType) {
+		this.returnType = returnType;
+	}
 	public Request() {
 		this.invokeId = sequencer.next();
 	}

@@ -78,7 +78,9 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
 	protected String filter;
-
+	
+	protected List<Filter> filterRef;
+	
 	protected String registry;
 
 	protected List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
@@ -541,11 +543,20 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return castThis();
 	}
 
+	public List<Filter> getFilterRef() {
+		return filterRef;
+	}
+
+	public void setFilterRef(List<Filter> filterRef) {
+		this.filterRef = filterRef;
+	}
+
 	/**
 	 * Is cache boolean.
 	 *
 	 * @return the boolean
 	 */
+	
 	public boolean isCache() {
 		return cache;
 	}

@@ -13,6 +13,7 @@ public class RequestMessageBuilder {
 		re.setMethodName(method.getName());
 		re.setParameters(params);
 		re.setParametersType(method.getParameterTypes());
+		re.setReturnType(method.getReturnType());
 		re.setSerializerCode(SerializerType.HESSIAN.value());
 		return re;
 	}
