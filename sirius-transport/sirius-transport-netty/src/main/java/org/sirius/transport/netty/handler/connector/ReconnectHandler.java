@@ -112,7 +112,6 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 						if(!succeed) {
 							attempts ++;
 							long timeOut = 2 << attempts;
-							System.out.println(timeOut);
 							ReconnectTask newTask = new ReconnectTask(connector, group, remoteAddress, attempts);
 							connector.timer.newTimeout(newTask, timeOut, TimeUnit.SECONDS);
 						}
