@@ -2,17 +2,17 @@ package org.sirius.rpc.invoker;
 
 import org.sirius.rpc.config.AbstractInterfaceConfig;
 
-public abstract class AbstractInvoker implements Invoker{
+public abstract class AbstractInvoker<T> implements Invoker<T>{
 
-	private AbstractInterfaceConfig config;
-	public AbstractInvoker(AbstractInterfaceConfig config) {
+	protected AbstractInterfaceConfig<T, ?> config;
+	public AbstractInvoker(AbstractInterfaceConfig<T, ?> config) {
 		this.config = config;
 	}
 	
-	public void setConfig(AbstractInterfaceConfig config) {
+	public void setConfig(AbstractInterfaceConfig<T, ?> config) {
 		this.config = config;
 	}
-	public AbstractInterfaceConfig getConfig() {
+	public AbstractInterfaceConfig<T, ?> getConfig() {
 		return this.config;
 	}
 }

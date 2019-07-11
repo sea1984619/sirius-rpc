@@ -10,19 +10,22 @@ import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
-public class ConsumerProxyInvoker extends AbstractInvoker {
+public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultProviderProcessor.class);
 	private Cluster cluster;
-	private ConsumerConfig consumerConfig;
+	private ConsumerConfig<T> consumerConfig;
 
-	public ConsumerProxyInvoker(ConsumerConfig consumerConfig) {
+	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
-		consumerConfig = (ConsumerConfig) getConfig();
-		cluster = new Cluster();
-		cluster.setConsumerConfig(consumerConfig);
+		consumerConfig = (ConsumerConfig<T>) getConfig();
+//		cluster = new Cluster();
+//		cluster.setConsumerConfig(consumerConfig);
 	}
 
+	
+	
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public Response invoke(Request request) throws Throwable {
@@ -35,10 +38,9 @@ public class ConsumerProxyInvoker extends AbstractInvoker {
 		try {
 			response = cluster.invoke(request);
 		} catch (Throwable t) {
-			logger.error("invocation of {} failed, the reason maybe {}",
+			logger.error("invocation of {} invoked failed, the reason maybe {}",
 					request.getClassName() + request.getMethodName(), t.getCause());
-			response = new Response(request.invokeId());
-			response.setResult(t);
+			throw t;
 		}
 		return response;
 	}
