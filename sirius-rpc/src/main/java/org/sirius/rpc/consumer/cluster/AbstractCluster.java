@@ -1,7 +1,6 @@
 package org.sirius.rpc.consumer.cluster;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.sirius.common.ext.Extensible;
 import org.sirius.common.util.ClassUtil;
@@ -12,8 +11,6 @@ import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
-import org.sirius.rpc.consumer.ResponseFuture;
-import org.sirius.rpc.consumer.ResponseFutureContent;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.future.InvokeFuture;
@@ -73,7 +70,6 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 			int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
-				
 				try {
 					future = new DefaultInvokeFuture<Response>(channel,request,timeout,null);
 					response = future.getResponse();
@@ -83,7 +79,6 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 							request.getClassName() + request.getMethodName(), e.getCause());
 					throw e;
 				}
-				
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
 				response = buildEmptyResponse(request);
 				//异步调用   需要设置过滤链 过滤返回结果

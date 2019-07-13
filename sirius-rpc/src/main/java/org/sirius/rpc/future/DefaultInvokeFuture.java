@@ -13,6 +13,7 @@ import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
@@ -29,7 +30,6 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	public long id;
 	private List<Filter> filters; 
 	
-	
 	private static final int FUTURES_CONTAINER_INITIAL_CAPACITY = org.sirius.common.util.SystemPropertyUtil
 			.getInt("rpc.invoke.futures_container_initial_capacity", 1024);
 	private static final long TIMEOUT_SCANNER_INTERVAL_MILLIS = org.sirius.common.util.SystemPropertyUtil
@@ -40,6 +40,9 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	private static final HashedWheelTimer timeoutScanner = new HashedWheelTimer(
 			new NamedThreadFactory("futures.timeout.scanner", true), TIMEOUT_SCANNER_INTERVAL_MILLIS,
 			TimeUnit.MILLISECONDS, 4096);
+	
+	//参数回调invoker map   {key ->invokeId : value ->回调参数对象生成的invoker} 
+    private static ConcurrentMap<Long,Invoker> callbackInvokers = Maps.newConcurrentMap();
 	
 
 	public DefaultInvokeFuture(Channel channel, Request request, int timeout,List<Filter> filters) {
@@ -54,6 +57,14 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		timeoutScanner.newTimeout(timeoutTask, timeout, TimeUnit.NANOSECONDS);
 	}
 
+	
+	public static void setCallbackInvoker(Long invokerId,Invoker invoker) {
+		callbackInvokers.putIfAbsent(invokerId, invoker);
+	}
+	
+	public static Invoker getCallbackInvoker(Long invokerId) {
+		return callbackInvokers.get(invokerId);
+	}
 	
 	@Override
 	public Response getResponse() throws Throwable{
