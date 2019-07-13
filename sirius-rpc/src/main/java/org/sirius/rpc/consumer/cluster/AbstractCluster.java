@@ -9,6 +9,7 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.cluster.router.Router;
@@ -16,7 +17,6 @@ import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.future.InvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
-import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.rpc.registry.ProviderInfo;
 import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.transport.api.Connector;
@@ -50,8 +50,20 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private void init() {
 		connector = new NettyTcpConnector();
 		connector.setConsumerProcessor(consumerProcessor);
-		UnresolvedAddress address = new UnresolvedSocketAddress("192.168.1.108", 18090);
-		channel = connector.connect(address);
+		if (consumerConfig.getDirectUrl() != null) {
+			String url = consumerConfig.getDirectUrl();
+			try {
+				UnresolvedAddress address = parseUrl(url);
+				channel = connector.connect(address);
+			}catch(Throwable t) {
+				logger.error("connect to DirectUrl {} failed, please check the url is available or not" ,url);
+				throw t;
+			}
+		}else {
+			List<RegistryConfig> registrys = consumerConfig.getRegistryRef();
+			
+			
+		}
 	}
 
 	public void setConsumerConfig(ConsumerConfig<T> consumerConfig) {
@@ -71,19 +83,19 @@ public class AbstractCluster<T> extends Cluster<T> {
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
 				try {
-					future = new DefaultInvokeFuture<Response>(channel,request,timeout,null);
+					future = new DefaultInvokeFuture<Response>(channel, request, timeout, null);
 					response = future.getResponse();
 					RpcInvokeContent.getContent().setFuture(null);
-				}catch (Exception e) {
+				} catch (Exception e) {
 					logger.error("invocation of {} get result failed, the reason maybe {}",
 							request.getClassName() + request.getMethodName(), e);
 					throw e;
 				}
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
 				response = buildEmptyResponse(request);
-				//异步调用   需要设置过滤链 过滤返回结果
+				// 异步调用 需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
-			    future = new DefaultInvokeFuture<Response>(channel,request,timeout,filters);
+				future = new DefaultInvokeFuture<Response>(channel, request, timeout, filters);
 				RpcInvokeContent.getContent().setFuture(future);
 			}
 
@@ -96,9 +108,16 @@ public class AbstractCluster<T> extends Cluster<T> {
 		return response;
 	}
 
-	 private Response buildEmptyResponse(Request request) {
-	        Response response = new Response(request.invokeId());
-	        response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
-	        return response;
-	    }
+	private Response buildEmptyResponse(Request request) {
+		Response response = new Response(request.invokeId());
+		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
+		return response;
+	}
+
+	private UnresolvedAddress parseUrl(String url) {
+		int index = url.indexOf(":");
+		String host = url.substring(0,index).trim();
+		int port = Integer.valueOf(url.substring(index + 1).trim());
+		return new UnresolvedSocketAddress(host,port);
+	}
 }
