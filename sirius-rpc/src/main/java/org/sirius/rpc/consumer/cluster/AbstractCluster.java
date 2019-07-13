@@ -15,6 +15,8 @@ import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.ResponseFuture;
 import org.sirius.rpc.consumer.ResponseFutureContent;
 import org.sirius.rpc.consumer.cluster.router.Router;
+import org.sirius.rpc.future.DefaultInvokeFuture;
+import org.sirius.rpc.future.InvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
@@ -64,17 +66,17 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 	public Response invoke(Request request) throws Throwable {
 
 		Response response = null;
-		long invokeId = request.invokeId();
 		String invokeType = request.getInvokeType();
-		ResponseFuture<Response> future = new ResponseFuture<Response>();
-		ResponseFutureContent.add(invokeId, future);
+		DefaultInvokeFuture<Response> future;
 		try {
 			channel.send(request);
+			int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
-				int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
+				
 				try {
-					response = future.get(timeout, TimeUnit.MILLISECONDS);
+					future = new DefaultInvokeFuture<Response>(channel,request,timeout,null);
+					response = future.getResponse();
 					RpcInvokeContent.getContent().setFuture(null);
 				}catch (Exception e) {
 					logger.error("invocation of {} get result failed, the reason maybe {}",
@@ -84,15 +86,9 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 				
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
 				response = buildEmptyResponse(request);
-				//对返回的结果调用过滤链
+				//异步调用   需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
-				 future.whenComplete((res, ex) -> {
-					 for(Filter filter :filters) {
-						 filter.onResponse(res);
-					 }
-					 future.isFilted = true;
-					 future.notifyAll();
-				 });
+			    future = new DefaultInvokeFuture<Response>(channel,request,timeout,filters);
 				RpcInvokeContent.getContent().setFuture(future);
 			}
 

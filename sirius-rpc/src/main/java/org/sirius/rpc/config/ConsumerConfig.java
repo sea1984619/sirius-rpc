@@ -46,7 +46,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 是否异步调用
 	 */
-	protected String invokeType;
+	protected String invokeType           = "sync";
 
 	/**
 	 * 连接超时时间

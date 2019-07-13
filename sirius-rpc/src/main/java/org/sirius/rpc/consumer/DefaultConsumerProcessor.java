@@ -1,10 +1,10 @@
 package org.sirius.rpc.consumer;
 
-import java.util.concurrent.CompletableFuture;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.callback.ArgumentCallbackResponse;
+import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
 import org.sirius.transport.api.ConsumerProcessor;
@@ -23,10 +23,8 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 			handleArgumentCallbackResponse(channel, response);
 		}
 
-		ResponseFuture<Response> future = (ResponseFuture<Response>) ResponseFutureContent.get(response.invokeId());
-		if (future != null) {
-			future.complete(response);
-		}
+		 DefaultInvokeFuture.received(response);
+		
 	}
 
 	private void handleArgumentCallbackResponse(Channel channel, Response response) {

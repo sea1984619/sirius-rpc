@@ -1,5 +1,6 @@
 package org.sirius.rpc.future;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
@@ -11,6 +12,7 @@ import org.sirius.common.util.Maps;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.Filter;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
@@ -25,6 +27,8 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	public Request request;
 	public int timeout;
 	public long id;
+	private List<Filter> filters; 
+	
 	
 	private static final int FUTURES_CONTAINER_INITIAL_CAPACITY = org.sirius.common.util.SystemPropertyUtil
 			.getInt("rpc.invoke.futures_container_initial_capacity", 1024);
@@ -38,42 +42,46 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 			TimeUnit.MILLISECONDS, 4096);
 	
 
-	public DefaultInvokeFuture(Channel channel, Request request, int timeout) {
+	public DefaultInvokeFuture(Channel channel, Request request, int timeout,List<Filter> filters) {
 		this.channel = channel;
 		this.request = request;
 		this.id = request.invokeId();
 		this.timeout = timeout;
+		this.filters = filters;
+		
 		futures.put(id, this);
 		TimeoutTask timeoutTask = new TimeoutTask(id);
 		timeoutScanner.newTimeout(timeoutTask, timeout, TimeUnit.NANOSECONDS);
 	}
 
+	
 	@Override
-	public Object getResult() {
-
+	public Response getResponse() throws Throwable{
 		Response response = null;
-		if (!isFilted) {
-			synchronized (this) {
-				while (!isFilted) {
-					try {
-						this.wait();
-					} catch (InterruptedException e) {
-						ThrowUtil.throwException(e);
-					}
+		try {
+			response = (Response) super.get(timeout, TimeUnit.MILLISECONDS);
+		} catch (TimeoutException e) {
+			throw e;
+		}
+	    return response;
+	}
+	
+	@Override
+	public Object getResult() throws Throwable{
+		return getResponse().getResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void received(Response response) {
+		long id = response.invokeId();
+		DefaultInvokeFuture<Response> future = (DefaultInvokeFuture<Response>) futures.remove(id);
+		if(future != null) {
+			if(future.filters != null) {
+				for(Filter filter : future.filters) {
+					filter.onResponse(response);
 				}
 			}
 		}
-
-		try {
-			response = (Response) super.get(timeout,TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		}
-		return response.getResult();
+		future.complete(response);
 	}
-
 }
