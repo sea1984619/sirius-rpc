@@ -9,10 +9,16 @@
                         http://sirius.org/schema/sirius/sirius.xsd ">
 
 
-
+<!--  
 	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person" registry ="one" >
 	   <sirius:method name = "eat" timeout = "30000">
 	     <sirius:argument index ="0" callback = "true"></sirius:argument>
+	   </sirius:method>
+	</sirius:reference>
+	<sirius:registry id = "one"></sirius:registry>
+	-->
+	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" registry ="one" >
+	   <sirius:method name = "buyApple" timeout = "3000" >
 	   </sirius:method>
 	</sirius:reference>
 	<sirius:registry id = "one"></sirius:registry>

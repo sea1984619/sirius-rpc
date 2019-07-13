@@ -4,6 +4,7 @@ import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
+import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.consumer.cluster.Cluster;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
@@ -12,15 +13,15 @@ import org.sirius.transport.api.Response;
 
 public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultProviderProcessor.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerProxyInvoker.class);
 	private Cluster cluster;
 	private ConsumerConfig<T> consumerConfig;
 
 	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
-		consumerConfig = (ConsumerConfig<T>) getConfig();
-//		cluster = new Cluster();
-//		cluster.setConsumerConfig(consumerConfig);
+		this.consumerConfig = (ConsumerConfig<T>) getConfig();
+		cluster = new AbstractCluster();
+		cluster.setConsumerConfig(consumerConfig);
 	}
 
 	
@@ -39,7 +40,7 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 			response = cluster.invoke(request);
 		} catch (Throwable t) {
 			logger.error("invocation of {} invoked failed, the reason maybe {}",
-					request.getClassName() + request.getMethodName(), t.getCause());
+					request.getClassName() + request.getMethodName(), t);
 			throw t;
 		}
 		return response;

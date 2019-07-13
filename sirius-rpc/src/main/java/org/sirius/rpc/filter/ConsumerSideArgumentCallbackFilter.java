@@ -71,11 +71,13 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 		return invoker.invoke(request);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void init(Invoker invoker) {
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;
 		ConsumerConfig consumerConfig = (ConsumerConfig) _invoker.getConfig();
 		Map<String, MethodConfig> methods = consumerConfig.getMethods();
 		for (MethodConfig method : methods.values()) {
+			if(method.getArguments() != null)
 			argumentsMap.put(method.getName(), method.getArguments());
 		}
 	}

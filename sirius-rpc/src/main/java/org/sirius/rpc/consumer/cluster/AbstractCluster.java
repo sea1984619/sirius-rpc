@@ -31,9 +31,9 @@ import org.sirius.transport.api.channel.DirectoryGroupList;
 import org.sirius.transport.netty.NettyTcpConnector;
 
 @Extensible
-public abstract class AbstractCluster<T> extends Cluster<T> {
+public class AbstractCluster<T> extends Cluster<T> {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultProviderProcessor.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private ConsumerConfig<T> consumerConfig;
 	private Router router;
 	private LoadBalancer loadBalancer;
@@ -76,7 +76,7 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 					RpcInvokeContent.getContent().setFuture(null);
 				}catch (Exception e) {
 					logger.error("invocation of {} get result failed, the reason maybe {}",
-							request.getClassName() + request.getMethodName(), e.getCause());
+							request.getClassName() + request.getMethodName(), e);
 					throw e;
 				}
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
@@ -89,7 +89,7 @@ public abstract class AbstractCluster<T> extends Cluster<T> {
 
 		} catch (Throwable t) {
 			logger.error("invocation of {} sended failed, the reason maybe {}",
-					request.getClassName() + request.getMethodName(), t.getCause());
+					request.getClassName() + request.getMethodName(), t);
 			throw t;
 		}
 

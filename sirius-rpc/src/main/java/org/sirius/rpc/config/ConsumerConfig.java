@@ -41,7 +41,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 是否泛化调用
 	 */
-	protected boolean generic;
+	protected boolean generic  = false;
 
 	/**
 	 * 是否异步调用

@@ -29,6 +29,11 @@
 				<xsd:documentation><![CDATA[ The method retry times. ]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="invokeType" type="xsd:string">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[ the invoke type. ]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
 		<xsd:attribute name="failbacktasks" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[ The max failback tasks capacity size. ]]></xsd:documentation>
@@ -48,12 +53,6 @@
 		<xsd:attribute name="loadbalance" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[ The method load balance. ]]></xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="async" type="xsd:string"
-			default="false">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[ The method does async. ]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="sent" type="xsd:string">
@@ -184,8 +183,7 @@
 	<xsd:complexType name="abstractReferenceType">
 		<xsd:complexContent>
 			<xsd:extension base="abstractInterfaceType">
-				<xsd:attribute name="version" type="xsd:string"
-					default="0.0.0">
+				<xsd:attribute name="version" type="xsd:string" default="0.0.0">
 					<xsd:annotation>
 						<xsd:documentation><![CDATA[ The service version. ]]></xsd:documentation>
 					</xsd:annotation>
@@ -687,8 +685,7 @@
 					<xsd:element ref="parameter" minOccurs="0"
 						maxOccurs="unbounded" />
 				</xsd:choice>
-				<xsd:attribute name="interface" type="xsd:token"
-					use="required">
+				<xsd:attribute name="interface" type="xsd:token" use="required">
 					<xsd:annotation>
 						<xsd:documentation><![CDATA[ The service interface class name. ]]></xsd:documentation>
 						<xsd:appinfo>
@@ -708,11 +705,7 @@
 						<xsd:documentation><![CDATA[ Protocol transport client type. ]]></xsd:documentation>
 					</xsd:annotation>
 				</xsd:attribute>
-				<xsd:attribute name="consumer" type="xsd:string">
-					<xsd:annotation>
-						<xsd:documentation><![CDATA[ Deprecated. Replace to reference-default. ]]></xsd:documentation>
-					</xsd:annotation>
-				</xsd:attribute>
+				
 				<xsd:attribute name="protocol" type="xsd:string">
 					<xsd:annotation>
 						<xsd:documentation><![CDATA[ The service protocol. ]]></xsd:documentation>
