@@ -42,6 +42,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 		List<ArgumentConfig> arguments = argumentsMap.get(methodName);
 		if (arguments != null) {
 			for (ArgumentConfig argument : arguments) {
+				int i = 0;
 				if (argument.isCallback()) {
 					int index = argument.getIndex();
 					if (index < 0 || index > request.getParameters().length - 1) {
@@ -61,7 +62,9 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 						invokers.putIfAbsent(callbackArument, callbackInvoker);
 						callbackInvoker = invokers.get(callbackArument);
 					}
-					DefaultInvokeFuture.setCallbackInvoker(request.invokeId(), callbackInvoker);
+					String callbackId = request.invokeId()+ "." + i++;
+					DefaultInvokeFuture.setCallbackInvoker(callbackId, callbackInvoker);
+					argument.setId(callbackId);
 				}
 			}
 			ArgumentCallbackRequest argRequset = new ArgumentCallbackRequest(request, arguments);

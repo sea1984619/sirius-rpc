@@ -1,32 +1,13 @@
-package org.sirius.registry;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+package org.sirius.rpc.registry;
 
 import org.sirius.common.concurrent.ConcurrentHashSet;
-import org.sirius.common.util.Maps;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
-import org.sirius.rpc.registry.ProviderInfo;
-import org.sirius.rpc.registry.ProviderInfoListener;
-import org.sirius.rpc.registry.Registry;
-import org.sirius.rpc.registry.RegistryServer;
 
+public  class AbstractRegistry implements Registry{
 
-public class DefaultRegistry implements Registry{
-	
-	private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
 	@Override
 	public void register(ProviderConfig config) {
-		try {
-			doRegister();
-			}catch(Throwable t) {
-				
-			}
-	}
-
-	private void doRegister() {
 		// TODO Auto-generated method stub
 		
 	}

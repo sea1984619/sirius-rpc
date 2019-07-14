@@ -71,7 +71,7 @@ public class DefaultRegistryService implements RegistryService {
 
 	private List<ProviderInfo> getInfoFromConfig(ProviderConfig<?> provider) {
 
-		List<ServerConfig> configList = provider.getServer();
+		List<ServerConfig> configList = provider.getServerRef();
 		List<ProviderInfo> infoList = new ArrayList<ProviderInfo>();
 //		for (ServerConfig server : configList) {
 //			ProviderInfo info = new ProviderInfo();

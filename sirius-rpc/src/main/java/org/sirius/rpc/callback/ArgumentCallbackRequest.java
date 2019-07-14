@@ -9,6 +9,8 @@ public class ArgumentCallbackRequest extends Request {
 	private static final long serialVersionUID = -1599291269995568269L;
 	
 	private List<ArgumentConfig> argumentconfig;
+	private Long id;
+	
 	private Request requset;
 	
 	public ArgumentCallbackRequest(Request request,List<ArgumentConfig> argumentconfig) {
@@ -23,6 +25,14 @@ public class ArgumentCallbackRequest extends Request {
 		return this.requset;
 	}
 	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	private void copy(Request request) {
 		this.className = request.getClassName();
 		this.invokeId = request.invokeId();

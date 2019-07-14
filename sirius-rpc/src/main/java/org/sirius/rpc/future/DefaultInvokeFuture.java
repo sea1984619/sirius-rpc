@@ -41,8 +41,8 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 			new NamedThreadFactory("futures.timeout.scanner", true), TIMEOUT_SCANNER_INTERVAL_MILLIS,
 			TimeUnit.MILLISECONDS, 4096);
 	
-	//参数回调invoker map   {key ->invokeId : value ->回调参数对象生成的invoker} 
-    private static ConcurrentMap<Long,Invoker> callbackInvokers = Maps.newConcurrentMap();
+	//参数回调invoker map   {key ->invokeId +"."+index形成的字符串 : value ->回调参数对象生成的invoker} 
+    private static ConcurrentMap<String,Invoker> callbackInvokers = Maps.newConcurrentMap();
 	
 
 	public DefaultInvokeFuture(Channel channel, Request request, int timeout,List<Filter> filters) {
@@ -58,8 +58,8 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	}
 
 	
-	public static void setCallbackInvoker(Long invokerId,Invoker invoker) {
-		callbackInvokers.putIfAbsent(invokerId, invoker);
+	public static void setCallbackInvoker(String id,Invoker invoker) {
+		callbackInvokers.putIfAbsent(id, invoker);
 	}
 	
 	public static Invoker getCallbackInvoker(Long invokerId) {
