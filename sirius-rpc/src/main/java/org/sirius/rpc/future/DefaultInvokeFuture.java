@@ -58,12 +58,12 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	}
 
 	
-	public static void setCallbackInvoker(String id,Invoker invoker) {
-		callbackInvokers.putIfAbsent(id, invoker);
+	public static void setCallbackInvoker(String callbackId,Invoker invoker) {
+		callbackInvokers.putIfAbsent(callbackId, invoker);
 	}
 	
-	public static Invoker getCallbackInvoker(Long invokerId) {
-		return callbackInvokers.get(invokerId);
+	public static Invoker getCallbackInvoker(String callbackId) {
+		return callbackInvokers.get(callbackId);
 	}
 	
 	@Override

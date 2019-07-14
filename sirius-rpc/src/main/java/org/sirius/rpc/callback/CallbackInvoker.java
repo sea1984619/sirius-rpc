@@ -8,8 +8,8 @@ import org.sirius.transport.api.channel.Channel;
 public class CallbackInvoker implements Invoker {
 
 	private final Channel channel;
-	private final long id;
-	public CallbackInvoker(Channel channel ,long id) {
+	private final String id;
+	public CallbackInvoker(Channel channel ,String id) {
 		this.channel = channel;
 		this.id = id;
 	}
