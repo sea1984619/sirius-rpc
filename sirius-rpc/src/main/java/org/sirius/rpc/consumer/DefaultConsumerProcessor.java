@@ -30,8 +30,8 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		ArgumentCallbackResponse argResponse = (ArgumentCallbackResponse) response;
 		// 获取回调参数
 		Request request = (Request) argResponse.getResult();
-		String callbackId = argResponse.getId();
-		Invoker invoker = DefaultInvokeFuture.getCallbackInvoker(callbackId);
+		Long callbackId = argResponse.invokeId();
+		Invoker invoker = DefaultInvokeFuture.getCallbackInvoker(callbackId.intValue());
 		try {
 			// 暂时不考虑返回结果,后续再加入
 			invoker.invoke(request);

@@ -1,9 +1,11 @@
 package org.sirius.rpc.filter;
 
 import java.util.List;
+import java.util.Map;
 
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
+import org.sirius.common.util.Maps;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
@@ -19,6 +21,7 @@ import org.sirius.transport.api.channel.Channel;
 @Extension(value = "providerSideArgumentCallback" ,singleton = false)
 public class ProviderSideArgumentCallbackFilter implements Filter{
 
+	private Map<String, Invoker> invokers = Maps.newConcurrentMap();
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
 		if(request instanceof ArgumentCallbackRequest) {
@@ -30,7 +33,7 @@ public class ProviderSideArgumentCallbackFilter implements Filter{
 				Class<?> clazz = request.getParametersType()[index];
 				Class<?>[] interfaces = callbackObject.getClass().getInterfaces();
 				Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
-				CallbackInvoker callbackInvoker = new CallbackInvoker(channel,argument.getId());
+				CallbackInvoker callbackInvoker = new CallbackInvoker(channel,Integer.valueOf(argument.getId()));
 				Object proxy = ProxyFactory.getProxy(callbackInvoker, interfaces);
 				//将参数替换为callback代理
 				request.getParameters()[index] = clazz.cast(proxy);

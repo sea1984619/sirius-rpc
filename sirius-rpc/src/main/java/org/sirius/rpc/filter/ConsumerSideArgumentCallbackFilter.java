@@ -23,8 +23,8 @@ import org.sirius.transport.api.Response;
 @Extension(value = "consumerSideArgumentCallback", singleton = false)
 public class ConsumerSideArgumentCallbackFilter implements Filter {
 
-	// 缓存 : key : callbackArgument -> value : invoker
-	private Map<Object, Invoker> invokers = Maps.newConcurrentMap();
+	// 缓存 : key : callbackArgument.hashcode -> value : invoker
+	private Map<Integer, Invoker> invokers = Maps.newConcurrentMap();
 
 	// 缓存 : key:methodName -> List<ArgumentConfig>
 	private Map<String, List<ArgumentConfig>> argumentsMap = Maps.newConcurrentMap();
@@ -56,15 +56,16 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 								+ " must not be a Array or a Collection or a primitive type");
 					}
 					Invoker callbackInvoker = invokers.get(callbackArument);
+					int hashcode = callbackArument.hashCode();
 					if (callbackInvoker == null) {
 						//将callbackArument包装为代理invoker ,以供调用
 						callbackInvoker = ProxyFactory.getInvoker(callbackArument, clazz);
-						invokers.putIfAbsent(callbackArument, callbackInvoker);
+						invokers.putIfAbsent(hashcode, callbackInvoker);
 						callbackInvoker = invokers.get(callbackArument);
 					}
-					String callbackId = request.invokeId()+ "." + i++;
-					DefaultInvokeFuture.setCallbackInvoker(callbackId, callbackInvoker);
-					argument.setId(callbackId);
+				
+					DefaultInvokeFuture.setCallbackInvoker(hashcode, callbackInvoker);
+					argument.setId(String.valueOf(hashcode));
 				}
 			}
 			ArgumentCallbackRequest argRequset = new ArgumentCallbackRequest(request, arguments);
