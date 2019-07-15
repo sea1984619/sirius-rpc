@@ -44,7 +44,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private Channel channel;
 
 	public AbstractCluster() {
-		init();
+//		init();
 	}
 
 	private void init() {

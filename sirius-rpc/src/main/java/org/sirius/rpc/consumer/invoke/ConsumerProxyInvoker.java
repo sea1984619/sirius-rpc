@@ -22,6 +22,7 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
 		cluster = new AbstractCluster();
 		cluster.setConsumerConfig(consumerConfig);
+		
 	}
 
 	
