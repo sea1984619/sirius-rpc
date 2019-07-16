@@ -105,7 +105,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 长连接个数，不是所有的框架都支持一个地址多个长连接
 	 */
-	protected int connectionNum;
+	protected int connectionNum = 1;
 
 	/**
 	 * Consumer给Provider发心跳的间隔

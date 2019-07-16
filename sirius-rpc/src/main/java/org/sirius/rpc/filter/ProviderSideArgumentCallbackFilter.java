@@ -39,12 +39,14 @@ public class ProviderSideArgumentCallbackFilter implements Filter{
 					Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
 					CallbackInvoker callbackInvoker = new CallbackInvoker(channel,Integer.valueOf(argument.getId()),
 							                               argument.getRetry(),argument.getAttempts(),argument.getDelay());
-					proxy = ProxyFactory.getProxy(callbackInvoker, interfaces);
+					proxy = ProxyFactory.getProxyNotCache(callbackInvoker, interfaces);
 					//将参数替换为callback代理
 					request.getParameters()[index] = clazz.cast(proxy);
 				}else {
-					//执行到这里,或许表明客户端因为网络闪断又重新执行一次注册方法,原有的channle不能用了
-					  
+					//执行到这里,或许表明客户端因为网络闪断又重新执行一次注册方法,原有的channle不能用了,需要替换为新的可用channel
+					  if(callbackRequest.isReconnect()) {
+						  
+					  }
 				}
 				
 			}

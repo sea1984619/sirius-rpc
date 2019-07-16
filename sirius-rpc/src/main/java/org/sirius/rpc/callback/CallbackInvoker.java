@@ -47,6 +47,7 @@ public class CallbackInvoker implements Invoker {
 				
 			}else {
 				logger.error("callback response send failed ", t);
+				throw t;
 			}
 		}
 		//此处返回的response不会有任何实际作用, 仅仅是为了不返回空值而返回

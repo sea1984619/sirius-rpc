@@ -17,7 +17,7 @@ public class PersonImpl implements Person{
                            try {  
                                entry.getValue().onEat(getChanged(entry.getKey()));  
                            } catch (Throwable t) {  
-                               listeners.remove(entry.getKey());  
+                               System.out.println("发生错误");
                            }  
                         }  
                         Thread.sleep(15000); // 定时触发变更通知  
@@ -35,8 +35,9 @@ public class PersonImpl implements Person{
 
 	
 	public void addListener(String key, EatListener listener) {  
-        listeners.put(key, listener);  
-        listener.onEat(getChanged(key)); // 发送变更通知  
+		System.out.println(listener.hashCode());
+        listeners.put(String.valueOf(listener.hashCode()), listener);  
+        System.out.println("当前数量为:"+listeners.size());
     }  
        
     private String getChanged(String key) {  

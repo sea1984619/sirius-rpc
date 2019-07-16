@@ -1,5 +1,6 @@
 package org.sirius.rpc.proxy;
 
+import org.sirius.rpc.callback.CallbackInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.invoke.ProviderProxyInvoker;
 import org.sirius.rpc.proxy.bytecode.ProxyGenerator;
@@ -21,5 +22,9 @@ public class ProxyFactory {
 				return wrapper.invokeMethod(provider, mn, types, args);
 			}
 		};
+	}
+
+	public static Object getProxyNotCache(Invoker invoker, Class<?>... ics) {
+		return ProxyGenerator.getProxyNotCache(invoker, ics);
 	}
 }

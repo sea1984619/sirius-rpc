@@ -17,6 +17,7 @@ import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.future.InvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
+import org.sirius.rpc.load.balance.RandomLoadBalancer;
 import org.sirius.rpc.registry.ProviderInfo;
 import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.transport.api.Connector;
@@ -26,6 +27,7 @@ import org.sirius.transport.api.Response;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.api.channel.Channel;
+import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.channel.ChannelGroupList;
 import org.sirius.transport.api.channel.DirectoryGroupList;
 import org.sirius.transport.netty.NettyTcpConnector;
@@ -35,12 +37,11 @@ public class AbstractCluster<T> extends Cluster<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private Router router;
-	private LoadBalancer loadBalancer;
+	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
 	private Connector connector;
 	private DirectoryGroupList directory;
-	private ChannelGroupList channelGroupList;
+	private ChannelGroupList channelGroupList = new ChannelGroupList();
 	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
-	private Channel channel;
 
 	public AbstractCluster(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
@@ -52,17 +53,19 @@ public class AbstractCluster<T> extends Cluster<T> {
 		connector.setConsumerProcessor(consumerProcessor);
 		if (consumerConfig.getDirectUrl() != null) {
 			String url = consumerConfig.getDirectUrl();
+			int connectionNum = consumerConfig.getConnectionNum();
 			try {
 				UnresolvedAddress address = parseUrl(url);
-				channel = connector.connect(address);
+				for(int i = 0; i < connectionNum;i++) {
+					Channel channel = connector.connect(address);
+					channelGroupList.add(channel.getGroup());
+				}
 			}catch(Throwable t) {
 				logger.error("connect to DirectUrl {} failed, please check the url is available or not" ,url);
 				throw t;
 			}
 		}else {
 			List<RegistryConfig> registrys = consumerConfig.getRegistryRef();
-			
-			
 		}
 	}
 
@@ -77,7 +80,10 @@ public class AbstractCluster<T> extends Cluster<T> {
 		Response response = null;
 		String invokeType = request.getInvokeType();
 		DefaultInvokeFuture<Response> future;
+		Channel channel;
 		try {
+			ChannelGroup  group = loadBalancer.select(channelGroupList.getChannelGroup());
+			channel = group.next();
 			channel.send(request);
 			RpcInvokeContent.getContent().setFuture(null);
 			int timeout = request.getTimeout();

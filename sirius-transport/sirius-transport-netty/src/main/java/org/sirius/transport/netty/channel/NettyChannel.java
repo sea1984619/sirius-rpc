@@ -1,12 +1,9 @@
 package org.sirius.transport.netty.channel;
 
 import java.net.SocketAddress;
-import java.util.List;
 
 import org.sirius.transport.api.AbstractChannel;
-import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroup;
-import org.sirius.transport.api.channel.ChannelListener;
 
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;

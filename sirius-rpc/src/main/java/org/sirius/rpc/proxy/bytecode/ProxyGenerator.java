@@ -43,6 +43,123 @@ public class ProxyGenerator {
 		return getProxy(ClassHelper.getClassLoader(ProxyGenerator.class), invoker, ics);
 	}
 
+	public static Object getProxyNotCache(Invoker invoker, Class<?>... ics) {
+		return getProxyNotCache(ClassHelper.getClassLoader(ProxyGenerator.class), invoker, ics);
+	}
+	private static Object getProxyNotCache(ClassLoader cl, Invoker invoker, Class<?>[] ics) {
+		if (ics.length > 63325) {
+			throw new IllegalArgumentException("interface limit exceeded");
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ics.length; i++) {
+			String itf = ics[i].getName();
+			if (!ics[i].isInterface()) {
+				throw new RuntimeException(itf + " is not a interface.");
+			}
+
+			Class<?> tmp = null;
+			try {
+				tmp = Class.forName(itf, false, cl);
+			} catch (ClassNotFoundException e) {
+			}
+
+			if (tmp != ics[i]) {
+				throw new IllegalArgumentException(ics[i] + " is not visible from class loader");
+			}
+
+			sb.append(itf).append(';');
+		}
+
+		// use interface class name list as key.
+		String key = sb.toString();
+		// get cache by class loader.
+
+		Object proxy = null;
+		long id = PROXY_CLASS_COUNTER.getAndIncrement();
+		String pkg = null;
+		ClassGenerator ccp = null;
+		try {
+			ccp = ClassGenerator.newInstance(cl);
+
+			Set<String> worked = new HashSet<>();
+			List<Method> methods = new ArrayList<>();
+
+			for (int i = 0; i < ics.length; i++) {
+				if (!Modifier.isPublic(ics[i].getModifiers())) {
+					String npkg = ics[i].getPackage().getName();
+					if (pkg == null) {
+						pkg = npkg;
+					} else {
+						if (!pkg.equals(npkg)) {
+							throw new IllegalArgumentException("non-public interfaces from different packages");
+						}
+					}
+				}
+				ccp.addInterface(ics[i]);
+
+				for (Method method : ics[i].getMethods()) {
+					String desc = ReflectUtils.getDesc(method);
+					if (worked.contains(desc)) {
+						continue;
+					}
+					worked.add(desc);
+
+					int ix = methods.size();
+					Class<?> rt = method.getReturnType();
+					Class<?>[] pts = method.getParameterTypes();
+
+					StringBuilder code = new StringBuilder("Object[] args = new Object[").append(pts.length)
+							.append("];");
+					for (int j = 0; j < pts.length; j++) {
+						code.append(" args[").append(j).append("] = ($w)$").append(j + 1).append(";");
+					}
+					code.append(Request.class.getCanonicalName() + " request =");
+					code.append(RequestMessageBuilder.class.getCanonicalName() + ".build(methods[").append(ix)
+							.append("], args);");
+					code.append(Response.class.getCanonicalName() + " response  = invoker.invoke(request);");
+					code.append("Object ret = response.getResult();");
+					if (!Void.TYPE.equals(rt)) {
+						code.append(" return ").append(asArgument(rt, "ret")).append(";");
+					}
+
+					methods.add(method);
+					ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(),
+							code.toString());
+				}
+			}
+
+			if (pkg == null) {
+				pkg = PACKAGE_NAME;
+			}
+
+			// create ProxyInstance class.
+			String pcn = pkg + ".proxy" + id;
+			ccp.setClassName(pcn);
+			ccp.addField("public static java.lang.reflect.Method[] methods;");
+			ccp.addField("private " + Invoker.class.getName() + " invoker;");
+			ccp.addConstructor(Modifier.PUBLIC, new Class<?>[] { Invoker.class }, new Class<?>[0],
+					"this.invoker = $1;");
+
+			ccp.addDefaultConstructor();
+			Class<?> clazz = ccp.toClass();
+			clazz.getField("methods").set(null, methods.toArray(new Method[0]));
+
+			proxy = clazz.getConstructor(Invoker.class).newInstance(invoker);
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e.getMessage(), e);
+		} finally {
+			// release ClassGenerator
+			if (ccp != null) {
+				ccp.release();
+			}
+		}
+		return proxy;
+
+	}
+
 	/**
 	 * Get proxy.
 	 *
@@ -52,6 +169,7 @@ public class ProxyGenerator {
 	 *            interface class array.
 	 * @return Proxy instance.
 	 */
+
 	public static Object getProxy(ClassLoader cl, Invoker invoker, Class<?>... ics) {
 		if (ics.length > 63325) {
 			throw new IllegalArgumentException("interface limit exceeded");
@@ -147,16 +265,18 @@ public class ProxyGenerator {
 					for (int j = 0; j < pts.length; j++) {
 						code.append(" args[").append(j).append("] = ($w)$").append(j + 1).append(";");
 					}
-					code.append(Request.class.getCanonicalName()+" request =");
-					code.append(RequestMessageBuilder.class.getCanonicalName()+".build(methods[").append(ix).append("], args);");
-					code.append(Response.class.getCanonicalName()+ " response  = invoker.invoke(request);");
+					code.append(Request.class.getCanonicalName() + " request =");
+					code.append(RequestMessageBuilder.class.getCanonicalName() + ".build(methods[").append(ix)
+							.append("], args);");
+					code.append(Response.class.getCanonicalName() + " response  = invoker.invoke(request);");
 					code.append("Object ret = response.getResult();");
 					if (!Void.TYPE.equals(rt)) {
 						code.append(" return ").append(asArgument(rt, "ret")).append(";");
 					}
 
 					methods.add(method);
-					ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(),code.toString());
+					ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(),
+							code.toString());
 				}
 			}
 
@@ -169,8 +289,9 @@ public class ProxyGenerator {
 			ccp.setClassName(pcn);
 			ccp.addField("public static java.lang.reflect.Method[] methods;");
 			ccp.addField("private " + Invoker.class.getName() + " invoker;");
-			ccp.addConstructor(Modifier.PUBLIC, new Class<?>[] { Invoker.class },  new Class<?>[0], "this.invoker = $1;");
-					                                            
+			ccp.addConstructor(Modifier.PUBLIC, new Class<?>[] { Invoker.class }, new Class<?>[0],
+					"this.invoker = $1;");
+
 			ccp.addDefaultConstructor();
 			Class<?> clazz = ccp.toClass();
 			clazz.getField("methods").set(null, methods.toArray(new Method[0]));
@@ -228,9 +349,7 @@ public class ProxyGenerator {
 		return "(" + ReflectUtils.getName(cl) + ")" + name;
 	}
 
-	
 	public static void main(String args[]) {
-		
-	} 
-}
 
+	}
+}

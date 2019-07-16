@@ -1,5 +1,6 @@
 package org.sirius.transport.api.channel;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,5 +28,9 @@ public class ChannelGroupList {
 	     vision.incrementAndGet();
 	   return removed;
 	   
+   }
+   
+   public List<ChannelGroup> getChannelGroup(){
+	   return this.groupList;
    }
 }
