@@ -3,7 +3,6 @@ package org.sirius.transport.netty.channel;
 import java.net.SocketAddress;
 
 import org.sirius.transport.api.AbstractChannel;
-import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroup;
 
@@ -51,7 +50,7 @@ public class NettyChannel extends AbstractChannel {
 
 	@Override
 	public String id() {
-		return null;
+		return channel.id().toString();
 	}
 
 	@Override

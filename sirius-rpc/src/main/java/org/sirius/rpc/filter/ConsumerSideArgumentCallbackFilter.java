@@ -3,6 +3,7 @@ package org.sirius.rpc.filter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.sirius.common.ext.AutoActive;
@@ -29,14 +30,15 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 
 	// 缓存 : key : callbackArgument.hashcode -> value : invoker
 	private Map<Integer, Invoker> invokers = Maps.newConcurrentMap();
-
 	// 缓存 : key:methodName -> List<ArgumentConfig>
 	private Map<String, List<ArgumentConfig>> argumentsMap = Maps.newConcurrentMap();
+	// 缓存 : key:channel  -> Set<Invoker> 在当前channel上创建的invoker
+	private Map<Channel,Set<Invoker>> channelInvoker = Maps.newConcurrentMap();
+	
 	private boolean isFirstCall = true;
 
 	@Override
 	public Response invoke(Invoker invoker, Request request) throws Throwable {
-
 		if (isFirstCall) {
 			// 此处无需同步控制, 最坏的结果不过是开始时 init()方法多执行几遍
 			init(invoker);

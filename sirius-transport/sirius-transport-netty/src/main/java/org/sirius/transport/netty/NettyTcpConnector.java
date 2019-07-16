@@ -2,6 +2,7 @@ package org.sirius.transport.netty;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.List;
 
 import org.sirius.common.util.Constants;
 import org.sirius.transport.api.Config;
@@ -11,6 +12,7 @@ import org.sirius.transport.api.Option;
 import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroup;
+import org.sirius.transport.api.channel.ChannelListener;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
@@ -33,6 +35,8 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollMode;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 public class NettyTcpConnector extends NettyConnector {
 
@@ -155,6 +159,7 @@ public class NettyTcpConnector extends NettyConnector {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Channel connect(UnresolvedAddress address, boolean async) {
 		setOptions();
@@ -178,6 +183,30 @@ public class NettyTcpConnector extends NettyConnector {
 	            io.netty.channel.Channel channel = future.channel();
 	            nettyChannel = NettyChannel.attachChannel(channel);
 	            nettyChannel.setGroup(group);
+	            List<ChannelListener> listeners = nettyChannel.getListener();
+	            
+	            future.addListener(new GenericFutureListener() {
+					@Override
+					public void operationComplete(Future future) throws Exception {
+						if(future.isSuccess()) {
+							for(ChannelListener listener :listeners) {
+								listener.onConnected(nettyChannel);
+							}
+						}
+					}
+	            });
+	            
+	            channel.closeFuture().addListener(new GenericFutureListener() {
+					@Override
+					public void operationComplete(Future future) throws Exception {
+						if(future.isSuccess()) {
+							
+							for(ChannelListener listener :listeners) {
+								listener.onClosed(nettyChannel);
+							}
+						}
+					}
+	            } );
 	        }
 			if(!async) {
 				future.sync();

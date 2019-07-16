@@ -1,6 +1,7 @@
 package org.sirius.transport.api.channel;
 
 import java.net.SocketAddress;
+import java.util.List;
 
 public interface Channel {
 
@@ -23,5 +24,9 @@ public interface Channel {
 	void close();
 	
 	Channel send(Object message) throws Exception;
+	
+	void setListener(ChannelListener listener);
+	
+	List<ChannelListener> getListener();
 	
 }
