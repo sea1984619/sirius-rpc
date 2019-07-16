@@ -5,8 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.transport.api.AddressReconnectManager;
-import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.netty.NettyConnector;
 import org.sirius.transport.netty.channel.NettyChannel;
@@ -20,10 +18,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import io.netty.util.concurrent.DefaultThreadFactory;
 
 @ChannelHandler.Sharable
 public class ReconnectHandler extends ChannelInboundHandlerAdapter {
@@ -85,7 +81,7 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 			
 			if(attempts <= ReconnectHandler.MaxAttempts && isReconnectNeeded(remoteAddress,group)) {
 				
-				logger.warn("尝试重新链接 {} ,当前第{}次", remoteAddress, attempts );
+				logger.warn("try to reconnect to {} , the {}th times ", remoteAddress, attempts );
 				
 				Bootstrap bootstrap = connector.bootstrap();
 				ChannelFuture future;

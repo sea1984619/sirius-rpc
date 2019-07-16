@@ -16,7 +16,6 @@
  */
 package org.sirius.rpc.config;
 
-
 import java.io.Serializable;
 
 /**
@@ -26,45 +25,75 @@ import java.io.Serializable;
  */
 public class ArgumentConfig extends AbstractIdConfig implements Serializable {
 
-    private static final long serialVersionUID = -2165482463925213595L;
+	private static final long serialVersionUID = -2165482463925213595L;
 
-    /**
-     * The argument index: index -1 represents not set
-     */
-    private Integer index = -1;
+	/**
+	 * The argument index: index -1 represents not set
+	 */
+	private Integer index = -1;
 
-    /**
-     * Argument type
-     */
-    private String type;
+	/**
+	 * Argument type
+	 */
+	private String type;
 
-    /**
-     * Whether the argument is the callback interface
-     */
-    private Boolean callback = false;
+	/**
+	 * Whether the argument is the callback interface
+	 */
+	private Boolean callback = false;
 
-    public Integer getIndex() {
-        return index;
-    }
+	private Boolean retry = false;
 
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
+	private int attempts = 100;
 
-    public String getType() {
-        return type;
-    }
+	private int delay = 3000;
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public Boolean getRetry() {
+		return retry;
+	}
 
-    public void setCallback(Boolean callback) {
-        this.callback = callback;
-    }
+	public void setRetry(Boolean retry) {
+		this.retry = retry;
+	}
 
-    public Boolean isCallback() {
-        return callback;
-    }
+	public int getAttempts() {
+		return attempts;
+	}
+
+	public void setAttempts(int attempts) {
+		this.attempts = attempts;
+	}
+
+	public int getDelay() {
+		return delay;
+	}
+
+	public void setDelay(int delay) {
+		this.delay = delay;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setCallback(Boolean callback) {
+		this.callback = callback;
+	}
+
+	public Boolean isCallback() {
+		return callback;
+	}
 
 }

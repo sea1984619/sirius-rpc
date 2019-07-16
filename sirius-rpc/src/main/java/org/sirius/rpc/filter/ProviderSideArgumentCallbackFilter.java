@@ -37,7 +37,8 @@ public class ProviderSideArgumentCallbackFilter implements Filter{
 					Class<?> clazz = request.getParametersType()[index];
 					Class<?>[] interfaces = callbackObject.getClass().getInterfaces();
 					Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
-					CallbackInvoker callbackInvoker = new CallbackInvoker(channel,Integer.valueOf(argument.getId()));
+					CallbackInvoker callbackInvoker = new CallbackInvoker(channel,Integer.valueOf(argument.getId()),
+							                               argument.getRetry(),argument.getAttempts(),argument.getDelay());
 					proxy = ProxyFactory.getProxy(callbackInvoker, interfaces);
 					//将参数替换为callback代理
 					request.getParameters()[index] = clazz.cast(proxy);

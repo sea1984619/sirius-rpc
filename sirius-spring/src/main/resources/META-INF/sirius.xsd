@@ -635,6 +635,21 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="argumentType">
+		<xsd:attribute name="retry" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ is retry or not ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="attempts" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ retry times. ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="delay" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[ retry delay. ]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 		<xsd:attribute name="index" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[ The argument index. ]]></xsd:documentation>
