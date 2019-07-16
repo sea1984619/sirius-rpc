@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
@@ -25,17 +28,26 @@ import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelListener;
 
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
+import io.netty.util.concurrent.DefaultThreadFactory;
+
 @AutoActive(consumerSide = true)
 @Extension(value = "consumerSideArgumentCallback", singleton = false)
 public class ConsumerSideArgumentCallbackFilter implements Filter {
 
+	private static final InternalLogger logger = InternalLoggerFactory
+			.getInstance(ConsumerSideArgumentCallbackFilter.class);
+	public final HashedWheelTimer timer = new HashedWheelTimer(
+			new DefaultThreadFactory("ConsumerSideArgumentCallbackFilter.timer", true));
 	// 缓存 : key : callbackArgument.hashcode -> value : invoker
 	private Map<Integer, Invoker> invokers = Maps.newConcurrentMap();
 	// 缓存 : key:methodName -> List<ArgumentConfig>
 	private Map<String, List<ArgumentConfig>> argumentsMap = Maps.newConcurrentMap();
-	// 缓存 : key:channel -> List<ArgumentWarper>  在当前channel关闭后,需要重试的参数集合
+	// 缓存 : key:channel -> List<ArgumentWarper> 在当前channel关闭后,需要重试的参数集合
 	private Map<Channel, List<ArgumentWarper>> retryArguments = Maps.newConcurrentMap();
-	
+
 	private boolean isFirstCall = true;
 
 	@Override
@@ -76,7 +88,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 				}
 			}
 			ArgumentCallbackRequest argRequset = new ArgumentCallbackRequest(request, arguments);
-			ArgumentWarper warper = new ArgumentWarper(invoker,argRequset);
+			ArgumentWarper warper = new ArgumentWarper(invoker, argRequset);
 			RpcInvokeContent.getContent().set("newArgumentWarper", warper);
 			request = argRequset;
 		}
@@ -100,20 +112,10 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 			channel.setListener(new ChannelListener() {
 				@Override
 				public void onClosed(Channel channel) {
-					List<ArgumentWarper> arguments =  retryArguments.get(channel);
-					for(ArgumentWarper argu : arguments) {
-						Invoker invoker = argu.getInvoker();
-						ArgumentCallbackRequest request = (ArgumentCallbackRequest) argu.getRequest();
-						request.setReconnect(true);
-						//同步调用,保证结果返回;
-						RpcInvokeContent.getContent().setInvokeType(RpcConstants.INVOKER_TYPE_SYNC);
-						RpcInvokeContent.getContent().setTimeout(8000);
-						try {
-							invoker.invoke(argu.getRequest());
-						} catch (Throwable e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+					List<ArgumentWarper> arguments = retryArguments.get(channel);
+					for (ArgumentWarper warper : arguments) {
+						RetryTask task = new RetryTask(warper);
+						timer.newTimeout(task, 1, TimeUnit.MICROSECONDS);
 					}
 				}
 			});
@@ -131,24 +133,54 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 				argumentsMap.put(method.getName(), method.getArguments());
 		}
 	}
-	
-	
+
+	private final class RetryTask implements TimerTask {
+
+		private ArgumentWarper warper;
+
+		public RetryTask(ArgumentWarper warper) {
+			this.warper = warper;
+		}
+
+		@Override
+		public void run(Timeout timeout) throws Exception {
+			Invoker invoker = warper.getInvoker();
+			ArgumentCallbackRequest request = (ArgumentCallbackRequest) warper.getRequest();
+			request.setReconnect(true);
+			// 同步调用,保证结果返回;
+			RpcInvokeContent.getContent().setInvokeType(RpcConstants.INVOKER_TYPE_SYNC);
+			RpcInvokeContent.getContent().setTimeout(8000);
+			try {
+				invoker.invoke(warper.getRequest());
+			} catch (Throwable e) {
+				logger.error("retryTask excute failed ,continue.." ,e );
+				RetryTask task = new RetryTask(warper);
+				timer.newTimeout(task, 5000, TimeUnit.MILLISECONDS);
+			}
+		}
+	}
+
 	private final class ArgumentWarper {
 		private Invoker invoker;
 		private Request request;
+
 		public ArgumentWarper(Invoker invoker, Request request) {
 			this.invoker = invoker;
 			this.request = request;
 		}
+
 		public Invoker getInvoker() {
 			return invoker;
 		}
+
 		public void setInvoker(Invoker invoker) {
 			this.invoker = invoker;
 		}
+
 		public Request getRequest() {
 			return request;
 		}
+
 		public void setRequest(Request request) {
 			this.request = request;
 		}

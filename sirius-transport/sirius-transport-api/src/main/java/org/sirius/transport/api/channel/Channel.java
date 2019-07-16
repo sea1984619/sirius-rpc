@@ -23,7 +23,7 @@ public interface Channel {
 	
 	void close();
 	
-	Channel send(Object message) throws Exception;
+	void send(Object message) throws Exception;
 	
 	void setListener(ChannelListener listener);
 	
