@@ -184,37 +184,20 @@ public class NettyTcpConnector extends NettyConnector {
 				io.netty.channel.Channel channel = future.channel();
 				nettyChannel = NettyChannel.attachChannel(channel);
 				nettyChannel.setGroup(group);
-				List<ChannelListener> listeners = nettyChannel.getListener();
-
-				future.addListener(new GenericFutureListener() {
-					@Override
-					public void operationComplete(Future future) throws Exception {
-
-						if (future.isSuccess()) {
-							for (ChannelListener listener : listeners) {
-								try {
-									listener.onConnected(nettyChannel);
-								} catch (Throwable t) {
-									logger.error("execute channellistener.onConnected() failed  on channel {}",channel.toString(),t);
-									continue;
-								}
-							}
-						}
-
-					}
-				});
-
+				
 				channel.closeFuture().addListener(new GenericFutureListener() {
 					@Override
 					public void operationComplete(Future future) throws Exception {
-
 						if (future.isSuccess()) {
-							for (ChannelListener listener : listeners) {
-								try {
-									listener.onClosed(nettyChannel);
-								} catch (Throwable t) {
-									logger.error("execute channellistener.onClosed() failed on channel {} ", channel.toString(),t);
-									continue;
+							List<ChannelListener> listeners = nettyChannel.getListener();
+							if(listeners != null) {
+								for (ChannelListener listener : listeners) {
+									try {
+										listener.onClosed(nettyChannel);
+									} catch (Throwable t) {
+										logger.error("execute channellistener.onClosed() failed on channel {} ", channel.toString(),t);
+										continue;
+									}
 								}
 							}
 						}

@@ -23,6 +23,7 @@ import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
+import org.sirius.transport.api.channel.ChannelListener;
 
 @AutoActive(consumerSide = true)
 @Extension(value = "consumerSideArgumentCallback", singleton = false)
@@ -84,6 +85,12 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 	@Override
 	public Response onResponse(Response res) {
 			Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
+			channel.setListener(new ChannelListener() {
+				@Override
+				public void onClosed(Channel channel) {
+				System.out.println("关闭壳 挂 ");
+				}
+			});
 		    return res;
 	}
 	
