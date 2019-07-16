@@ -2,13 +2,9 @@ package org.sirius.rpc.filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
-import org.sirius.common.concurrent.ConcurrentSet;
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
@@ -19,6 +15,7 @@ import org.sirius.rpc.callback.ArgumentCallbackRequest;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.MethodConfig;
+import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
@@ -108,8 +105,10 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 						Invoker invoker = argu.getInvoker();
 						ArgumentCallbackRequest request = (ArgumentCallbackRequest) argu.getRequest();
 						request.setReconnect(true);
+						//同步调用,保证结果返回;
+						RpcInvokeContent.getContent().setInvokeType(RpcConstants.INVOKER_TYPE_SYNC);
+						RpcInvokeContent.getContent().setTimeout(5000);
 						try {
-							
 							invoker.invoke(argu.getRequest());
 						} catch (Throwable e) {
 							// TODO Auto-generated catch block

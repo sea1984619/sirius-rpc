@@ -17,8 +17,14 @@ public class Request implements Serializable{
     protected String invokeType;
 	protected transient long timestamp;
 	protected transient Class<?> returnType;
+	protected int timeout;
 	
-	
+	public int getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
 	public Class<?> getReturnType() {
 		return returnType;
 	}

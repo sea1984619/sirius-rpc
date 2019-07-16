@@ -2,6 +2,7 @@ package org.sirius.rpc.consumer.invoke;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
@@ -24,16 +25,26 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 		cluster = new AbstractCluster<T>(consumerConfig);
 	}
 
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public Response invoke(Request request) throws Throwable {
 
 		Response response = null;
 		if (!consumerConfig.isGeneric()) {
-            // 找到调用类型， generic的时候类型在filter里进行判断
-            request.setInvokeType(consumerConfig.getMethodInvokeType(request.getMethodName()));
-        }
+			// 找到调用类型， generic的时候类型在filter里进行判断
+			String invokeType = RpcInvokeContent.getContent().getInvokeType();
+			if (invokeType != null) {
+				request.setInvokeType(invokeType);
+				// 仅供单次调用
+				RpcInvokeContent.getContent().setInvokeType(null);
+			} else {
+				request.setInvokeType(consumerConfig.getMethodInvokeType(request.getMethodName()));
+			}
+			int timeout =  RpcInvokeContent.getContent().getTimeout();
+			if(timeout != 0) {
+				request.s
+			}
+		}
 		try {
 			response = cluster.invoke(request);
 		} catch (Throwable t) {
