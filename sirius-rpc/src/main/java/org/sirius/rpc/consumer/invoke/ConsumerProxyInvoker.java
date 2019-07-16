@@ -35,15 +35,21 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 			String invokeType = RpcInvokeContent.getContent().getInvokeType();
 			if (invokeType != null) {
 				request.setInvokeType(invokeType);
-				// 仅供单次调用
+				// 调用一次就作废
 				RpcInvokeContent.getContent().setInvokeType(null);
 			} else {
 				request.setInvokeType(consumerConfig.getMethodInvokeType(request.getMethodName()));
 			}
-			int timeout =  RpcInvokeContent.getContent().getTimeout();
-			if(timeout != 0) {
-				request.s
-			}
+		}
+		
+		int timeout =  RpcInvokeContent.getContent().getTimeout();
+		if(timeout != 0) {
+			request.setTimeout(timeout);
+			// 调用一次就作废
+			RpcInvokeContent.getContent().setTimeout(0);
+		}else {
+			timeout = consumerConfig.getMethodTimeout(request.getMethodName());
+			request.setTimeout(timeout);
 		}
 		try {
 			response = cluster.invoke(request);

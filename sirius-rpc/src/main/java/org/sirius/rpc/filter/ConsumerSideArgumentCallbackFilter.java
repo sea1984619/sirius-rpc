@@ -107,7 +107,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 						request.setReconnect(true);
 						//同步调用,保证结果返回;
 						RpcInvokeContent.getContent().setInvokeType(RpcConstants.INVOKER_TYPE_SYNC);
-						RpcInvokeContent.getContent().setTimeout(5000);
+						RpcInvokeContent.getContent().setTimeout(8000);
 						try {
 							invoker.invoke(argu.getRequest());
 						} catch (Throwable e) {

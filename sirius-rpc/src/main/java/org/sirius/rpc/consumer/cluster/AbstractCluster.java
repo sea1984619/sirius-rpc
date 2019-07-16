@@ -80,7 +80,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		try {
 			channel.send(request);
 			RpcInvokeContent.getContent().setFuture(null);
-			int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
+			int timeout = request.getTimeout();
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
 				try {
