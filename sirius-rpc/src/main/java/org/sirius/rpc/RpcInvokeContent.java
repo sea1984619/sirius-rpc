@@ -20,15 +20,25 @@ public class RpcInvokeContent {
 	};
 
 	private int timeout;
+	private String invokeType;
+
 	private Map values = Maps.newHashMap();
 	private Future future;
-	
+
 	public static RpcInvokeContent getContent() {
 		return Local.get();
 	}
 
 	public static void setLocalContent(RpcInvokeContent content) {
 		Local.set(content);
+	}
+
+	public String getInvokeType() {
+		return invokeType;
+	}
+
+	public void setInvokeType(String invokeType) {
+		this.invokeType = invokeType;
 	}
 
 	public int getTimeout() {
@@ -38,18 +48,24 @@ public class RpcInvokeContent {
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
+
 	public void set(Object key, Object value) {
 		values.put(key, value);
 	}
 
-	public Object get(Object key)  {
+	public Object get(Object key) {
 		return values.get(key);
+	}
+
+	public void remove(Object key) {
+		values.remove(key);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Future<T> getFuture() {
 		return (Future<T>) future;
 	}
+
 	public void setFuture(Future<?> future) {
 		this.future = future;
 	}
