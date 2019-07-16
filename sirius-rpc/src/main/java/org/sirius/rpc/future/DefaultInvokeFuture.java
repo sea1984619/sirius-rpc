@@ -92,7 +92,7 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 					filter.onResponse(response);
 				}
 			}
+			future.complete(response);
 		}
-		future.complete(response);
 	}
 }

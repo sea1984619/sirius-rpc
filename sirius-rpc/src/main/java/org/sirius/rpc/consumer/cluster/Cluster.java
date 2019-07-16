@@ -6,8 +6,11 @@ import org.sirius.rpc.registry.ProviderInfoListener;
 
 public  abstract class Cluster<T> implements Invoker<T> ,ProviderInfoListener {
 
-	private ConsumerConfig<T> consumerConfig;
+	protected ConsumerConfig<T> consumerConfig;
 	
+	public Cluster(ConsumerConfig<T> consumerConfig) {
+		this.consumerConfig = consumerConfig;
+	}
 	public void setConsumerConfig(ConsumerConfig<T> consumerConfig) {
 		this.consumerConfig = consumerConfig;
 	}

@@ -42,7 +42,7 @@ public class RpcInvokeContent {
 		values.put(key, value);
 	}
 
-	public Object get(Object key) throws InterruptedException, ExecutionException {
+	public Object get(Object key)  {
 		return values.get(key);
 	}
 

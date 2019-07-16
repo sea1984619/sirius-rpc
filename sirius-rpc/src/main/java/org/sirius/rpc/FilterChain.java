@@ -13,6 +13,7 @@ import org.sirius.transport.api.Response;
 
 public class FilterChain {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Invoker buildeFilterChain(Invoker invoker, List<Filter> filters) {
 
 		AbstractInvoker last = (AbstractInvoker) invoker;
@@ -30,7 +31,6 @@ public class FilterChain {
 		}
 		return last;
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	public static List<Filter> loadFilter(String filter,boolean needConsumerSide) {

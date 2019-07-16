@@ -21,9 +21,9 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 
 		if (response instanceof ArgumentCallbackResponse) {
 			handleArgumentCallbackResponse(channel, response);
+		}else {
+			 DefaultInvokeFuture.received(response);
 		}
-
-		 DefaultInvokeFuture.received(response);
 	}
 
 	private void handleArgumentCallbackResponse(Channel channel, Response response) {

@@ -34,7 +34,6 @@ import org.sirius.transport.netty.NettyTcpConnector;
 public class AbstractCluster<T> extends Cluster<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
-	private ConsumerConfig<T> consumerConfig;
 	private Router router;
 	private LoadBalancer loadBalancer;
 	private Connector connector;
@@ -43,8 +42,9 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
 	private Channel channel;
 
-	public AbstractCluster() {
-//		init();
+	public AbstractCluster(ConsumerConfig<T> consumerConfig) {
+		super(consumerConfig);
+		init();
 	}
 
 	private void init() {
@@ -79,6 +79,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		DefaultInvokeFuture<Response> future;
 		try {
 			channel.send(request);
+			RpcInvokeContent.getContent().setFuture(null);
 			int timeout = consumerConfig.getMethodTimeout(request.getMethodName());
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
@@ -104,7 +105,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 					request.getClassName() + request.getMethodName(), t);
 			throw t;
 		}
-
+		RpcInvokeContent.getContent().set("channel", channel);
 		return response;
 	}
 

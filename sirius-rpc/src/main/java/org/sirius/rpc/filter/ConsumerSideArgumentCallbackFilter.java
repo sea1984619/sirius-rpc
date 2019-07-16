@@ -3,11 +3,14 @@ package org.sirius.rpc.filter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.Maps;
 import org.sirius.rpc.Filter;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.callback.ArgumentCallbackRequest;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
@@ -18,6 +21,7 @@ import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
+import org.sirius.transport.api.channel.Channel;
 
 @AutoActive(consumerSide = true)
 @Extension(value = "consumerSideArgumentCallback", singleton = false)
@@ -56,12 +60,12 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 								+ " must not be a Array or a Collection or a primitive type");
 					}
 					Invoker callbackInvoker = invokers.get(callbackArument);
-					int hashcode = callbackArument.hashCode();
+					int hashcode = System.identityHashCode(callbackArument);
 					if (callbackInvoker == null) {
 						//将callbackArument包装为代理invoker ,以供调用
 						callbackInvoker = ProxyFactory.getInvoker(callbackArument, clazz);
 						invokers.putIfAbsent(hashcode, callbackInvoker);
-						callbackInvoker = invokers.get(callbackArument);
+						callbackInvoker = invokers.get(hashcode);
 					}
 				
 					DefaultInvokeFuture.setCallbackInvoker(hashcode, callbackInvoker);
@@ -75,6 +79,12 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 		return invoker.invoke(request);
 	}
 
+	@Override
+	public Response onResponse(Response res) {
+			Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");
+		    return res;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	private void init(Invoker invoker) {
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;

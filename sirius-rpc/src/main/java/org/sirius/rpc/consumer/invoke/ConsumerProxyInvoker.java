@@ -17,16 +17,13 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 	private Cluster cluster;
 	private ConsumerConfig<T> consumerConfig;
 
+	@SuppressWarnings("unchecked")
 	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
-		cluster = new AbstractCluster();
-		cluster.setConsumerConfig(consumerConfig);
-		
+		cluster = new AbstractCluster<T>(consumerConfig);
 	}
 
-	
-	
 	
 	@Override
 	@SuppressWarnings("unchecked")
