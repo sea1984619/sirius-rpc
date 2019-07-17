@@ -10,7 +10,6 @@ public class ArgumentCallbackRequest extends Request {
 	private static final long serialVersionUID = -1599291269995568269L;
 
 	private List<ArgumentConfig> argumentconfig;
-	private Long id;
 	private boolean reconnect = false;
 	private Request requset;
 
@@ -25,14 +24,6 @@ public class ArgumentCallbackRequest extends Request {
 
 	public Request getRequset() {
 		return this.requset;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public boolean isReconnect() {

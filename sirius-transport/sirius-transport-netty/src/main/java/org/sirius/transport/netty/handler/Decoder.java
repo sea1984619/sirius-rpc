@@ -1,4 +1,4 @@
-package org.sirius.transport.netty.handler.acceptor;
+package org.sirius.transport.netty.handler;
 
 import org.sirius.common.util.Signal;
 import org.sirius.common.util.SystemPropertyUtil;
@@ -9,6 +9,7 @@ import org.sirius.serialization.api.SerializerFactory;
 import org.sirius.serialization.api.io.InputBuf;
 import org.sirius.transport.api.ProtocolHeader;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 import org.sirius.transport.api.exception.IoSignals;
 import org.sirius.transport.netty.NettyTcpAcceptor;
 import org.sirius.transport.netty.buf.NettyInputBuf;
@@ -17,19 +18,24 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
-public class RequestDecoder extends LengthFieldBasedFrameDecoder {
+public class Decoder extends LengthFieldBasedFrameDecoder{
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyTcpAcceptor.class);
 	// 协议体最大限制, 默认5M
-	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("io.decoder.max.body.size", 1024 * 1024 * 5);
+	private static final int MAX_BODY_SIZE = SystemPropertyUtil.getInt("io.decoder.max.body.size",1024 * 1024 * 5);
 
-	public RequestDecoder() {
-		this(MAX_BODY_SIZE, 12, 4);
-	}
 
-	public RequestDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength) {
+	public Decoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength) {
 		super(maxFrameLength, lengthFieldOffset, lengthFieldLength);
 	}
+	
+	public Decoder() {
+    	this(MAX_BODY_SIZE, 12, 4);
+        if (USE_COMPOSITE_BUF) {
+            setCumulator(COMPOSITE_CUMULATOR);
+        }
+    }
+	private static final boolean USE_COMPOSITE_BUF = SystemPropertyUtil.getBoolean("io.decoder.composite.buf", false);
 
 	protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
 		ByteBuf buf = (ByteBuf) super.decode(ctx, in);
@@ -46,7 +52,13 @@ public class RequestDecoder extends LengthFieldBasedFrameDecoder {
 			checkBodySize(bodySize);
 			Serializer serializer = SerializerFactory.getSerializer(ProtocolHeader.serializerCode(sign));
 			InputBuf input = new NettyInputBuf(buf.readRetainedSlice(bodySize));
-			return serializer.readObject(input, Request.class);
+			Object  msg = null;
+			if(ProtocolHeader.messageCode(sign) == ProtocolHeader.REQUEST) {
+				msg = serializer.readObject(input, Request.class);
+			}else if(ProtocolHeader.messageCode(sign) == ProtocolHeader.RESPONSE) {
+				msg = serializer.readObject(input, Response.class);
+			}
+			return msg;
 		} finally {
 			buf.release();
 		}
@@ -65,3 +77,4 @@ public class RequestDecoder extends LengthFieldBasedFrameDecoder {
 		return size;
 	}
 }
+

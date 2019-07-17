@@ -14,7 +14,7 @@ public class RequestMessageBuilder {
 		re.setParameters(params);
 		re.setParametersType(method.getParameterTypes());
 		re.setReturnType(method.getReturnType());
-		re.setSerializerCode(SerializerType.JAVA.value());
+		re.setSerializerCode(SerializerType.HESSIAN.value());
 		return re;
 	}
 }

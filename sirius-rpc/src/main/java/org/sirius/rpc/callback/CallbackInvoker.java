@@ -39,22 +39,22 @@ public class CallbackInvoker implements Invoker {
 		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
 		response.setSerializerCode(request.getSerializerCode());
-		syncSend(response,request);
-		return response;
+		Response res = syncSend(response,request);
+		return res;
 	}
 	
-	private void syncSend(ArgumentCallbackResponse response,Request request) throws Throwable{
+	private Response syncSend(ArgumentCallbackResponse response,Request request) throws Throwable{
 		DefaultInvokeFuture<Response> future;
+		Response res = null;
 		try {
-			System.out.println("request id: "+ request.invokeId());
 			future = new DefaultInvokeFuture<Response>(channel, request, 3000, null);
 			channel.send(response);
-			future.getResponse();
+			res = future.getResponse();
+			return res;
 		}catch(Throwable t) {
 			//只有网络连接原因 或者 缓存区满 才重试
 			if(!channel.isActive() || !channel.isWritable()|| t instanceof TimeoutException) {
 				logger.error("callback response send failed ,waiting to retry...", t);
-				System.out.println("发送失败"+request.getParameters()[0].toString());;
 				if(retry) {
 					int attempt = attempts;
 					timer.newTimeout(new RetryTask(response,request,attempt), delay, TimeUnit.MILLISECONDS);
@@ -65,7 +65,7 @@ public class CallbackInvoker implements Invoker {
 				throw t;
 			}
 		}
-		
+		return res;
 	}
 
 	private final class RetryTask implements TimerTask{
@@ -84,7 +84,6 @@ public class CallbackInvoker implements Invoker {
 				if(channel.isActive() && channel.isWritable()) {
 					try {
 						syncSend(response,request);
-						logger.info("发送成功！！！！！{}",request.getParameters()[0].toString());
 					}catch(Throwable t) {
 						if(!channel.isActive()|| !channel.isWritable()) {
 							--attempts;

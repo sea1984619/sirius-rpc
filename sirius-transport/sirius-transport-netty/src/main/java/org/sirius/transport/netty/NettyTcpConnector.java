@@ -18,11 +18,11 @@ import org.sirius.transport.api.channel.ChannelListener;
 import org.sirius.transport.api.exception.ConnectFailedException;
 import org.sirius.transport.netty.channel.NettyChannel;
 import org.sirius.transport.netty.config.TcpConnectorConfig;
+import org.sirius.transport.netty.handler.Decoder;
+import org.sirius.transport.netty.handler.Encoder;
 import org.sirius.transport.netty.handler.IdleStateHandler;
 import org.sirius.transport.netty.handler.connector.ConnectorHandler;
 import org.sirius.transport.netty.handler.connector.ReconnectHandler;
-import org.sirius.transport.netty.handler.connector.RequestEncoder;
-import org.sirius.transport.netty.handler.connector.ResponseDecoder;
 import org.sirius.transport.netty.handler.connector.WriteIdleEventHandler;
 
 import io.netty.bootstrap.Bootstrap;
@@ -45,7 +45,8 @@ public class NettyTcpConnector extends NettyConnector {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(NettyTcpConnector.class);
 	private final boolean isNative;// use native transport
 	private ReconnectHandler reconnectHandler = new ReconnectHandler(this);
-	private RequestEncoder encoder = new RequestEncoder();
+//	private RequestEncoder encoder = new RequestEncoder();
+	private Encoder encoder = new Encoder();
 	private ConnectorHandler connectorHandler = new ConnectorHandler();
 	private WriteIdleEventHandler writeIdleEventHandler = new WriteIdleEventHandler();
 
@@ -73,7 +74,7 @@ public class NettyTcpConnector extends NettyConnector {
 	public ChannelHandler[] getHandlers() {
 		ChannelHandler[] handler = { reconnectHandler,
 				new IdleStateHandler(timer, 0, Constants.WRITER_IDLE_TIME_SECONDS, 0), writeIdleEventHandler,
-				new ResponseDecoder(), encoder, connectorHandler };
+				new Decoder(), encoder, connectorHandler };
 		return handler;
 	}
 
