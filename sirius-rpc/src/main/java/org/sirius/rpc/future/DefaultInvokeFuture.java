@@ -72,6 +72,7 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		try {
 			response = (Response) super.get(timeout, TimeUnit.MILLISECONDS);
 		} catch (TimeoutException e) {
+			futures.remove(id);		
 			throw e;
 		}
 	    return response;

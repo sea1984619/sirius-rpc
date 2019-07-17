@@ -1,9 +1,11 @@
 package org.sirius.rpc.callback;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
@@ -37,16 +39,25 @@ public class CallbackInvoker implements Invoker {
 		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
 		response.setSerializerCode(request.getSerializerCode());
+		syncSend(response,request);
+		return response;
+	}
+	
+	private void syncSend(ArgumentCallbackResponse response,Request request) throws Throwable{
+		DefaultInvokeFuture<Response> future;
 		try {
+			System.out.println("request id: "+ request.invokeId());
+			future = new DefaultInvokeFuture<Response>(channel, request, 3000, null);
 			channel.send(response);
+			future.getResponse();
 		}catch(Throwable t) {
 			//只有网络连接原因 或者 缓存区满 才重试
-			if(!channel.isActive() || !channel.isWritable()) {
-//				logger.error("callback response send failed ,the channel is closed or writeBuffer full,waiting to retry...", t);
+			if(!channel.isActive() || !channel.isWritable()|| t instanceof TimeoutException) {
+				logger.error("callback response send failed ,waiting to retry...", t);
 				System.out.println("发送失败"+request.getParameters()[0].toString());;
 				if(retry) {
 					int attempt = attempts;
-					timer.newTimeout(new RetryTask(response,attempt), delay, TimeUnit.MILLISECONDS);
+					timer.newTimeout(new RetryTask(response,request,attempt), delay, TimeUnit.MILLISECONDS);
 				}
 				
 			}else {
@@ -54,15 +65,16 @@ public class CallbackInvoker implements Invoker {
 				throw t;
 			}
 		}
-		//此处返回的response不会有任何实际作用, 仅仅是为了不返回空值而返回
-		return response;
+		
 	}
-	
+
 	private final class RetryTask implements TimerTask{
         private ArgumentCallbackResponse response;
+        private Request request;
         private int attempts;
-        public RetryTask(ArgumentCallbackResponse response,int attempts) {
+        public RetryTask(ArgumentCallbackResponse response,Request request,int attempts) {
         	this.response = response;
+        	this.request = request;
         	this.attempts = attempts;
         	
         }
@@ -71,20 +83,20 @@ public class CallbackInvoker implements Invoker {
 			if(attempts > 0) {
 				if(channel.isActive() && channel.isWritable()) {
 					try {
-						channel.send(response);
-						logger.info("发送成功！！！！！{}",response.getResult());
+						syncSend(response,request);
+						logger.info("发送成功！！！！！{}",request.getParameters()[0].toString());
 					}catch(Throwable t) {
 						if(!channel.isActive()|| !channel.isWritable()) {
 							--attempts;
-//							logger.error("callback response send retry failed ,the channel is closed or writeBuffer full, The remaining retry times is {}", attempts ,t);
-							timer.newTimeout(new RetryTask(response,attempts), delay, TimeUnit.MILLISECONDS);
+							logger.error("callback response send retry failed , The remaining retry times is {}", attempts ,t);
+							timer.newTimeout(new RetryTask(response,request,attempts), delay, TimeUnit.MILLISECONDS);
 							
 						}else {
-							logger.error("callback response send retry failed, but don't retry, because the reason is not that the channel is closed or writeBuffer full", t);
+							logger.error("callback response send retry failed, but don't retry, ", t);
 						}
 					}
 				}else {
-					timer.newTimeout(new RetryTask(response,attempts), delay, TimeUnit.MILLISECONDS);
+					timer.newTimeout(new RetryTask(response,request,attempts), delay, TimeUnit.MILLISECONDS);
 				}
 			}
 		}

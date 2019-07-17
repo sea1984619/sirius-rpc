@@ -44,6 +44,16 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 			handlerException(channel, request, t);
 		}
 	}
+	
+	@Override
+	public void handlerResponse(Channel channel, Response response) {
+		try {
+			executor.execute(new ResponseTask(channel,response));
+		} catch (Throwable t) {
+			ThrowUtil.throwException(t);
+		}
+		
+	}
 
 	@Override
 	public void handlerException(Channel channel, Request request, Throwable t) {
@@ -63,5 +73,7 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 	public void shutdown() {
 		executor.shutdown();
 	}
+
+	
 
 }

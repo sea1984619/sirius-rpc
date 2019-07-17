@@ -9,6 +9,7 @@ import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.transport.api.ProviderProcessor;
 import org.sirius.transport.api.Request;
+import org.sirius.transport.api.Response;
 import org.sirius.transport.netty.channel.NettyChannel;
 
 import io.netty.channel.Channel;
@@ -28,14 +29,17 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 	public void setProcessor(ProviderProcessor processor) {
 		this.providerProcessor = processor;
 	}
-	
+
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		Channel channel = (Channel) ctx.channel();
 		NettyChannel nettyChannel = NettyChannel.attachChannel(channel);
 		if (msg instanceof Request) {
 			providerProcessor.handlerRequest(nettyChannel, (Request) msg);
-		} else {
+		} else if(msg instanceof Response){
+			System.out.println("接受到response");
+			providerProcessor.handlerResponse(nettyChannel, (Response)msg);
+		}else {
 			logger.warn("Unexpected message type received: {}, channel: {}.", msg.getClass(), channel);
 		}
 	}
@@ -62,7 +66,8 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 		if (!ch.isWritable()) {
 			// 当前channel的缓冲区(OutboundBuffer)大小超过了WRITE_BUFFER_HIGH_WATER_MARK
 			if (logger.isWarnEnabled()) {
-				logger.warn("{} is not writable, high water mask: {}, the number of flushed entries that are not written yet: {}.",
+				logger.warn(
+						"{} is not writable, high water mask: {}, the number of flushed entries that are not written yet: {}.",
 						ch, config.getWriteBufferHighWaterMark(), ch.unsafe().outboundBuffer().size());
 			}
 
@@ -70,7 +75,8 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 		} else {
 			// 曾经高于高水位线的OutboundBuffer现在已经低于WRITE_BUFFER_LOW_WATER_MARK了
 			if (logger.isWarnEnabled()) {
-				logger.warn("{} is writable(rehabilitate), low water mask: {}, the number of flushed entries that are not written yet: {}.",
+				logger.warn(
+						"{} is writable(rehabilitate), low water mask: {}, the number of flushed entries that are not written yet: {}.",
 						ch, config.getWriteBufferLowWaterMark(), ch.unsafe().outboundBuffer().size());
 			}
 
@@ -86,15 +92,16 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 			logger.error("I/O signal was caught: {}, force to close channel: {}.", ((Signal) cause).name(), ch);
 			ch.close();
 		} else if (cause instanceof IOException) {
-			logger.error("I/O exception was caught: {}, force to close channel: {}.", StackTraceUtil.stackTrace(cause),ch);
+			logger.error("I/O exception was caught: {}, force to close channel: {}.", StackTraceUtil.stackTrace(cause),
+					ch);
 			ch.close();
 		} else if (cause instanceof DecoderException) {
-			logger.error("Decoder exception was caught: {}, force to close channel: {}.",StackTraceUtil.stackTrace(cause), ch);
+			logger.error("Decoder exception was caught: {}, force to close channel: {}.",
+					StackTraceUtil.stackTrace(cause), ch);
 			ch.close();
 		} else {
 			logger.error("Unexpected exception was caught: {}, channel: {}.", StackTraceUtil.stackTrace(cause), ch);
 		}
 	}
-	
-	
+
 }

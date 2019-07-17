@@ -33,8 +33,9 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		Long callbackId = argResponse.invokeId();
 		Invoker invoker = DefaultInvokeFuture.getCallbackInvoker(callbackId.intValue());
 		try {
-			// 暂时不考虑返回结果,后续再加入
-			invoker.invoke(request);
+			Response _response = invoker.invoke(request);
+			channel.send(_response);
+			System.out.println("回复id: "+_response.invokeId());
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
