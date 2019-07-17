@@ -18,7 +18,7 @@ public class CallbackInvoker implements Invoker {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(CallbackInvoker.class);
 	public final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("CallbackInvoker.timer", true));
-	private final Channel channel;
+	private Channel channel;
 	private final int id;
 	private boolean retry;
 	private int attempts ;
@@ -30,6 +30,9 @@ public class CallbackInvoker implements Invoker {
 		this.attempts = attempts;
 		this.delay = delay;
 	}
+	public void swapChannel(Channel channel) {
+		this.channel = channel;
+	}
 	public Response invoke(Request request) throws Throwable {
 		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
@@ -37,9 +40,10 @@ public class CallbackInvoker implements Invoker {
 		try {
 			channel.send(response);
 		}catch(Throwable t) {
-			//只有网络连接原因才重试
-			if(!channel.isActive()) {
-				logger.error("callback response send failed ,the channel is closed ,waiting to reconnect...", t);
+			//只有网络连接原因 或者 缓存区满 才重试
+			if(!channel.isActive() || !channel.isWritable()) {
+//				logger.error("callback response send failed ,the channel is closed or writeBuffer full,waiting to retry...", t);
+				System.out.println("发送失败"+request.getParameters()[0].toString());;
 				if(retry) {
 					int attempt = attempts;
 					timer.newTimeout(new RetryTask(response,attempt), delay, TimeUnit.MILLISECONDS);
@@ -65,17 +69,22 @@ public class CallbackInvoker implements Invoker {
 		@Override
 		public void run(Timeout timeout) throws Exception {
 			if(attempts > 0) {
-				try {
-					channel.send(response);
-				}catch(Throwable t) {
-					if(!channel.isActive()) {
-						--attempts;
-						logger.error("callback response send retry failed ,the channel is closed, The remaining retry times is {}", attempts ,t);
-						timer.newTimeout(new RetryTask(response,attempts), delay, TimeUnit.MILLISECONDS);
-						
-					}else {
-						logger.error("callback response send retry failed, but don't retry, because the reason is not that the channel is closed", t);
+				if(channel.isActive() && channel.isWritable()) {
+					try {
+						channel.send(response);
+						logger.info("发送成功！！！！！{}",response.getResult());
+					}catch(Throwable t) {
+						if(!channel.isActive()|| !channel.isWritable()) {
+							--attempts;
+//							logger.error("callback response send retry failed ,the channel is closed or writeBuffer full, The remaining retry times is {}", attempts ,t);
+							timer.newTimeout(new RetryTask(response,attempts), delay, TimeUnit.MILLISECONDS);
+							
+						}else {
+							logger.error("callback response send retry failed, but don't retry, because the reason is not that the channel is closed or writeBuffer full", t);
+						}
 					}
+				}else {
+					timer.newTimeout(new RetryTask(response,attempts), delay, TimeUnit.MILLISECONDS);
 				}
 			}
 		}

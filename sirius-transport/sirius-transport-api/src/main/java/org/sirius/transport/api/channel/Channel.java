@@ -13,6 +13,8 @@ public interface Channel {
 	
 	boolean isActive();
 	
+	boolean isWritable();
+	
 	boolean isAutoRead();
 	
 	ChannelGroup getGroup();

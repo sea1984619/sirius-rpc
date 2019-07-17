@@ -91,4 +91,9 @@ public class NettyChannel extends AbstractChannel {
 		this.group = group;
 	}
 
+	@Override
+	public boolean isWritable() {
+		return channel.isWritable();
+	}
+
 }

@@ -13,6 +13,6 @@ public class ReferTest {
 		 Shop shop = (Shop) ctx.getBean("shop");
          Apple apple = shop.buyApple();		
          System.out.println(apple.color);
-		 Thread.sleep(2000000);
+//	
 	}
 }

@@ -15,7 +15,10 @@ public class PersonImpl implements Person{
                     try {  
                         for(Map.Entry<String, EatListener> entry : listeners.entrySet()){  
                            try {  
-                               entry.getValue().onEat(getChanged(entry.getKey()));  
+                        	   String s = getChanged(entry.getKey());
+                        	   System.out.println("发送:"+s);
+                               entry.getValue().onEat(s); 
+                               
                            } catch (Throwable t) {  
                                System.out.println("发生错误");
                            }  
@@ -35,9 +38,7 @@ public class PersonImpl implements Person{
 
 	
 	public void addListener(String key, EatListener listener) {  
-		System.out.println(listener.hashCode());
         listeners.put(String.valueOf(listener.hashCode()), listener);  
-        System.out.println("当前数量为:"+listeners.size());
     }  
        
     private String getChanged(String key) {  

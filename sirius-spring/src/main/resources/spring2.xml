@@ -10,9 +10,9 @@
 
 
 
-	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person" registry ="one" directUrl = "127.0.0.1:18090">
+	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person" registry ="one" directUrl = "121.63.139.171:18090">
 	   <sirius:method name = "eat" timeout = "30000">
-	     <sirius:argument index ="0" callback = "true"  attempts ="5" ></sirius:argument>
+	     <sirius:argument index ="0" callback = "true"  retry = "true"  ></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
 	

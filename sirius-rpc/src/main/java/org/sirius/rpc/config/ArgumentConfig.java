@@ -46,7 +46,7 @@ public class ArgumentConfig extends AbstractIdConfig implements Serializable {
 
 	private int attempts = 100;
 
-	private int delay = 3000;
+	private int delay = 10000;
 
 	public Boolean getRetry() {
 		return retry;
