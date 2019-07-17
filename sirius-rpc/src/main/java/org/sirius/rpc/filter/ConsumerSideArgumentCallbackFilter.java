@@ -78,7 +78,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 					Invoker callbackInvoker = invokers.get(hashcode);
 					if (callbackInvoker == null) {
 						// 将callbackArument包装为代理invoker ,以供调用
-						callbackInvoker = ProxyFactory.getInvoker(callbackArument, clazz);
+						callbackInvoker = ProxyFactory.getInvokerNotCache(callbackArument, clazz);
 						invokers.putIfAbsent(hashcode, callbackInvoker);
 						callbackInvoker = invokers.get(hashcode);
 					}
