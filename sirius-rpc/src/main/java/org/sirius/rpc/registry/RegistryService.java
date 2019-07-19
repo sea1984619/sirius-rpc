@@ -9,7 +9,7 @@ public interface RegistryService {
 
 	public void register(ProviderConfig config);
 
-	public void Unregister(ProviderConfig config);
+	public void unRegister(ProviderConfig config);
 
 	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config ,ProviderInfoListener listener);
 

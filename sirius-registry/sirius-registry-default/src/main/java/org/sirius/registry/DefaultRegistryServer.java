@@ -223,6 +223,12 @@ public class DefaultRegistryServer extends NettyTcpAcceptor {
 			
 		}
 
+		@Override
+		public void handlerResponse(Channel channel, Response response) {
+			// TODO Auto-generated method stub
+			
+		}
+
 	}
 
 	public static void main(String args[]) throws InterruptedException, ExecutionException {

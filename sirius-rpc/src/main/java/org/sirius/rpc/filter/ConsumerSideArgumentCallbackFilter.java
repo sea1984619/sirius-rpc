@@ -135,9 +135,9 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 	}
 
 	private final class RetryTask implements TimerTask {
-
+		
 		private ArgumentWarper warper;
-
+		
 		public RetryTask(ArgumentWarper warper) {
 			this.warper = warper;
 		}

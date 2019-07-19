@@ -23,79 +23,82 @@ public class CallbackInvoker implements Invoker {
 	private Channel channel;
 	private final int id;
 	private boolean retry;
-	private int attempts ;
+	private int attempts;
 	private int delay;
-	public CallbackInvoker(Channel channel ,Integer id,boolean retry,int attempts ,int delay) {
+
+	public CallbackInvoker(Channel channel, Integer id, boolean retry, int attempts, int delay) {
 		this.channel = channel;
 		this.id = id;
 		this.retry = retry;
 		this.attempts = attempts;
 		this.delay = delay;
 	}
+	
 	public void swapChannel(Channel channel) {
 		this.channel = channel;
 	}
+
 	public Response invoke(Request request) throws Throwable {
 		ArgumentCallbackResponse response = new ArgumentCallbackResponse(id);
 		response.setResult(request);
 		response.setSerializerCode(request.getSerializerCode());
-		Response res = syncSend(response,request);
-		return res;
-	}
-	
-	private Response syncSend(ArgumentCallbackResponse response,Request request) throws Throwable{
-		DefaultInvokeFuture<Response> future;
 		Response res = null;
 		try {
-			future = new DefaultInvokeFuture<Response>(channel, request, 3000, null);
-			channel.send(response);
-			res = future.getResponse();
-			return res;
-		}catch(Throwable t) {
-			//只有网络连接原因 或者 缓存区满 才重试
-			if(!channel.isActive() || !channel.isWritable()|| t instanceof TimeoutException) {
+			res = syncSend(response, request);
+		} catch (Throwable t) {
+			// 只有网络连接原因 或者 缓存区满 才重试
+			if (!channel.isActive() || !channel.isWritable() || t instanceof TimeoutException) {
 				logger.error("callback response send failed ,waiting to retry...", t);
-				if(retry) {
+				if (retry) {
 					int attempt = attempts;
-					timer.newTimeout(new RetryTask(response,request,attempt), delay, TimeUnit.MILLISECONDS);
+					timer.newTimeout(new RetryTask(response, request, attempt), delay, TimeUnit.MILLISECONDS);
+				}else {
+					throw t;
 				}
-				
-			}else {
+			} else {
 				logger.error("callback response send failed ", t);
 				throw t;
 			}
 		}
+
 		return res;
 	}
 
-	private final class RetryTask implements TimerTask{
-        private ArgumentCallbackResponse response;
-        private Request request;
-        private int attempts;
-        public RetryTask(ArgumentCallbackResponse response,Request request,int attempts) {
-        	this.response = response;
-        	this.request = request;
-        	this.attempts = attempts;
-        	
-        }
+	private Response syncSend(ArgumentCallbackResponse response, Request request) throws Throwable {
+		DefaultInvokeFuture<Response> future = new DefaultInvokeFuture<Response>(channel, request, 3000, null);
+		channel.send(response);
+		return future.getResponse();
+	}
+
+	private final class RetryTask implements TimerTask {
+		private ArgumentCallbackResponse response;
+		private Request request;
+		private int attempts;
+
+		public RetryTask(ArgumentCallbackResponse response, Request request, int attempts) {
+			this.response = response;
+			this.request = request;
+			this.attempts = attempts;
+		}
 		@Override
 		public void run(Timeout timeout) throws Exception {
-			if(attempts > 0) {
-				if(channel.isActive() && channel.isWritable()) {
+			if (attempts > 0) {
+				if (channel.isActive() && channel.isWritable()) {
 					try {
-						syncSend(response,request);
-					}catch(Throwable t) {
-						if(!channel.isActive()|| !channel.isWritable()) {
+						syncSend(response, request);
+					} catch (Throwable t) {
+						if (!channel.isActive() || !channel.isWritable()) {
 							--attempts;
-							logger.error("callback response send retry failed , The remaining retry times is {}", attempts ,t);
-							timer.newTimeout(new RetryTask(response,request,attempts), delay, TimeUnit.MILLISECONDS);
-							
-						}else {
+							logger.error("callback response send retry failed , The remaining retry times is {}",
+									attempts, t);
+							timer.newTimeout(new RetryTask(response, request, attempts), delay, TimeUnit.MILLISECONDS);
+
+						} else {
 							logger.error("callback response send retry failed, but don't retry, ", t);
 						}
 					}
-				}else {
-					timer.newTimeout(new RetryTask(response,request,attempts), delay, TimeUnit.MILLISECONDS);
+				} else {
+					timer.newTimeout(new RetryTask(response, request, attempts), delay, TimeUnit.MILLISECONDS);
 				}
 			}
 		}

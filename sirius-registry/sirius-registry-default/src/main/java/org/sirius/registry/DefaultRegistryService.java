@@ -12,6 +12,7 @@ import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.ServerConfig;
 import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.rpc.registry.RegistryService;
 
 @SuppressWarnings("rawtypes")
@@ -53,16 +54,8 @@ public class DefaultRegistryService implements RegistryService {
 		AllProviderInfoSet.addAll(infoList);
 	}
 
-	@Override
-	public void Unregister(ProviderConfig provider) {
-	}
 
-	@Override
-	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig consumer) {
-		String uniqueId = consumer.getUniqueId();
-		ConcurrentHashSet<ProviderInfo> set  = AllProviderInfoMap.get(uniqueId);
-		return set;
-	}
+	
 
 	@Override
 	public void unSubscribe(ConsumerConfig consumer) {
@@ -89,5 +82,17 @@ public class DefaultRegistryService implements RegistryService {
 	
 
 	public static void main(String args[]) throws InterruptedException, ExecutionException {
+	}
+
+	@Override
+	public void unRegister(ProviderConfig config) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config, ProviderInfoListener listener) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -1,65 +1,61 @@
 package org.sirius.registry;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-import org.sirius.common.concurrent.ConcurrentHashSet;
-import org.sirius.common.util.Maps;
+import org.sirius.common.ext.Extension;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
-import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.config.RegistryConfig;
+import org.sirius.rpc.registry.AbstractRegistry;
 import org.sirius.rpc.registry.ProviderInfoListener;
-import org.sirius.rpc.registry.Registry;
-import org.sirius.rpc.registry.RegistryServer;
+import org.sirius.rpc.registry.RegistryFactory;
+import org.sirius.rpc.registry.RegistryService;
 
-
-public class DefaultRegistry implements Registry{
+@Extension(value = "sirius", singleton = false)
+public class DefaultRegistry extends AbstractRegistry{
 	
-	private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
-	@Override
-	public void register(ProviderConfig config) {
-		try {
-			doRegister();
-			}catch(Throwable t) {
-				
-			}
+	private RegistryService service;
+	
+	public RegistryService getService() {
+		return service;
 	}
 
-	private void doRegister() {
-		// TODO Auto-generated method stub
+	public void setService(RegistryService service) {
+		this.service = service;
+	}
+
+	public DefaultRegistry(RegistryConfig config) {
+		super(config);
+	}
+
+	@Override
+	protected void init() {
+		
+	}
+	@Override
+	protected void doRegister(ProviderConfig config) {
+		service.register(config);
 		
 	}
 
 	@Override
-	public void Unregister(ProviderConfig config) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void unSubscribe(ConsumerConfig config) {
-		// TODO Auto-generated method stub
-		
+	protected void doUnSubscribe(ConsumerConfig config) {
+		service.unSubscribe(config);
 	}
 
 	@Override
-	public void start() {
-		// TODO Auto-generated method stub
-		
+	protected void doUnregister(ProviderConfig config) {
+		service.unRegister(config);
 	}
 
 	@Override
-	public void shutdown() {
-		// TODO Auto-generated method stub
+	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
+		service.subscribe(config, listener);
+	}
+	public static void main(String agrs[]) {
+		RegistryConfig config = new RegistryConfig();
+		config.setAddress("127.0.0.1:5222");
+		System.out.println(RegistryFactory.getRegistry(config).get(0));
 		
 	}
 
-	@Override
-	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config, ProviderInfoListener listener) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
