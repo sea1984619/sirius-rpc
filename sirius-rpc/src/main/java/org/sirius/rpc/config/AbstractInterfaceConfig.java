@@ -374,7 +374,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 
 	public S addMethod(MethodConfig method) {
 		if(methods == null) {
-			synchronized(methods) {
+			synchronized(this) {
 				if(methods == null)
 				     methods = new HashMap<String,MethodConfig>();
 			}

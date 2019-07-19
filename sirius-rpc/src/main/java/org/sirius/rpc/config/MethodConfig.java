@@ -285,7 +285,7 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
   	}
   	public MethodConfig addArgument(ArgumentConfig argument) {
   		if(arguments == null) {
-  			synchronized(arguments) {
+  			synchronized(this) {
   				if(arguments == null) {
   					arguments = new ArrayList<>();
   				}
