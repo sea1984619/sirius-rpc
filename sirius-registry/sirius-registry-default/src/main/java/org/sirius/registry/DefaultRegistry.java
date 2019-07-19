@@ -28,6 +28,7 @@ public class DefaultRegistry extends AbstractRegistry{
 
 	@Override
 	protected void init() {
+		ConsumerConfig config = new ConsumerConfig();
 		
 	}
 	@Override
