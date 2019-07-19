@@ -4,6 +4,7 @@ import org.sirius.common.ext.Extension;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.RegistryConfig;
+import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.registry.AbstractRegistry;
 import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.rpc.registry.RegistryFactory;
@@ -28,8 +29,13 @@ public class DefaultRegistry extends AbstractRegistry{
 
 	@Override
 	protected void init() {
-		ConsumerConfig config = new ConsumerConfig();
-		
+		RegistryConfig registryConfig = getRegistryConfig();
+		ConsumerConfig<RegistryService> consumerConfig = new ConsumerConfig<RegistryService>();
+		consumerConfig.setDirectUrl(registryConfig.getAddress())
+		              .setInterface(RegistryService.class.getName())
+		              .setInvokeType(RpcConstants.INVOKER_TYPE_SYNC)
+		              .setTimeout(3000);
+		service = consumerConfig.refer();   
 	}
 	@Override
 	protected void doRegister(ProviderConfig config) {
@@ -54,7 +60,8 @@ public class DefaultRegistry extends AbstractRegistry{
 	public static void main(String agrs[]) {
 		RegistryConfig config = new RegistryConfig();
 		config.setAddress("127.0.0.1:5222");
-		System.out.println(RegistryFactory.getRegistry(config).get(0));
+		DefaultRegistry s = (DefaultRegistry)RegistryFactory.getRegistry(config).get(0);
+		s.register(null);
 		
 	}
 

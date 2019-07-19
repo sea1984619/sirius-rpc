@@ -206,7 +206,7 @@ public final class ClassUtil {
      */
     public static <T> T newInstanceWithArgs(Class<T> clazz, Class<?>[] argTypes, Object[] args)
         throws RuntimeException {
-        if (argTypes != null && argTypes.length != 0) {
+    	if (argTypes == null && args == null) {
             return newInstance(clazz);
         }
         try {

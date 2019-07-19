@@ -26,6 +26,9 @@ public abstract class AbstractRegistry implements Registry {
 		init();
 	}
 
+	protected RegistryConfig getRegistryConfig() {
+		return this.config;
+	}
 	@Override
 	public void register(ProviderConfig config) {
 

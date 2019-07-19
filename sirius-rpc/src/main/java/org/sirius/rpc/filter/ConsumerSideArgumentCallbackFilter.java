@@ -128,9 +128,11 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 		AbstractInvoker _invoker = (AbstractInvoker) invoker;
 		ConsumerConfig consumerConfig = (ConsumerConfig) _invoker.getConfig();
 		Map<String, MethodConfig> methods = consumerConfig.getMethods();
-		for (MethodConfig method : methods.values()) {
-			if (method.getArguments() != null)
-				argumentsMap.put(method.getName(), method.getArguments());
+		if(methods != null) {
+			for (MethodConfig method : methods.values()) {
+				if (method.getArguments() != null)
+					argumentsMap.put(method.getName(), method.getArguments());
+			}
 		}
 	}
 
