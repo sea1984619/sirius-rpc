@@ -57,7 +57,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 			try {
 				UnresolvedAddress address = parseUrl(url);
 				for(int i = 0; i < connectionNum;i++) {
-					Channel channel = connector.connect(address);
+					Channel channel = connector.connect(address,false);
 					channelGroupList.add(channel.getGroup());
 				}
 			}catch(Throwable t) {

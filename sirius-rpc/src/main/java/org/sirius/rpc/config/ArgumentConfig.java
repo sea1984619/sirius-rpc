@@ -52,44 +52,50 @@ public class ArgumentConfig extends AbstractIdConfig implements Serializable {
 		return retry;
 	}
 
-	public void setRetry(Boolean retry) {
+	public ArgumentConfig setRetry(Boolean retry) {
 		this.retry = retry;
+		return this;
 	}
 
 	public int getAttempts() {
 		return attempts;
 	}
 
-	public void setAttempts(int attempts) {
+	public ArgumentConfig setAttempts(int attempts) {
 		this.attempts = attempts;
+		return this;
 	}
 
 	public int getDelay() {
 		return delay;
 	}
 
-	public void setDelay(int delay) {
+	public ArgumentConfig setDelay(int delay) {
 		this.delay = delay;
+		return this;
 	}
 
 	public Integer getIndex() {
 		return index;
 	}
 
-	public void setIndex(Integer index) {
+	public ArgumentConfig setIndex(Integer index) {
 		this.index = index;
+		return this;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public ArgumentConfig setType(String type) {
 		this.type = type;
+		return this;
 	}
 
-	public void setCallback(Boolean callback) {
+	public ArgumentConfig setCallback(Boolean callback) {
 		this.callback = callback;
+		return this;
 	}
 
 	public Boolean isCallback() {

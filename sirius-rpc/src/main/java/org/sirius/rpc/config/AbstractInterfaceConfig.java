@@ -372,6 +372,16 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return castThis();
 	}
 
+	public S addMethod(MethodConfig method) {
+		if(methods == null) {
+			synchronized(methods) {
+				if(methods == null)
+				     methods = new HashMap<String,MethodConfig>();
+			}
+		}
+		methods.putIfAbsent(method.getName(), method);
+		return castThis();
+	}
 	/**
 	 * Gets serialization.
 	 *

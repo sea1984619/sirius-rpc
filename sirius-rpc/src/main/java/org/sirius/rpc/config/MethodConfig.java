@@ -1,6 +1,7 @@
 package org.sirius.rpc.config;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,9 +63,7 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
     protected String               compress;
 
     
-  
-
-	private List<ArgumentConfig> arguments;
+	private volatile List<ArgumentConfig> arguments;
 
     /*-------------配置项结束----------------*/
     /**
@@ -280,7 +279,19 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
   		return arguments;
   	}
 
-  	public void setArguments(List<ArgumentConfig> arguments) {
+  	public MethodConfig setArguments(List<ArgumentConfig> arguments) {
   		this.arguments = arguments;
+  		return this;
+  	}
+  	public MethodConfig addArgument(ArgumentConfig argument) {
+  		if(arguments == null) {
+  			synchronized(arguments) {
+  				if(arguments == null) {
+  					arguments = new ArrayList<>();
+  				}
+  			}
+  		}
+  		arguments.add(argument);
+  		return this;
   	}
 }

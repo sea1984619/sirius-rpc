@@ -1,7 +1,9 @@
 package org.sirius.registry;
 
 import org.sirius.common.ext.Extension;
+import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.MethodConfig;
 import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
@@ -30,11 +32,21 @@ public class DefaultRegistry extends AbstractRegistry{
 	@Override
 	protected void init() {
 		RegistryConfig registryConfig = getRegistryConfig();
+		MethodConfig  methodConfig = new MethodConfig();
+		methodConfig.setName("subscribe");
+		ArgumentConfig argumentConfig = new ArgumentConfig();
+		argumentConfig.setIndex(1)
+		              .setCallback(true)
+		              .setRetry(true);
+		methodConfig.addArgument(argumentConfig);
 		ConsumerConfig<RegistryService> consumerConfig = new ConsumerConfig<RegistryService>();
 		consumerConfig.setDirectUrl(registryConfig.getAddress())
 		              .setInterface(RegistryService.class.getName())
 		              .setInvokeType(RpcConstants.INVOKER_TYPE_SYNC)
-		              .setTimeout(3000);
+		              .setTimeout(3000)
+		              .addMethod(methodConfig)
+		              .initConfigValueCache();
+		
 		service = consumerConfig.refer();   
 	}
 	@Override
