@@ -19,6 +19,7 @@ import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.rpc.load.balance.RandomLoadBalancer;
 import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoGroup;
 import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
@@ -56,15 +57,15 @@ public class AbstractCluster<T> extends Cluster<T> {
 			int connectionNum = consumerConfig.getConnectionNum();
 			try {
 				UnresolvedAddress address = parseUrl(url);
-				for(int i = 0; i < connectionNum;i++) {
-					Channel channel = connector.connect(address,false);
+				for (int i = 0; i < connectionNum; i++) {
+					Channel channel = connector.connect(address, false);
 					channelGroupList.add(channel.getGroup());
 				}
-			}catch(Throwable t) {
-				logger.error("connect to DirectUrl {} failed, please check the url is available or not" ,url);
+			} catch (Throwable t) {
+				logger.error("connect to DirectUrl {} failed, please check the url is available or not", url);
 				throw t;
 			}
-		}else {
+		} else {
 			List<RegistryConfig> registrys = consumerConfig.getRegistryRef();
 		}
 	}
@@ -82,7 +83,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		DefaultInvokeFuture<Response> future;
 		Channel channel;
 		try {
-			ChannelGroup  group = loadBalancer.select(channelGroupList.getChannelGroup());
+			ChannelGroup group = loadBalancer.select(channelGroupList.getChannelGroup());
 			channel = group.next();
 			channel.send(request);
 			RpcInvokeContent.getContent().setFuture(null);
@@ -123,8 +124,39 @@ public class AbstractCluster<T> extends Cluster<T> {
 
 	private UnresolvedAddress parseUrl(String url) {
 		int index = url.indexOf(":");
-		String host = url.substring(0,index).trim();
+		String host = url.substring(0, index).trim();
 		int port = Integer.valueOf(url.substring(index + 1).trim());
-		return new UnresolvedSocketAddress(host,port);
+		return new UnresolvedSocketAddress(host, port);
 	}
+
+	@Override
+	public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

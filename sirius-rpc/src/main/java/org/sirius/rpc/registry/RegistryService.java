@@ -11,7 +11,7 @@ public interface RegistryService {
 
 	public void unRegister(ProviderConfig config);
 
-	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config ,ProviderInfoListener listener);
+	public void subscribe(ConsumerConfig config ,ProviderInfoListener listener);
 
 	public void unSubscribe(ConsumerConfig config);
 }

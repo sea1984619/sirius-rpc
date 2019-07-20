@@ -14,7 +14,7 @@ public class ServiceBean extends ProviderConfig implements ApplicationContextAwa
 
 	private static final long serialVersionUID = -1012109173695636437L;
 	
-	private ApplicationContext context;
+	private transient ApplicationContext context;
 	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -13,7 +13,7 @@
    <bean id= "personImpl" class = "org.sirius.spring.schema.PersonImpl"/>
 	<sirius:service interface="org.sirius.spring.schema.Person" ref = "personImpl"></sirius:service>
 	<sirius:server  port ="18090" protocol = "netty" ></sirius:server>
-	<sirius:registry id = "one"></sirius:registry>
+	<sirius:registry address = "127.0.0.1:20080"></sirius:registry>
 
     <bean id= "shopImpl" class = "org.sirius.spring.test.ShopImpl"/>
     <sirius:service interface="org.sirius.spring.test.Shop" ref = "shopImpl"></sirius:service>

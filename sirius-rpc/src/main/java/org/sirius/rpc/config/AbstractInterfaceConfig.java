@@ -77,13 +77,13 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	/**
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
-	protected String filter;
+	protected transient String filter;
 	
-	protected List<Filter> filterRef;
+	protected transient List<Filter> filterRef;
 	
-	protected String registry;
+	protected transient String registry;
 
-	protected List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
+	protected transient List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
 
 	/**
 	 * 方法配置，可配置多个

@@ -53,7 +53,7 @@ public abstract class AbstractRegistry implements Registry {
 	}
 
 	@Override
-	public ConcurrentHashSet<ProviderInfo> subscribe(ConsumerConfig config, ProviderInfoListener listener) {
+	public void subscribe(ConsumerConfig config, ProviderInfoListener listener) {
 		try {
 			doSubscribe(config, listener);
 		} catch (Exception e) {
@@ -61,7 +61,6 @@ public abstract class AbstractRegistry implements Registry {
 			logger.error("subscribe failed ,wait to retry .." ,e);
 			timer.newTimeout(new SubscribeRetryTask(config,listener), 3000, TimeUnit.MILLISECONDS);
 		}
-		return null;
 	}
 
 	@Override

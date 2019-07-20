@@ -1,7 +1,9 @@
 package org.sirius.rpc.registry;
 
 
-public interface RegistryServer extends RegistryService{
-	
+public interface RegistryServer {
 
+	void start();
+	
+	void close();
 }

@@ -1,6 +1,8 @@
 package org.sirius.rpc.config;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.sirius.common.util.ClassUtil;
+import org.sirius.common.util.ReflectUtils;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
@@ -16,6 +19,8 @@ import org.sirius.rpc.RpcException;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
+import org.sirius.rpc.registry.Registry;
+import org.sirius.rpc.registry.RegistryFactory;
 import org.sirius.rpc.server.RpcServer;
 import org.sirius.rpc.server.ServerFactory;
 
@@ -30,7 +35,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	private static final long serialVersionUID = -3058073881775315962L;
 
 	private final static InternalLogger LOGGER = InternalLoggerFactory.getInstance(ProviderConfig.class);
-	
+
 	private volatile boolean isExport = false;
 
 	/*---------- 参数配置项开始 ------------*/
@@ -40,7 +45,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	 */
 	protected transient T ref;
 
-	protected String server;
+	protected transient String server;
 
 	protected List<ServerConfig> serverRef = new ArrayList<ServerConfig>();
 
@@ -76,7 +81,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 	/**
 	 * 启动器
 	 */
-	protected String bootstrap;
+	protected transient String bootstrap;
 
 	/**
 	 * 自定义线程池
@@ -133,6 +138,12 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 
 	public void setServerRef(List<ServerConfig> serverRef) {
 		this.serverRef = serverRef;
+	}
+
+	public void addServer(ServerConfig server) {
+		synchronized (serverRef) {
+			this.serverRef.add(server);
+		}
 	}
 
 	/**
@@ -455,9 +466,9 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 		return false;
 	}
 
-	public synchronized void  export() {
-		if(isExport)
-			return ;
+	public synchronized void export() {
+		if (isExport)
+			return;
 		try {
 			List<Filter> filter = FilterChain.loadFilter(getFilter(), false);
 			AbstractInvoker invoker = (AbstractInvoker) ProxyFactory.getInvoker(ref, getProxyClass());
@@ -476,9 +487,33 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 					throw e;
 				}
 			}
+
+			List<RegistryConfig> registryConfigs = getRegistryRef();
+			for (RegistryConfig registryConfig : registryConfigs) {
+				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
+				for (Registry registry : registrys) {
+					// 不copy的话 ,发送的是serviceBean....
+					registry.register(copyOf(this));
+				}
+			}
 		} catch (Throwable e) {
 			throw new RpcException("export service : " + getInterface() + " failed", e);
 		}
 		isExport = true;
+	}
+
+	private ProviderConfig copyOf(ProviderConfig oldConfig) {
+		ProviderConfig newConfig = new ProviderConfig();
+		Map<String, Field> fields = ReflectUtils.getBeanPropertyFields(oldConfig.getClass());
+
+		for (Field field : fields.values()) {
+			try {
+				field.set(newConfig, field.get(oldConfig));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+		return newConfig;
 	}
 }
