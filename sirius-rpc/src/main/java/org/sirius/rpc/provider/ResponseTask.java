@@ -13,7 +13,6 @@ public class ResponseTask  implements Runnable{
 
 	@Override
 	public void run() {
-		 System.out.println("task id "+ response.invokeId());
 		 DefaultInvokeFuture.received(response);
 	}
 }

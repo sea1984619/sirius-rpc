@@ -1,5 +1,6 @@
 package org.sirius.rpc.registry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,9 +9,11 @@ import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.CommonUtils;
 import org.sirius.rpc.config.RpcConstants;
 
-public class ProviderInfoGroup {
+public class ProviderInfoGroup implements Serializable{
 
-	 /**
+	private static final long serialVersionUID = 8299207912719081539L;
+
+	/**
      * 服务分组名称
      */
     protected final String   name;

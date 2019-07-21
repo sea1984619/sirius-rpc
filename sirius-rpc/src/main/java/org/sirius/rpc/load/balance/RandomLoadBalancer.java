@@ -8,6 +8,9 @@ public class RandomLoadBalancer<T> implements LoadBalancer<T> {
 	
 	@Override
 	public T select(List<T> list) {
+		if(list.isEmpty()) {
+			throw new IllegalStateException("this is No available channelGroupList ");
+		}
 	   ThreadLocalRandom  random = ThreadLocalRandom.current();
 		return list.get(random.nextInt(list.size()));
 	}

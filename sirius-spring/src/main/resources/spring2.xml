@@ -10,15 +10,14 @@
 
 
 
-	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person" registry ="one" directUrl = "121.63.139.171:18090">
+	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person">
 	   <sirius:method name = "eat" timeout = "30000">
 	     <sirius:argument index ="0" callback = "true"  retry = "true"  ></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
-	
-	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" registry ="one" >
+	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" >
 	   <sirius:method name = "buyApple" timeout = "3000" >
 	   </sirius:method>
 	</sirius:reference>
-	<sirius:registry id = "one"></sirius:registry>
+	<sirius:registry address = "127.0.0.1:20080"></sirius:registry>
 </beans>

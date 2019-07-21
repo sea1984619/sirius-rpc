@@ -1,5 +1,6 @@
 package org.sirius.rpc.consumer.cluster;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.sirius.common.ext.Extensible;
@@ -21,6 +22,8 @@ import org.sirius.rpc.load.balance.RandomLoadBalancer;
 import org.sirius.rpc.registry.ProviderInfo;
 import org.sirius.rpc.registry.ProviderInfoGroup;
 import org.sirius.rpc.registry.ProviderInfoListener;
+import org.sirius.rpc.registry.Registry;
+import org.sirius.rpc.registry.RegistryFactory;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Request;
@@ -43,12 +46,14 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private DirectoryGroupList directory;
 	private ChannelGroupList channelGroupList = new ChannelGroupList();
 	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
+	private ProviderInfoListener listener ;
 
 	public AbstractCluster(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
 		init();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void init() {
 		connector = new NettyTcpConnector();
 		connector.setConsumerProcessor(consumerProcessor);
@@ -66,7 +71,16 @@ public class AbstractCluster<T> extends Cluster<T> {
 				throw t;
 			}
 		} else {
-			List<RegistryConfig> registrys = consumerConfig.getRegistryRef();
+			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
+			listener = new DefaultProviderInfoListener(connector,channelGroupList);
+			for (RegistryConfig registryConfig : registryConfigs) {
+				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
+				for (Registry registry : registrys) {
+					// 不copy的话 ,发送的是referenceBean....
+					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
+					registry.subscribe(newConfig, listener);
+				}
+			}
 		}
 	}
 
@@ -129,34 +143,43 @@ public class AbstractCluster<T> extends Cluster<T> {
 		return new UnresolvedSocketAddress(host, port);
 	}
 
-	@Override
-	public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
-		// TODO Auto-generated method stub
+	public class DefaultProviderInfoListener implements ProviderInfoListener{
+
+		private Connector connector;
+		private ChannelGroupList groupList;
+		public DefaultProviderInfoListener(Connector connector ,ChannelGroupList groupList) {
+			this.connector = connector;
+			this.groupList = groupList;
+		}
+		@Override
+		public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
-
-	@Override
-	public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

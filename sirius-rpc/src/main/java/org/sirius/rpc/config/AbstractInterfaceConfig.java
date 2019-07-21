@@ -17,6 +17,7 @@
 package org.sirius.rpc.config;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.sirius.common.util.BeanUtils;
 import org.sirius.common.util.CommonUtils;
+import org.sirius.common.util.ReflectUtils;
 import org.sirius.common.util.StringUtils;
+import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
@@ -78,9 +81,9 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 * 过滤器配置别名，多个用逗号隔开
 	 */
 	protected transient String filter;
-	
+
 	protected transient List<Filter> filterRef;
-	
+
 	protected transient String registry;
 
 	protected transient List<RegistryConfig> registryRef = new ArrayList<RegistryConfig>();
@@ -373,15 +376,16 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	}
 
 	public S addMethod(MethodConfig method) {
-		if(methods == null) {
-			synchronized(this) {
-				if(methods == null)
-				     methods = new HashMap<String,MethodConfig>();
+		if (methods == null) {
+			synchronized (this) {
+				if (methods == null)
+					methods = new HashMap<String, MethodConfig>();
 			}
 		}
 		methods.putIfAbsent(method.getName(), method);
 		return castThis();
 	}
+
 	/**
 	 * Gets serialization.
 	 *
@@ -566,7 +570,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 	 *
 	 * @return the boolean
 	 */
-	
+
 	public boolean isCache() {
 		return cache;
 	}
@@ -796,14 +800,14 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		BeanUtils.copyPropertiesToMap(this, StringUtils.EMPTY, context);
 		configValueCache = Collections.unmodifiableMap(context);
 	}
-	
-	public  Map<String, Object> getConfigValueCache(boolean rebuild) {
+
+	public Map<String, Object> getConfigValueCache(boolean rebuild) {
 		if (configValueCache != null && !rebuild) {
 			return configValueCache;
 		}
-		
-		synchronized(this) {
-			if (configValueCache != null ) {
+
+		synchronized (this) {
+			if (configValueCache != null) {
 				return configValueCache;
 			}
 			initConfigValueCache();
@@ -811,4 +815,19 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return configValueCache;
 	}
 
+	public <V extends AbstractInterfaceConfig<T, S>> V copyOf(V oldConfig, Class<V> clazz) {
+		V newConfig = null;
+		try {
+			newConfig = clazz.newInstance();
+			Map<String, Field> fields = ReflectUtils.getBeanPropertyFields(oldConfig.getClass());
+			for (Field field : fields.values()) {
+
+				field.set(newConfig, field.get(oldConfig));
+
+			}
+		} catch (Throwable e) {
+			ThrowUtil.throwException(e);
+		}
+		return  newConfig;
+	}
 }

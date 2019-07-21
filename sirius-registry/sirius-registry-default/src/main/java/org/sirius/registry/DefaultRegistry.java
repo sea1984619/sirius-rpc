@@ -69,13 +69,4 @@ public class DefaultRegistry extends AbstractRegistry{
 	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
 		service.subscribe(config, listener);
 	}
-	public static void main(String agrs[]) {
-		RegistryConfig config = new RegistryConfig();
-		config.setAddress("127.0.0.1:5222");
-		DefaultRegistry s = (DefaultRegistry)RegistryFactory.getRegistry(config).get(0);
-		s.register(null);
-		
-	}
-
-
 }

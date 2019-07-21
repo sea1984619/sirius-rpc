@@ -84,7 +84,8 @@ public class DefaultRegistryService implements RegistryService {
 
 	@Override
 	public  void subscribe(ConsumerConfig config, ProviderInfoListener listener) {
-		String key  = config.getUniqueId();
+		System.out.println(config.getInterface());
+		String key  = config.getInterface();
 		ConcurrentHashSet<ProviderInfoListener> listenerSet = consumerListerners.get(key);
 		if(listenerSet == null) {
 			listenerSet = new ConcurrentHashSet<ProviderInfoListener>();

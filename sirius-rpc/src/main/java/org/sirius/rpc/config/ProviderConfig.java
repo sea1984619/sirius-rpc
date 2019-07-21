@@ -493,27 +493,12 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
 					// 不copy的话 ,发送的是serviceBean....
-					registry.register(copyOf(this));
+					registry.register(copyOf(this,ProviderConfig.class));
 				}
 			}
 		} catch (Throwable e) {
 			throw new RpcException("export service : " + getInterface() + " failed", e);
 		}
 		isExport = true;
-	}
-
-	private ProviderConfig copyOf(ProviderConfig oldConfig) {
-		ProviderConfig newConfig = new ProviderConfig();
-		Map<String, Field> fields = ReflectUtils.getBeanPropertyFields(oldConfig.getClass());
-
-		for (Field field : fields.values()) {
-			try {
-				field.set(newConfig, field.get(oldConfig));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-				continue;
-			}
-		}
-		return newConfig;
 	}
 }

@@ -35,7 +35,6 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		try {
 			Response _response = invoker.invoke(request);
 			channel.send(_response);
-			System.out.println("回复id: "+_response.invokeId());
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

@@ -35,7 +35,7 @@ public class NettyChannelGroup implements ChannelGroup {
 	public Channel next() {
 		int size = channels.size();
 		if(size == 0)
-			throw new IllegalStateException("No channel");
+			throw new IllegalStateException("all channel has colesd and removed ,there is No available channel");
 		if(size == 1)
 			return  channels.get(0);
 		

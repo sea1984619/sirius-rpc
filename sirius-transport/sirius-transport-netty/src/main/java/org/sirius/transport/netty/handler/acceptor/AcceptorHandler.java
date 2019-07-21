@@ -37,7 +37,6 @@ public class AcceptorHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof Request) {
 			providerProcessor.handlerRequest(nettyChannel, (Request) msg);
 		} else if(msg instanceof Response){
-			System.out.println("接受到response");
 			providerProcessor.handlerResponse(nettyChannel, (Response)msg);
 		}else {
 			logger.warn("Unexpected message type received: {}, channel: {}.", msg.getClass(), channel);

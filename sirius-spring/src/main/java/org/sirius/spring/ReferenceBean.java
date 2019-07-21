@@ -13,7 +13,7 @@ import org.springframework.context.ApplicationContextAware;
 public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T>, ApplicationContextAware, InitializingBean, DisposableBean {
 	
 	private static final long serialVersionUID = 6747208266832553385L;
-	private ApplicationContext context;
+	private transient ApplicationContext context;
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {

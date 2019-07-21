@@ -43,7 +43,7 @@ public class ProviderSideArgumentCallbackFilter implements Filter{
 					proxy = ProxyFactory.getProxyNotCache(callbackInvoker, interfaces);
 					proxys.putIfAbsent(id, proxy);
 					//将参数替换为callback代理
-					request.getParameters()[index] = clazz.cast(proxy);
+					request.getParameters()[index] = proxy;
 				}else {
 					//执行到这里,或许表明客户端因为网络闪断又重新执行一次注册方法,原有的channle不能用了,需要替换为新的可用channel
 					  if(callbackRequest.isReconnect()) {
