@@ -3,6 +3,7 @@ package org.sirius.rpc.consumer.invoke;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.RpcInvokeContent;
+import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
@@ -17,11 +18,13 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerProxyInvoker.class);
 	private Cluster cluster;
 	private ConsumerConfig<T> consumerConfig;
+	private RpcClient client;
 
 	@SuppressWarnings("unchecked")
-	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig) {
+	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig,RpcClient client) {
 		super(consumerConfig);
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
+		this.client = client;
 		cluster = new AbstractCluster<T>(consumerConfig);
 	}
 

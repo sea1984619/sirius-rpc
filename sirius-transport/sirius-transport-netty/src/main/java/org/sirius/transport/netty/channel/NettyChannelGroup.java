@@ -45,7 +45,7 @@ public class NettyChannelGroup implements ChannelGroup {
 		if(channel != null)
 			return channel;
 		else 
-			throw new IllegalStateException("No channel");
+			throw new IllegalStateException("all channel has colesd and removed ,there is No available channel");
 	}
 
 	@Override

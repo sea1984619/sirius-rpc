@@ -9,6 +9,7 @@ import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
+import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
@@ -47,6 +48,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private ChannelGroupList channelGroupList = new ChannelGroupList();
 	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
 	private ProviderInfoListener listener ;
+	private RpcClient client;
 
 	public AbstractCluster(ConsumerConfig<T> consumerConfig) {
 		super(consumerConfig);
@@ -97,6 +99,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		DefaultInvokeFuture<Response> future;
 		Channel channel;
 		try {
+			ChannelGroupList channelGroupList = client.getGroupList(consumerConfig.getInterface());
 			ChannelGroup group = loadBalancer.select(channelGroupList.getChannelGroup());
 			channel = group.next();
 			channel.send(request);
