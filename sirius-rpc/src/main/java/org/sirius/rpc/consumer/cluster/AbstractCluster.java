@@ -43,47 +43,14 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private Router router;
 	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
-	private Connector connector;
-	private DirectoryGroupList directory;
-	private ChannelGroupList channelGroupList = new ChannelGroupList();
 	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
 	private ProviderInfoListener listener ;
 	private RpcClient client;
 
-	public AbstractCluster(ConsumerConfig<T> consumerConfig) {
+	public AbstractCluster(ConsumerConfig<T> consumerConfig,RpcClient client) {
 		super(consumerConfig);
-		init();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void init() {
-		connector = new NettyTcpConnector();
-		connector.setConsumerProcessor(consumerProcessor);
-		if (consumerConfig.getDirectUrl() != null) {
-			String url = consumerConfig.getDirectUrl();
-			int connectionNum = consumerConfig.getConnectionNum();
-			try {
-				UnresolvedAddress address = parseUrl(url);
-				for (int i = 0; i < connectionNum; i++) {
-					Channel channel = connector.connect(address, false);
-					channelGroupList.add(channel.getGroup());
-				}
-			} catch (Throwable t) {
-				logger.error("connect to DirectUrl {} failed, please check the url is available or not", url);
-				throw t;
-			}
-		} else {
-			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
-			listener = new DefaultProviderInfoListener(connector,channelGroupList);
-			for (RegistryConfig registryConfig : registryConfigs) {
-				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
-				for (Registry registry : registrys) {
-					// 不copy的话 ,发送的是referenceBean....
-					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
-					registry.subscribe(newConfig, listener);
-				}
-			}
-		}
+		this.client =client;
+		
 	}
 
 	public void setConsumerConfig(ConsumerConfig<T> consumerConfig) {
@@ -112,8 +79,8 @@ public class AbstractCluster<T> extends Cluster<T> {
 					response = future.getResponse();
 					RpcInvokeContent.getContent().setFuture(null);
 				} catch (Exception e) {
-					logger.error("invocation of {} get result failed, the reason maybe {}",
-							request.getClassName() + request.getMethodName(), e);
+					logger.error("invocation of {}.{}get result failed, the reason maybe {}",
+							request.getClassName(),request.getMethodName(), e);
 					throw e;
 				}
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
@@ -125,8 +92,8 @@ public class AbstractCluster<T> extends Cluster<T> {
 			}
 
 		} catch (Throwable t) {
-			logger.error("invocation of {} sended failed, the reason maybe {}",
-					request.getClassName() + request.getMethodName(), t);
+			logger.error("invocation of {}.{} sended failed, the reason maybe {}",
+					request.getClassName(),request.getMethodName(), t);
 			throw t;
 		}
 		RpcInvokeContent.getContent().set("channel", channel);
@@ -137,52 +104,5 @@ public class AbstractCluster<T> extends Cluster<T> {
 		Response response = new Response(request.invokeId());
 		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
 		return response;
-	}
-
-	private UnresolvedAddress parseUrl(String url) {
-		int index = url.indexOf(":");
-		String host = url.substring(0, index).trim();
-		int port = Integer.valueOf(url.substring(index + 1).trim());
-		return new UnresolvedSocketAddress(host, port);
-	}
-
-	public class DefaultProviderInfoListener implements ProviderInfoListener{
-
-		private Connector connector;
-		private ChannelGroupList groupList;
-		public DefaultProviderInfoListener(Connector connector ,ChannelGroupList groupList) {
-			this.connector = connector;
-			this.groupList = groupList;
-		}
-		@Override
-		public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
-			// TODO Auto-generated method stub
-			
-		}
-		
 	}
 }

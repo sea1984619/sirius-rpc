@@ -25,7 +25,7 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 		super(consumerConfig);
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
 		this.client = client;
-		cluster = new AbstractCluster<T>(consumerConfig);
+		cluster = new AbstractCluster<T>(consumerConfig,client);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 		try {
 			response = cluster.invoke(request);
 		} catch (Throwable t) {
-			logger.error("invocation of {} invoked failed, the reason maybe {}",
-					request.getClassName() + request.getMethodName(), t);
+			logger.error("invocation of {}.{} invoked failed, the reason is {}",
+					request.getClassName() , request.getMethodName(), t);
 			throw t;
 		}
 		return response;

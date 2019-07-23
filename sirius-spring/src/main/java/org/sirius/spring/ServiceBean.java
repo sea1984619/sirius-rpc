@@ -10,9 +10,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class ServiceBean extends ProviderConfig implements ApplicationContextAware, InitializingBean, DisposableBean {
+public class ServiceBean extends ProviderConfig<Object> implements ApplicationContextAware, InitializingBean, DisposableBean {
 
-	private static final long serialVersionUID = -1012109173695636437L;
 	
 	private transient ApplicationContext context;
 	

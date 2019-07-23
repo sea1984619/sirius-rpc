@@ -19,7 +19,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 public class CallbackInvoker implements Invoker {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(CallbackInvoker.class);
-	public final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("CallbackInvoker.timer", true));
+	public static final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("CallbackInvoker.timer", true));
 	private Channel channel;
 	private final int id;
 	private boolean retry;

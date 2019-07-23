@@ -17,7 +17,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 public abstract class AbstractRegistry implements Registry {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractRegistry.class);
-	public final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("AbstractRegistry.timer", true));
+	public static final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("AbstractRegistry.timer", true));
 	
 	private RegistryConfig config;
 	

@@ -1,33 +1,47 @@
 package org.sirius.rpc.client;
 
-import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.Maps;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
+import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoGroup;
+import org.sirius.rpc.registry.ProviderInfoListener;
+import org.sirius.rpc.registry.Registry;
+import org.sirius.rpc.registry.RegistryFactory;
 import org.sirius.transport.api.Connector;
 import org.sirius.transport.api.ConsumerProcessor;
+import org.sirius.transport.api.UnresolvedAddress;
+import org.sirius.transport.api.UnresolvedSocketAddress;
+import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroupList;
 import org.sirius.transport.api.channel.DirectoryGroupList;
+import org.sirius.transport.api.channel.GroupListDirectory;
 import org.sirius.transport.netty.NettyTcpConnector;
 
 public class DefaultRpcClient implements RpcClient {
-	
+
+	private static final long serialVersionUID = -5323732602926281207L;
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultRpcClient.class);
 	private volatile static RpcClient client;
-	private ConcurrentMap<Class<?>,ConsumerConfig> configs = Maps.newConcurrentMap();
-	private ConcurrentMap<Class<?>,Invoker>  invokers = Maps.newConcurrentMap();
-	private List<Registry> registrys;
-	private DirectoryGroupList directory;
+	private ConcurrentMap<Class<?>, ConsumerConfig<?>> configs = Maps.newConcurrentMap();
+	private ConcurrentMap<Class<?>, Invoker<?>> invokers = Maps.newConcurrentMap();
+	private GroupListDirectory directory = new GroupListDirectory();
 	private Connector connector;
 	private ConsumerProcessor processor;
-	private ConcurrentMap<String,ChannelGroupList> groupList = Maps.newConcurrentMap();
+	private ProviderInfoListener listener;
+
 	private DefaultRpcClient() {
 		init();
 	}
-	
+
 	private void init() {
 		connector = new NettyTcpConnector();
 		processor = new DefaultConsumerProcessor();
@@ -35,15 +49,15 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	public static RpcClient getInstance() {
-		if(client == null) {
-			synchronized(DefaultRpcClient.class) {
-				if(client == null) {
+		if (client == null) {
+			synchronized (DefaultRpcClient.class) {
+				if (client == null) {
 					client = new DefaultRpcClient();
 				}
 			}
 		}
 		return client;
-		
+
 	}
 
 	@Override
@@ -54,28 +68,118 @@ public class DefaultRpcClient implements RpcClient {
 	public Connector getConnector() {
 		return this.connector;
 	}
-	
 
 	@Override
 	public ConsumerProcessor getProcessor() {
 		return this.processor;
-		}
+	}
 
 	@Override
 	public void Shutdown() {
-		
+
 	}
 
 	@Override
 	public ChannelGroupList getGroupList(String serviceID) {
-		// TODO Auto-generated method stub
-		return null;
+		return directory.getGroupList(serviceID);
 	}
 
 	@Override
 	public void addConsumerConfig(ConsumerConfig<?> consumerConfig) {
-		// TODO Auto-generated method stub
-		
+		creatChannel(consumerConfig);
+
 	}
-	
+
+	private void creatChannel(ConsumerConfig<?> consumerConfig) {
+		ChannelGroupList groupList = directory.getGroupList(consumerConfig.getInterface());
+		if (consumerConfig.getDirectUrl() != null) {
+			String url = consumerConfig.getDirectUrl();
+			UnresolvedAddress address = parseUrl(url);
+			doCreantChannel(connector, address, consumerConfig, groupList);
+
+		} else {
+			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
+			listener = new DefaultProviderInfoListener(connector, groupList, consumerConfig);
+			for (RegistryConfig registryConfig : registryConfigs) {
+				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
+				for (Registry registry : registrys) {
+					// 不copy的话 ,发送的是referenceBean....
+					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
+					// 创建channel的动作在listener里
+					registry.subscribe(newConfig, listener);
+				}
+			}
+		}
+	}
+
+	private static void doCreantChannel(Connector connector, UnresolvedAddress address, ConsumerConfig<?> consumerConfig,
+			ChannelGroupList groupList) {
+		int connectionNum = consumerConfig.getConnectionNum();
+		try {
+			for (int i = 0; i < connectionNum; i++) {
+				Channel channel = connector.connect(address, false);
+				groupList.add(channel.getGroup());
+			}
+		} catch (Throwable t) {
+			logger.error("connect to {} failed, please check the address is available or not ", address, t);
+			throw t;
+		}
+	}
+
+	private UnresolvedAddress parseUrl(String url) {
+		int index = url.indexOf(":");
+		String host = url.substring(0, index).trim();
+		int port = Integer.valueOf(url.substring(index + 1).trim());
+		return new UnresolvedSocketAddress(host, port);
+	}
+
+	public static class DefaultProviderInfoListener implements ProviderInfoListener, java.io.Serializable {
+		private static final long serialVersionUID = -6425896640822350525L;
+		private transient Connector connector;
+		private transient ChannelGroupList groupList;
+		private transient ConsumerConfig<?> consumerConfig;
+
+		public DefaultProviderInfoListener(Connector connector, ChannelGroupList groupList,
+				ConsumerConfig<?> consumerConfig) {
+			this.connector = connector;
+			this.groupList = groupList;
+			this.consumerConfig = consumerConfig;
+		}
+
+		@Override
+		public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
+			List<ProviderInfo> infos = providerInfoGroup.getProviderInfos();
+			for (ProviderInfo info : infos) {
+				String host = info.getHost();
+				int port = info.getPort();
+				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
+				doCreantChannel(connector, address, consumerConfig, groupList);
+			}
+		}
+
+		@Override
+		public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
 }

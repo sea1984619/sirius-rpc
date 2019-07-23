@@ -39,7 +39,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 
 	private static final InternalLogger logger = InternalLoggerFactory
 			.getInstance(ConsumerSideArgumentCallbackFilter.class);
-	public final HashedWheelTimer timer = new HashedWheelTimer(
+	public  static final HashedWheelTimer timer = new HashedWheelTimer(
 			new DefaultThreadFactory("ConsumerSideArgumentCallbackFilter.timer", true));
 	// 缓存 : key : callbackArgument.hashcode -> value : invoker
 	private Map<Integer, Invoker> invokers = Maps.newConcurrentMap();
