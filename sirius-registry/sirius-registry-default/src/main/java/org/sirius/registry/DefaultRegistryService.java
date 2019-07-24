@@ -29,8 +29,9 @@ public class DefaultRegistryService implements RegistryService {
 	private static String CHANNEL = "channel";
 	// key ->服务标识 : value -> 订阅者监听器集合
 	ConcurrentMap<String, ConcurrentHashSet<ProviderInfoListener>> consumerListerners = Maps.newConcurrentMap();
-	// key ->ip+host 确定一个唯一发布者 : value -> 发布的信息
-	ConcurrentMap<String, ProviderInfoGroup> providers = Maps.newConcurrentMap();
+	// key ->ip+host : value -> 发布的信息
+	// 一个IP地址下可能发布有不同的服务,而同一个服务可能会在不同端口上发布
+	ConcurrentMap<String, ConcurrentMap<String, ProviderInfoGroup>> providers = Maps.newConcurrentMap();
 	// key ->服务标识 : value -> 所有可用的信息集合
 	ConcurrentMap<String, ProviderInfoGroup> providerInfoGroup = Maps.newConcurrentMap();
 
@@ -41,60 +42,54 @@ public class DefaultRegistryService implements RegistryService {
 	public void register(ProviderConfig provider) {
 		String uniqueId = provider.getInterface();
 		List<ProviderInfo> temList = getInfoFromConfig(provider);
-		
+
 		InetSocketAddress address = getRemoteAddress();
-		String key = address.getHostString() + address.getPort();
-		ProviderInfoGroup group = providers.get(key);
-		ConcurrentHashSet<ProviderInfoListener> listeners = consumerListerners.get(uniqueId);
-		if (group == null) {
-			//第一次注册;
-			logger.info("register service {}.. " ,uniqueId);
-			group = new ProviderInfoGroup(uniqueId);
-			providers.putIfAbsent(key, group);
-			group = providers.get(key);
-			group.addAll(temList);
-			if(listeners != null) {
-				for(ProviderInfoListener listener : listeners) {
-					try {
-						listener.notifyOnLine(group);
-					}catch(Throwable t) {
-						logger.error("notifyOnLine failed.." ,t);
-						continue;
-					}
-				}
-			}
-			
-		}else {
-			group.addAll(temList);
-			if(listeners != null) {
-				for(ProviderInfoListener listener : listeners) {
-					listener.notifyUpdate(group);
-				}
-			}
+		String address_key = address.getHostString() + address.getPort();
+		ConcurrentMap<String, ProviderInfoGroup> groups = providers.get(address_key);
+
+		if (groups == null) {
+			providers.putIfAbsent(address_key, Maps.newConcurrentMap());
+			groups = providers.get(address_key);
 		}
-		
+		ProviderInfoGroup group = groups.get(uniqueId);
+		if (group == null) {
+			groups.putIfAbsent(uniqueId, new ProviderInfoGroup(uniqueId));
+			group = groups.get(uniqueId);
+		}
+
+		group.addAll(temList);
+
 		ProviderInfoGroup allGroup = providerInfoGroup.get(uniqueId);
 		if (allGroup == null) {
-			allGroup = new ProviderInfoGroup(uniqueId);
-			providerInfoGroup.putIfAbsent(uniqueId, allGroup);
+			providerInfoGroup.putIfAbsent(uniqueId, new ProviderInfoGroup(uniqueId));
 			allGroup = providerInfoGroup.get(uniqueId);
 		}
 		allGroup.addAll(temList);
+		
+		ConcurrentHashSet<ProviderInfoListener> listeners = consumerListerners.get(uniqueId);
+		if (listeners != null) {
+			for (ProviderInfoListener listener : listeners) {
+				try {
+					listener.notifyOnLine(group);
+				} catch (Throwable t) {
+					logger.error("notifyOnLine failed..", t);
+					continue;
+				}
+			}
+		}
 	}
 
 	@Override
-	public  void subscribe(ConsumerConfig config, ProviderInfoListener listener) {
-		System.out.println(config.getInterface());
-		String key  = config.getInterface();
+	public void subscribe(ConsumerConfig config, ProviderInfoListener listener) {
+		String key = config.getInterface();
 		ConcurrentHashSet<ProviderInfoListener> listenerSet = consumerListerners.get(key);
-		if(listenerSet == null) {
-			listenerSet = new ConcurrentHashSet<ProviderInfoListener>();
-			consumerListerners.putIfAbsent(key, listenerSet);
+		if (listenerSet == null) {
+			consumerListerners.putIfAbsent(key, new ConcurrentHashSet<ProviderInfoListener>());
 			listenerSet = consumerListerners.get(key);
 		}
 		listenerSet.add(listener);
 		ProviderInfoGroup group = providerInfoGroup.get(key);
-		if(group != null) {
+		if (group != null && !group.getProviderInfos().isEmpty()) {
 			listener.notifyOnLine(group);
 		}
 	}
@@ -109,7 +104,6 @@ public class DefaultRegistryService implements RegistryService {
 
 	}
 
-	
 	private List<ProviderInfo> getInfoFromConfig(ProviderConfig<?> provider) {
 		List<ServerConfig> configList = provider.getServerRef();
 		List<ProviderInfo> infoList = new ArrayList<ProviderInfo>();
@@ -126,7 +120,7 @@ public class DefaultRegistryService implements RegistryService {
 		}
 		return infoList;
 	}
-	
+
 	private InetSocketAddress getRemoteAddress() {
 		Channel channel = (Channel) RpcInvokeContent.getContent().get(CHANNEL);
 		return (InetSocketAddress) channel.remoteAddress();
