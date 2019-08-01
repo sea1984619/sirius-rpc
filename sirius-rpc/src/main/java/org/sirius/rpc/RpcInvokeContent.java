@@ -1,7 +1,6 @@
 package org.sirius.rpc;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.sirius.common.util.Maps;
@@ -20,7 +19,7 @@ public class RpcInvokeContent {
 		}
 	};
 
-	//存储状态变化时的 服务端content;
+	// 存储状态变化时的 服务端content;
 	private static InternalThreadLocal<RpcInvokeContent> backup = new InternalThreadLocal<RpcInvokeContent>() {
 		@Override
 		protected RpcInvokeContent initialValue() {
@@ -34,13 +33,14 @@ public class RpcInvokeContent {
 	private Map values = Maps.newHashMap();
 	private Future future;
 
+	//交换两个content
 	public static void swapContent() {
-		InternalThreadLocal<RpcInvokeContent> tem ;
-		tem = local;
-		local = backup;
-		backup = tem;
+		RpcInvokeContent tem;
+		tem = local.get();
+		local.set(backup.get());
+		backup.set(tem);
 	}
-	
+
 	public static RpcInvokeContent getBackupContent() {
 		return backup.get();
 	}
@@ -60,7 +60,7 @@ public class RpcInvokeContent {
 	public void setInvokeType(String invokeType) {
 		this.invokeType = invokeType;
 	}
-	
+
 	public boolean isProviderSide() {
 		return providerSide;
 	}
@@ -96,5 +96,19 @@ public class RpcInvokeContent {
 
 	public void setFuture(Future<?> future) {
 		this.future = future;
+	}
+	
+	public void clear() {
+		values.clear();
+		this.future = null;
+	}
+	
+	public static void main(String args[]) {
+		System.out.println(RpcInvokeContent.getContent());
+		RpcInvokeContent.swapContent();
+		System.out.println(RpcInvokeContent.getContent());
+		RpcInvokeContent.swapContent();
+		System.out.println(RpcInvokeContent.getContent());
+	
 	}
 }
