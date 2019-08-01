@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import org.sirius.common.util.Maps;
+import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
@@ -84,9 +85,13 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	@Override
-	public void addConsumerConfig(ConsumerConfig<?> consumerConfig) {
-		creatChannel(consumerConfig);
-
+	public void addConsumerConfig(ConsumerConfig<?> consumerConfig){
+		try {
+			creatChannel(consumerConfig);
+		} catch (Throwable e) {
+			logger.error("creat Channel failed", e);
+			ThrowUtil.throwException(e);
+		}
 	}
 
 	private void creatChannel(ConsumerConfig<?> consumerConfig) {
@@ -102,10 +107,23 @@ public class DefaultRpcClient implements RpcClient {
 			for (RegistryConfig registryConfig : registryConfigs) {
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
-					// 不copy的话 ,发送的是referenceBean....
+					// 不copy的话 ,使用spring启动时发送的是referenceBean....
 					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
 					// 创建channel的动作在listener里
-					registry.subscribe(newConfig, listener);
+					try {
+						registry.subscribe(newConfig, listener);
+					} catch (Throwable t) {
+						logger.error("subscribe to {} failed ,please retry..", registry, t);
+						throw t;
+					}
+					//等一会防止channel还没创建好就执行操作了
+					synchronized(consumerConfig) {
+						try {
+							consumerConfig.wait(5000);
+						} catch (InterruptedException e) {
+							//no op
+						}
+					}
 				}
 			}
 		}
@@ -154,6 +172,8 @@ public class DefaultRpcClient implements RpcClient {
 				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
 				doCreantChannel(connector, address, consumerConfig, groupList);
 			}
+			System.out.print("sdfff但是发发发发发发发发发发发");
+			consumerConfig.notifyAll();
 		}
 
 		@Override
