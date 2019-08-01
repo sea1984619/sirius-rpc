@@ -4,6 +4,7 @@ import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.RpcException;
+import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.executor.InnerExecutor;
 import org.sirius.rpc.executor.disruptor.DisruptorExecutor;
 import org.sirius.rpc.invoker.Invoker;
@@ -39,6 +40,8 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 			if (invoker == null) {
 				throw new RpcException("the invoker for interface " + request.getClassName() + " is not founded,");
 			}
+			RpcInvokeContent content = RpcInvokeContent.getContent();
+			content.setProviderSide(true);
 			executor.execute(new RequestTask(this, invoker, channel, request));
 		} catch (Throwable t) {
 			handlerException(channel, request, t);

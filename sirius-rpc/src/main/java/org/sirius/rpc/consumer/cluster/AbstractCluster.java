@@ -1,6 +1,5 @@
 package org.sirius.rpc.consumer.cluster;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.sirius.common.ext.Extensible;
@@ -11,31 +10,16 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
-import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
-import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.future.DefaultInvokeFuture;
-import org.sirius.rpc.future.InvokeFuture;
-import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.rpc.load.balance.RandomLoadBalancer;
-import org.sirius.rpc.registry.ProviderInfo;
-import org.sirius.rpc.registry.ProviderInfoGroup;
-import org.sirius.rpc.registry.ProviderInfoListener;
-import org.sirius.rpc.registry.Registry;
-import org.sirius.rpc.registry.RegistryFactory;
-import org.sirius.transport.api.Connector;
-import org.sirius.transport.api.ConsumerProcessor;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
-import org.sirius.transport.api.UnresolvedAddress;
-import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.channel.ChannelGroupList;
-import org.sirius.transport.api.channel.DirectoryGroupList;
-import org.sirius.transport.netty.NettyTcpConnector;
 
 @Extensible
 public class AbstractCluster<T> extends Cluster<T> {
@@ -43,8 +27,6 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private Router router;
 	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
-	private ConsumerProcessor consumerProcessor = new DefaultConsumerProcessor();
-	private ProviderInfoListener listener ;
 	private RpcClient client;
 
 	public AbstractCluster(ConsumerConfig<T> consumerConfig,RpcClient client) {
@@ -60,7 +42,6 @@ public class AbstractCluster<T> extends Cluster<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Response invoke(Request request) throws Throwable {
-
 		Response response = null;
 		String invokeType = request.getInvokeType();
 		DefaultInvokeFuture<Response> future;

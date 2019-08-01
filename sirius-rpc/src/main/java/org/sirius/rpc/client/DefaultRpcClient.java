@@ -28,9 +28,8 @@ import org.sirius.transport.netty.NettyTcpConnector;
 
 public class DefaultRpcClient implements RpcClient {
 
-	private static final long serialVersionUID = -5323732602926281207L;
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultRpcClient.class);
-	private volatile static RpcClient client;
+	private volatile static RpcClient instance;
 	private ConcurrentMap<Class<?>, ConsumerConfig<?>> configs = Maps.newConcurrentMap();
 	private ConcurrentMap<Class<?>, Invoker<?>> invokers = Maps.newConcurrentMap();
 	private GroupListDirectory directory = new GroupListDirectory();
@@ -49,14 +48,14 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	public static RpcClient getInstance() {
-		if (client == null) {
+		if (instance == null) {
 			synchronized (DefaultRpcClient.class) {
-				if (client == null) {
-					client = new DefaultRpcClient();
+				if (instance == null) {
+					instance = new DefaultRpcClient();
 				}
 			}
 		}
-		return client;
+		return instance;
 
 	}
 
