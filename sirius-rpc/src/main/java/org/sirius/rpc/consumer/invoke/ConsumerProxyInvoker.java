@@ -21,11 +21,11 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 	private RpcClient client;
 
 	@SuppressWarnings("unchecked")
-	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig,RpcClient client) {
+	public ConsumerProxyInvoker(ConsumerConfig<T> consumerConfig, RpcClient client) {
 		super(consumerConfig);
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
 		this.client = client;
-		cluster = new AbstractCluster<T>(consumerConfig,client);
+		cluster = new AbstractCluster<T>(consumerConfig, client);
 	}
 
 	@Override
@@ -44,23 +44,18 @@ public class ConsumerProxyInvoker<T> extends AbstractInvoker<T> {
 				request.setInvokeType(consumerConfig.getMethodInvokeType(request.getMethodName()));
 			}
 		}
-		
-		int timeout =  RpcInvokeContent.getContent().getTimeout();
-		if(timeout != 0) {
+
+		int timeout = RpcInvokeContent.getContent().getTimeout();
+		if (timeout != 0) {
 			request.setTimeout(timeout);
 			// 调用一次就作废
 			RpcInvokeContent.getContent().setTimeout(0);
-		}else {
+		} else {
 			timeout = consumerConfig.getMethodTimeout(request.getMethodName());
 			request.setTimeout(timeout);
 		}
-		try {
-			response = cluster.invoke(request);
-		} catch (Throwable t) {
-			logger.error("invocation of {}.{} invoked failed, the reason is {}",
-					request.getClassName() , request.getMethodName(), t);
-			throw t;
-		}
+
+		response = cluster.invoke(request);
 		return response;
 	}
 }

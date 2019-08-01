@@ -7,6 +7,7 @@ import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
+import org.sirius.rpc.RpcException;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
@@ -25,14 +26,15 @@ import org.sirius.transport.api.channel.ChannelGroupList;
 public class AbstractCluster<T> extends Cluster<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
+	private static final String CHANNEL_KEY = "channel";
 	private Router router;
 	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
 	private RpcClient client;
 
-	public AbstractCluster(ConsumerConfig<T> consumerConfig,RpcClient client) {
+	public AbstractCluster(ConsumerConfig<T> consumerConfig, RpcClient client) {
 		super(consumerConfig);
-		this.client =client;
-		
+		this.client = client;
+
 	}
 
 	public void setConsumerConfig(ConsumerConfig<T> consumerConfig) {
@@ -51,33 +53,39 @@ public class AbstractCluster<T> extends Cluster<T> {
 			ChannelGroup group = loadBalancer.select(channelGroupList.getChannelGroup());
 			channel = group.next();
 			channel.send(request);
-			RpcInvokeContent.getContent().setFuture(null);
 			int timeout = request.getTimeout();
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
-				try {
-					future = new DefaultInvokeFuture<Response>(channel, request, timeout, null);
-					response = future.getResponse();
-					RpcInvokeContent.getContent().setFuture(null);
-				} catch (Exception e) {
-					logger.error("invocation of {}.{}get result failed, the reason maybe {}",
-							request.getClassName(),request.getMethodName(), e);
-					throw e;
-				}
+
+				future = new DefaultInvokeFuture<Response>(channel, request, timeout, null);
+				response = future.getResponse();
+				RpcInvokeContent.getContent().setFuture(null);
+
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
+
 				response = buildEmptyResponse(request);
 				// 异步调用 需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
 				future = new DefaultInvokeFuture<Response>(channel, request, timeout, filters);
 				RpcInvokeContent.getContent().setFuture(future);
+
+			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_ONEWAY)) {
+				response = buildEmptyResponse(request);
+				RpcInvokeContent.getContent().setFuture(null);
+
+			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_CALLBACK)) {
+
+			} else {
+				throw new RpcException("Unknown invoke type" + invokeType);
 			}
 
 		} catch (Throwable t) {
-			logger.error("invocation of {}.{} sended failed, the reason maybe {}",
-					request.getClassName(),request.getMethodName(), t);
+			logger.error("invocation of {}.{} invoked failed, the reason is {}", request.getClassName(),
+					request.getMethodName(), t);
 			throw t;
 		}
-		RpcInvokeContent.getContent().set("channel", channel);
+		// fiter回调时会用到
+		RpcInvokeContent.getContent().set(CHANNEL_KEY, channel);
 		return response;
 	}
 
