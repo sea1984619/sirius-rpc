@@ -1,2 +1,3 @@
 org.sirius.rpc.filter.ConsumerSideArgumentCallbackFilter
 org.sirius.rpc.filter.ProviderSideArgumentCallbackFilter
+org.sirius.rpc.filter.ConsumerContentFilter

@@ -1,5 +1,6 @@
 package org.sirius.rpc;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -30,10 +31,13 @@ public class RpcInvokeContent {
 	private String invokeType;
 	private boolean providerSide;
 
-	private Map values = Maps.newHashMap();
-	private Future future;
+	private InetSocketAddress localAddress;
+	private InetSocketAddress remoteAddress;
 
-	//交换两个content
+	private Map<Object, Object> values = Maps.newConcurrentMap();
+	private Future<?> future;
+
+	// 交换两个content,此方法配合@ConsumerContentFilter适用
 	public static void swapContent() {
 		RpcInvokeContent tem;
 		tem = local.get();
@@ -97,18 +101,25 @@ public class RpcInvokeContent {
 	public void setFuture(Future<?> future) {
 		this.future = future;
 	}
-	
+
+	public InetSocketAddress getLocalAddress() {
+		return localAddress;
+	}
+
+	public void setLocalAddress(InetSocketAddress localAddress) {
+		this.localAddress = localAddress;
+	}
+
+	public InetSocketAddress getRemoteAddress() {
+		return remoteAddress;
+	}
+
+	public void setRemoteAddress(InetSocketAddress remoteAddress) {
+		this.remoteAddress = remoteAddress;
+	}
+
 	public void clear() {
 		values.clear();
 		this.future = null;
-	}
-	
-	public static void main(String args[]) {
-		System.out.println(RpcInvokeContent.getContent());
-		RpcInvokeContent.swapContent();
-		System.out.println(RpcInvokeContent.getContent());
-		RpcInvokeContent.swapContent();
-		System.out.println(RpcInvokeContent.getContent());
-	
 	}
 }
