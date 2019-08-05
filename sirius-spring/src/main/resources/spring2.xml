@@ -19,5 +19,6 @@
 	   <sirius:method name = "buyApple" timeout = "3000" >
 	   </sirius:method>
 	</sirius:reference>
-	<sirius:registry address = "127.0.0.1:20080"></sirius:registry>
+	<sirius:registry protocol ="zookeeper" address = "127.0.0.1:2181"></sirius:registry>
+    
 </beans>

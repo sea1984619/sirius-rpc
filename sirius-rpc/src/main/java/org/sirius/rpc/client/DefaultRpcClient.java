@@ -118,13 +118,13 @@ public class DefaultRpcClient implements RpcClient {
 						throw t;
 					}
 					//等一会防止channel还没创建好就执行操作了
-					synchronized(consumerConfig) {
-						try {
-							consumerConfig.wait(5000);
-						} catch (InterruptedException e) {
-							//no op
-						}
-					}
+//					synchronized(consumerConfig) {
+//						try {
+//							consumerConfig.wait(5000);
+//						} catch (InterruptedException e) {
+//							//no op
+//						}
+//					}
 				}
 			}
 		}
@@ -173,7 +173,6 @@ public class DefaultRpcClient implements RpcClient {
 				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
 				doCreantChannel(connector, address, consumerConfig, groupList);
 			}
-			consumerConfig.notifyAll();
 		}
 
 		@Override

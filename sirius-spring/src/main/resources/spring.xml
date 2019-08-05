@@ -18,7 +18,7 @@
     
     <sirius:server  port ="18090" protocol = "netty" ></sirius:server>
     
-	<sirius:registry address = "127.0.0.1:20080"></sirius:registry>
+	<sirius:registry protocol ="zookeeper" address = "127.0.0.1:2181"></sirius:registry>
     
      
 </beans>

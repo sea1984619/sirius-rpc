@@ -1,22 +1,5 @@
 package org.sirius.registry.zookeeper;
 
-import org.sirius.common.util.CommonUtils;
-import org.sirius.common.util.StringUtils;
-import org.sirius.common.util.SystemInfo;
-import org.sirius.common.util.internal.logging.InternalLogger;
-import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.rpc.config.AbstractInterfaceConfig;
-import org.sirius.rpc.config.ConsumerConfig;
-import org.sirius.rpc.config.ProviderConfig;
-import org.sirius.rpc.config.RegistryConfig;
-import org.sirius.rpc.config.RpcConstants;
-import org.sirius.rpc.config.ServerConfig;
-import org.sirius.rpc.registry.AbstractRegistry;
-import org.sirius.rpc.registry.ProviderInfo;
-import org.sirius.rpc.registry.ProviderInfoGroup;
-import org.sirius.rpc.registry.ProviderInfoListener;
-
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +22,23 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
+import org.sirius.common.ext.Extension;
+import org.sirius.common.util.CommonUtils;
+import org.sirius.common.util.StringUtils;
+import org.sirius.common.util.internal.logging.InternalLogger;
+import org.sirius.common.util.internal.logging.InternalLoggerFactory;
+import org.sirius.rpc.config.ConsumerConfig;
+import org.sirius.rpc.config.ProviderConfig;
+import org.sirius.rpc.config.RegistryConfig;
+import org.sirius.rpc.registry.AbstractRegistry;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoGroup;
+import org.sirius.rpc.registry.ProviderInfoListener;
 
-public class zookeeperRegistry extends AbstractRegistry {
+@Extension(value = "zookeeper", singleton = true)
+public class ZookeeperRegistry extends AbstractRegistry {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(zookeeperRegistry.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ZookeeperRegistry.class);
 	private static final String PATH_SEPARATOR = "/";
 	private String rootPath;
 	private CuratorFramework zkClient;
@@ -96,13 +92,13 @@ public class zookeeperRegistry extends AbstractRegistry {
 	 */
 	private static final ConcurrentMap<ConsumerConfig, PathChildrenCache> INTERFACE_PROVIDER_CACHE = new ConcurrentHashMap<ConsumerConfig, PathChildrenCache>();
 
-	public zookeeperRegistry(RegistryConfig config) {
+	public ZookeeperRegistry(RegistryConfig config) {
 		super(config);
+		init();
 	}
 
 	@Override
 	protected void init() {
-
 		if (zkClient != null) {
 			return;
 		}
@@ -218,24 +214,6 @@ public class zookeeperRegistry extends AbstractRegistry {
 		}
 	}
 
-	@Override
-	protected void doUnSubscribe(ConsumerConfig config) {
-
-	}
-
-	private String builderConsumerPath(ConsumerConfig consumerConfig) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(consumerConfig.getInterface() + PATH_SEPARATOR).append("consumers" + PATH_SEPARATOR)
-				.append(consumerConfig.getProtocol()).append("://").append(SystemInfo.getLocalHost());
-
-		return null;
-	}
-
-	@Override
-	protected void doUnregister(ProviderConfig config) {
-
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
@@ -253,8 +231,8 @@ public class zookeeperRegistry extends AbstractRegistry {
 							logger.debug(config.getAppName(),
 									"Receive zookeeper event: " + "type=[" + event.getType() + "]");
 						}
-						ProviderInfo providerInfo =  (ProviderInfo) ZookeeperRegistryHelper.convertUrlToProvider(
-			                    providerPath, event.getData());
+						ProviderInfo providerInfo = (ProviderInfo) ZookeeperRegistryHelper
+								.convertUrlToProvider(providerPath, event.getData());
 						ProviderInfoGroup group = new ProviderInfoGroup();
 						group.add(providerInfo);
 						switch (event.getType()) {
@@ -272,8 +250,8 @@ public class zookeeperRegistry extends AbstractRegistry {
 					}
 				});
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
-				List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(
-	                    providerPath, pathChildrenCache.getCurrentData());
+				List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(providerPath,
+						pathChildrenCache.getCurrentData());
 				ProviderInfoGroup group = new ProviderInfoGroup(providerInfos);
 				listener.notifyOnLine(group);
 				INTERFACE_PROVIDER_CACHE.put(config, pathChildrenCache);
@@ -284,12 +262,15 @@ public class zookeeperRegistry extends AbstractRegistry {
 		}
 	}
 
-	public static String getKeyPairs(String key, Object value) {
-		if (value != null) {
-			return "&" + key + "=" + value.toString();
-		} else {
-			return "";
-		}
+	@Override
+	protected void doUnSubscribe(ConsumerConfig config) {
+
+	}
+
+
+	@Override
+	protected void doUnregister(ProviderConfig config) {
+
 	}
 
 	/**
@@ -343,18 +324,5 @@ public class zookeeperRegistry extends AbstractRegistry {
 			throw new RuntimeException("Zookeeper client is not available");
 		}
 		return zkClient;
-	}
-
-	public static void main(String args[]) {
-
-		ServerConfig sc = new ServerConfig();
-		sc.setHost("127.0.1.1").setPort(2000).setProtocol("netty").setSerialization("hession");
-		ProviderConfig pc = new ProviderConfig();
-		pc.setInterface("org.sirius.hello.class");
-		pc.addServer(sc);
-
-		zookeeperRegistry zr = new zookeeperRegistry(new RegistryConfig());
-		zr.doRegister(pc);
-
 	}
 }

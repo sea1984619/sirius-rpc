@@ -492,6 +492,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 			for (RegistryConfig registryConfig : registryConfigs) {
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
+					registry.start();
 					// 不copy的话 ,发送的是serviceBean....
 					registry.register(copyOf(this,ProviderConfig.class));
 				}

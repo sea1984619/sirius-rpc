@@ -46,7 +46,7 @@ public class RegistryConfig extends AbstractIdConfig implements Serializable {
     /**
      * 连接注册中心超时时间
      */
-    private int                   connectTimeout   ;
+    private int                   connectTimeout   = 15000;
 
     /**
      * 保存到本地文件的位置，默认$HOME下
