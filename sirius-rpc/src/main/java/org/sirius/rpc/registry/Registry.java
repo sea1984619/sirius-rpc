@@ -5,7 +5,7 @@ import org.sirius.common.ext.Extensible;
 @Extensible
 public interface Registry  extends RegistryService{
 
-	 void start();
+	 boolean start();
 	 
 	 void shutdown();
 }

@@ -32,7 +32,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 调用的协议
 	 */
-	protected String protocol;
+	protected String protocol = "sirius";
 	
 
 	/**

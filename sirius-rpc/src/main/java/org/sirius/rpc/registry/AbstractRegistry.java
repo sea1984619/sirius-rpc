@@ -19,15 +19,15 @@ public abstract class AbstractRegistry implements Registry {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractRegistry.class);
 	public static final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("AbstractRegistry.timer", true));
 	
-	private RegistryConfig config;
+	protected RegistryConfig registryConfig;
 	
 	public AbstractRegistry(RegistryConfig config) {
-		this.config = config;
+		this.registryConfig = config;
 		init();
 	}
 
 	protected RegistryConfig getRegistryConfig() {
-		return this.config;
+		return this.registryConfig;
 	}
 	@Override
 	public void register(ProviderConfig config) {
@@ -76,8 +76,8 @@ public abstract class AbstractRegistry implements Registry {
 
 	
 	@Override
-	public void start() {
-
+	public boolean start() {
+		return false;
 	}
 
 	@Override
