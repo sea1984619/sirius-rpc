@@ -12,6 +12,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -231,22 +232,26 @@ public class ZookeeperRegistry extends AbstractRegistry {
 							logger.debug(config.getAppName(),
 									"Receive zookeeper event: " + "type=[" + event.getType() + "]");
 						}
-						ProviderInfo providerInfo = (ProviderInfo) ZookeeperRegistryHelper
-								.convertUrlToProvider(providerPath, event.getData());
-						ProviderInfoGroup group = new ProviderInfoGroup();
-						group.add(providerInfo);
-						switch (event.getType()) {
-						case CHILD_ADDED: // 加了一个provider
-							listener.notifyOnLine(group);
-							break;
-						case CHILD_REMOVED: // 删了一个provider
-							listener.notifyOffLine(group);
-							break;
-						case CHILD_UPDATED: // 更新一个Provider
-							break;
-						default:
-							break;
+						ChildData childData = event.getData();
+						if (childData != null) {
+							ProviderInfo providerInfo = (ProviderInfo) ZookeeperRegistryHelper
+									.convertUrlToProvider(providerPath, childData);
+							ProviderInfoGroup group = new ProviderInfoGroup();
+							group.add(providerInfo);
+							switch (event.getType()) {
+							case CHILD_ADDED: // 加了一个provider
+								listener.notifyOnLine(group);
+								break;
+							case CHILD_REMOVED: // 删了一个provider
+								listener.notifyOffLine(group);
+								break;
+							case CHILD_UPDATED: // 更新一个Provider
+								break;
+							default:
+								break;
+							}
 						}
+
 					}
 				});
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
@@ -266,7 +271,6 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	protected void doUnSubscribe(ConsumerConfig config) {
 
 	}
-
 
 	@Override
 	protected void doUnregister(ProviderConfig config) {
