@@ -111,6 +111,7 @@ public class DefaultRpcClient implements RpcClient {
 					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
 					// 创建channel的动作在listener里
 					try {
+						registry.start();
 						registry.subscribe(newConfig, listener);
 					} catch (Throwable t) {
 						logger.error("subscribe to {} failed ,please retry..", registry, t);
@@ -172,7 +173,6 @@ public class DefaultRpcClient implements RpcClient {
 				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
 				doCreantChannel(connector, address, consumerConfig, groupList);
 			}
-			System.out.print("sdfff但是发发发发发发发发发发发");
 			consumerConfig.notifyAll();
 		}
 

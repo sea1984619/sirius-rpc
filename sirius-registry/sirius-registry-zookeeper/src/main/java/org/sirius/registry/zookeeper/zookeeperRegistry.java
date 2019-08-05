@@ -12,6 +12,8 @@ import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.config.ServerConfig;
 import org.sirius.rpc.registry.AbstractRegistry;
+import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.ProviderInfoGroup;
 import org.sirius.rpc.registry.ProviderInfoListener;
 
 import java.io.UnsupportedEncodingException;
@@ -27,6 +29,9 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -84,6 +89,12 @@ public class zookeeperRegistry extends AbstractRegistry {
 	 * 正常在线服务
 	 */
 	private final static byte[] PROVIDER_ONLINE = new byte[] { 1 };
+
+	/**
+	 * 接口配置{ConsumerConfig：PathChildrenCache} <br>
+	 * 例如：{ConsumerConfig ： PathChildrenCache }
+	 */
+	private static final ConcurrentMap<ConsumerConfig, PathChildrenCache> INTERFACE_PROVIDER_CACHE = new ConcurrentHashMap<ConsumerConfig, PathChildrenCache>();
 
 	public zookeeperRegistry(RegistryConfig config) {
 		super(config);
@@ -181,7 +192,7 @@ public class zookeeperRegistry extends AbstractRegistry {
 			}
 			if (CommonUtils.isNotEmpty(urls)) {
 
-				String providerPath = buildProviderPath(rootPath, config);
+				String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
 				for (String url : urls) {
 					url = URLEncoder.encode(url, "UTF-8");
 					String providerUrl = providerPath + PATH_SEPARATOR + url;
@@ -207,54 +218,9 @@ public class zookeeperRegistry extends AbstractRegistry {
 		}
 	}
 
-	private List<String> buildProviderPath(ProviderConfig providerConfig) {
-
-		List<String> providerUrls = convertProviderToUrls(providerConfig);
-		List<String> paths = new ArrayList<String>();
-		for (String url : providerUrls) {
-			try {
-				url = URLEncoder.encode(url, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			StringBuilder builder = new StringBuilder();
-			builder.append(PATH_SEPARATOR).append(providerConfig.getInterface() + PATH_SEPARATOR)
-					.append("providers" + PATH_SEPARATOR).append(url);
-			paths.add(builder.toString());
-		}
-		return paths;
-	}
-
-	private List<String> convertProviderToUrls(ProviderConfig<?> providerConfig) {
-		List<String> urls = new ArrayList<String>();
-		List<ServerConfig> servers = providerConfig.getServerRef();
-		for (ServerConfig server : servers) {
-			StringBuilder builder = new StringBuilder();
-			builder.append(server.getProtocol() + "://").append(server.getHost() + ":").append(server.getPort());
-			urls.add(builder.toString());
-		}
-		return urls;
-	}
-
-	private String convertConsumerToUrl(ConsumerConfig consumerConfig) {
-		StringBuilder sb = new StringBuilder(200);
-		String host = SystemInfo.getLocalHost();
-		// noinspection unchecked
-		sb.append(consumerConfig.getProtocol()).append("://").append(host).append("?version=1.0")
-				.append(getKeyPairs(RpcConstants.CONFIG_KEY_INTERFACE, consumerConfig.getInterface()))
-				.append(getKeyPairs(RpcConstants.CONFIG_KEY_ID, consumerConfig.getId()));
-		return sb.toString();
-	}
-
-	private Object getKeyPairs(String configKeyUniqueid, String uniqueId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	protected void doUnSubscribe(ConsumerConfig config) {
 
-		String path = builderConsumerPath(config);
 	}
 
 	private String builderConsumerPath(ConsumerConfig consumerConfig) {
@@ -270,9 +236,52 @@ public class zookeeperRegistry extends AbstractRegistry {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
+		final String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
+		PathChildrenCache pathChildrenCache = INTERFACE_PROVIDER_CACHE.get(config);
+		try {
+			if (pathChildrenCache == null) {
+				// TODO 换成监听父节点变化（只是监听变化了，而不通知变化了什么，然后客户端自己来拉数据的）
+				pathChildrenCache = new PathChildrenCache(zkClient, providerPath, true);
+				final PathChildrenCache finalPathChildrenCache = pathChildrenCache;
+				pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
+					@Override
+					public void childEvent(CuratorFramework client1, PathChildrenCacheEvent event) throws Exception {
+						if (logger.isDebugEnabled()) {
+							logger.debug(config.getAppName(),
+									"Receive zookeeper event: " + "type=[" + event.getType() + "]");
+						}
+						ProviderInfo providerInfo =  (ProviderInfo) ZookeeperRegistryHelper.convertUrlToProvider(
+			                    providerPath, event.getData());
+						ProviderInfoGroup group = new ProviderInfoGroup();
+						group.add(providerInfo);
+						switch (event.getType()) {
+						case CHILD_ADDED: // 加了一个provider
+							listener.notifyOnLine(group);
+							break;
+						case CHILD_REMOVED: // 删了一个provider
+							listener.notifyOffLine(group);
+							break;
+						case CHILD_UPDATED: // 更新一个Provider
+							break;
+						default:
+							break;
+						}
+					}
+				});
+				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
+				List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(
+	                    providerPath, pathChildrenCache.getCurrentData());
+				ProviderInfoGroup group = new ProviderInfoGroup(providerInfos);
+				listener.notifyOnLine(group);
+				INTERFACE_PROVIDER_CACHE.put(config, pathChildrenCache);
+			}
 
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to subscribe provider from zookeeperRegistry!", e);
+		}
 	}
 
 	public static String getKeyPairs(String key, Object value) {
@@ -281,18 +290,6 @@ public class zookeeperRegistry extends AbstractRegistry {
 		} else {
 			return "";
 		}
-	}
-
-	public static String buildProviderPath(String rootPath, AbstractInterfaceConfig config) {
-		return rootPath + "sirius-rpc/" + config.getInterface() + "/providers";
-	}
-
-	public static String buildConsumerPath(String rootPath, AbstractInterfaceConfig config) {
-		return rootPath + "sirius-rpc/" + config.getInterface() + "/consumers";
-	}
-
-	public static String buildConfigPath(String rootPath, AbstractInterfaceConfig config) {
-		return rootPath + "sirius-rpc/" + config.getInterface() + "/configs";
 	}
 
 	/**

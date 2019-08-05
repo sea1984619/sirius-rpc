@@ -22,8 +22,9 @@ import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.registry.ProviderHelper;
 import org.sirius.rpc.registry.ProviderInfo;
+import org.sirius.rpc.registry.RegistryUtils;
 
-public class ZookeeperRegistryHelper {
+public class ZookeeperRegistryHelper extends RegistryUtils{
 
 	 /**
      * Convert url to provider list.
