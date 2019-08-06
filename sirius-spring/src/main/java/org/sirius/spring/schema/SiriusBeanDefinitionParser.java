@@ -113,33 +113,35 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 							reference = value;
 						} else {
 							if ("onreturn".equals(attrName)) {
-								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
-								String onreturnObject = pair[0];
-								String onreturnMethod = pair[1];
+								int index = value.lastIndexOf(".");
+								String onreturnObject = value.substring(0, index);
+								String onreturnMethod = value.substring(index + 1);
 								reference = new RuntimeBeanReference(onreturnObject);
 								beanDefinition.getPropertyValues().addPropertyValue("onreturnMethod", onreturnMethod);
 							} else if ("oninvoke".equals(attrName)) {
-								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
-								String oninvokeObject = pair[0];
-								String oninvokeMethod = pair[1];
+								int index = value.lastIndexOf(".");
+								String oninvokeObject = value.substring(0, index);
+								String oninvokeMethod = value.substring(index + 1);
 								reference = new RuntimeBeanReference(oninvokeObject);
 								beanDefinition.getPropertyValues().addPropertyValue("oninvokeMethod", oninvokeMethod);
 							} else if ("onthrow".equals(attrName)) {
-								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
-								String onthrowObject = pair[0];
-								String onthrowMethod = pair[1];
+								int index = value.lastIndexOf(".");
+								String onthrowObject = value.substring(0, index);
+								String onthrowMethod = value.substring(index + 1);
 								reference = new RuntimeBeanReference(onthrowObject);
 								beanDefinition.getPropertyValues().addPropertyValue("onreturnMethod", onthrowMethod);
-							} else if ("ref".equals(attrName)&& parserContext.getRegistry().containsBeanDefinition(value)) {
-								BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(value);
-								if (!refBean.isSingleton()) {
-									throw new IllegalStateException(
-											"The exported service ref " + value + " must be singleton! Please set the "
-													+ value + " bean scope to singleton, eg: <bean id=\"" + value
-													+ "\" scope=\"singleton\" ...>");
+							} else {
+								if ("ref".equals(attrName)&& parserContext.getRegistry().containsBeanDefinition(value)) {
+									BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(value);
+									if (!refBean.isSingleton()) {
+										throw new IllegalStateException("The exported service ref " + value
+												+ " must be singleton! Please set the " + value
+												+ " bean scope to singleton, eg: <bean id=\"" + value
+												+ "\" scope=\"singleton\" ...>");
+									}
+									reference = new RuntimeBeanReference(value);
 								}
 							}
-							reference = new RuntimeBeanReference(value);
 						}
 						beanDefinition.getPropertyValues().addPropertyValue(attrName, reference);
 					}

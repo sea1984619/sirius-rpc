@@ -787,7 +787,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	}
 
 	@Override
-	protected Class<?> getProxyClass() {
+	public Class<?> getProxyClass() {
 		 if (proxyClass != null) {
 	            return proxyClass;
 	        }

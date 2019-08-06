@@ -20,7 +20,7 @@ public class PersonImpl implements Person{
                                entry.getValue().onEat(s); 
                                
                            } catch (Throwable t) {  
-                               System.out.println("发生错误");
+                               t.printStackTrace();
                            }  
                         }  
                         Thread.sleep(15000); // 定时触发变更通知  

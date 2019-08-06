@@ -62,6 +62,26 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
      */
     protected String               compress;
 
+ // whether need to return
+    private Boolean isReturn;
+
+    // callback instance when async-call is invoked
+    private Object oninvoke;
+
+    // callback method when async-call is invoked
+    private String oninvokeMethod;
+
+    // callback instance when async-call is returned
+    private Object onreturn;
+
+    // callback method when async-call is returned
+    private String onreturnMethod;
+
+    // callback instance when async-call has exception thrown
+    private Object onthrow;
+
+    // callback method when async-call has exception thrown
+    private String onthrowMethod;
     
 	private volatile List<ArgumentConfig> arguments;
 
@@ -250,6 +270,61 @@ public class MethodConfig extends AbstractIdConfig implements Serializable {
         return this;
     }
 
+    public Object getOnreturn() {
+        return onreturn;
+    }
+
+    public void setOnreturn(Object onreturn) {
+        this.onreturn = onreturn;
+    }
+
+    public String getOnreturnMethod() {
+        return onreturnMethod;
+    }
+
+    public void setOnreturnMethod(String onreturnMethod) {
+        this.onreturnMethod = onreturnMethod;
+    }
+
+    public Object getOnthrow() {
+        return onthrow;
+    }
+
+    public void setOnthrow(Object onthrow) {
+        this.onthrow = onthrow;
+    }
+
+    public String getOnthrowMethod() {
+        return onthrowMethod;
+    }
+
+    public void setOnthrowMethod(String onthrowMethod) {
+        this.onthrowMethod = onthrowMethod;
+    }
+
+    public Object getOninvoke() {
+        return oninvoke;
+    }
+
+    public void setOninvoke(Object oninvoke) {
+        this.oninvoke = oninvoke;
+    }
+
+    public String getOninvokeMethod() {
+        return oninvokeMethod;
+    }
+
+    public void setOninvokeMethod(String oninvokeMethod) {
+        this.oninvokeMethod = oninvokeMethod;
+    }
+
+    public Boolean isReturn() {
+        return isReturn;
+    }
+
+    public void setReturn(Boolean isReturn) {
+        this.isReturn = isReturn;
+    }
 
     /**
      * Sets parameter.
