@@ -25,7 +25,7 @@ public class FilterChain {
 				public Response invoke(Request request) throws Throwable {
 
 					Response res = filter.invoke(next, request);
-					return filter.onResponse(res);
+					return filter.onResponse(res,next,request);
 				}
 			};
 		}
