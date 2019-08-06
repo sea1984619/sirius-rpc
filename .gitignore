@@ -9,9 +9,7 @@ target/
 *.class
 
 # eclipse ignore
-.settings/
-.project
-.classpath
+
 
 # idea ignore
 .idea/
@@ -29,4 +27,4 @@ target/
 # system ignore
 .DS_Store
 Thumbs.db
-/sirius-rpc/
+
