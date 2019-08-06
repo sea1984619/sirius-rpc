@@ -19,6 +19,8 @@ import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
 
 import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 
 public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements InvokeFuture<V> {
 
@@ -94,4 +96,26 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 			future.complete(response);
 		}
 	}
+	
+	 static final class TimeoutTask implements TimerTask {
+
+	        private final String channelId;
+	        private final long invokeId;
+
+	        public TimeoutTask(long invokeId) {
+	            this.channelId = null;
+	            this.invokeId = invokeId;
+	        }
+
+	        public TimeoutTask(String channelId, long invokeId) {
+	            this.channelId = channelId;
+	            this.invokeId = invokeId;
+	        }
+
+	        @Override
+	        public void run(Timeout timeout) throws Exception {
+	            DefaultInvokeFuture<?> future;
+
+	        }
+	    }
 }
