@@ -24,8 +24,6 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * 抽象的服务提供列表
  * <p>
- *
- * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 public class ProviderInfo implements Serializable {
 

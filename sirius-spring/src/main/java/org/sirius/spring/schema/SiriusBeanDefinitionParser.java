@@ -2,7 +2,6 @@ package org.sirius.spring.schema;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.BeanReference;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.ManagedList;
@@ -17,15 +16,14 @@ import org.w3c.dom.NodeList;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.sirius.common.util.StringUtils;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.CommonUtils;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.MethodConfig;
-import org.sirius.spring.ReferenceBean;
 import org.sirius.spring.ServiceBean;
 
 public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
@@ -38,16 +36,16 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Override
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		return parse(element,parserContext,beanClass);
+		return parse(element, parserContext, beanClass);
 	}
-	
-	public BeanDefinition parse(Element element, ParserContext parserContext,Class<?> beanClass) {
+
+	public BeanDefinition parse(Element element, ParserContext parserContext, Class<?> beanClass) {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition();
 		beanDefinition.setBeanClass(beanClass);
 		beanDefinition.setLazyInit(false);
 		String id = element.getAttribute("id");
 
-		if (CommonUtils.isBlank(id)) { 
+		if (CommonUtils.isBlank(id)) {
 			String generatedBeanName = element.getAttribute("name");
 			if (CommonUtils.isBlank(generatedBeanName)) {
 				generatedBeanName = element.getAttribute("interface");
@@ -70,28 +68,29 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		}
 
 		if (ServiceBean.class.equals(beanClass)) {
-            String className = element.getAttribute("class");
-            if (className != null && className.length() > 0) {
-                RootBeanDefinition classDefinition = new RootBeanDefinition();
-                classDefinition.setBeanClass(ClassUtil.forName(className));
-                classDefinition.setLazyInit(false);
-                parseProperties(element.getChildNodes(), classDefinition);
-                beanDefinition.getPropertyValues().addPropertyValue("ref", new BeanDefinitionHolder(classDefinition, id + "Impl"));
-            }
-        } 
-		
-		parseAttribute(beanDefinition, element, parserContext,beanClass);
-		
-		if(element.hasChildNodes()) {
+			String className = element.getAttribute("class");
+			if (className != null && className.length() > 0) {
+				RootBeanDefinition classDefinition = new RootBeanDefinition();
+				classDefinition.setBeanClass(ClassUtil.forName(className));
+				classDefinition.setLazyInit(false);
+				parseProperties(element.getChildNodes(), classDefinition);
+				beanDefinition.getPropertyValues().addPropertyValue("ref",
+						new BeanDefinitionHolder(classDefinition, id + "Impl"));
+			}
+		}
+
+		parseAttribute(beanDefinition, element, parserContext, beanClass);
+
+		if (element.hasChildNodes()) {
 			NodeList childNodes = element.getChildNodes();
 			parseChildNodes(beanDefinition, childNodes, parserContext);
 		}
-		
+
 		return beanDefinition;
 	}
 
-
-	private void parseAttribute(RootBeanDefinition beanDefinition, Element element, ParserContext parserContext,Class<?> beanClass) {
+	private void parseAttribute(RootBeanDefinition beanDefinition, Element element, ParserContext parserContext,
+			Class<?> beanClass) {
 		NamedNodeMap attrs = element.getAttributes();
 		Set<String> attrsNameSet = new HashSet<String>();
 		for (int i = 0; i < attrs.getLength(); i++) {
@@ -102,23 +101,45 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 		for (Method method : methods) {
 			String name = method.getName();
 			Class<?>[] paramTypes = method.getParameterTypes();
-			if (name.startsWith("set") && name.length() > 3 && paramTypes.length == 1 && Modifier.isPublic(method.getModifiers())) {
+			if (name.startsWith("set") && name.length() > 3 && paramTypes.length == 1
+					&& Modifier.isPublic(method.getModifiers())) {
 				String attrName = name.substring(3, 4).toLowerCase() + name.substring(4);
 				if (attrsNameSet.contains(attrName)) {
 					String value = element.getAttribute(attrName);
 					value = value.trim();
 					if (value.length() > 0) {
 						Object reference = null;
-						if(ClassUtil.isPrimitive(paramTypes[0])) {
+						if (ClassUtil.isPrimitive(paramTypes[0])) {
 							reference = value;
-						}else {
-							if("ref".equals(attrName) && parserContext.getRegistry().containsBeanDefinition(value)) {
+						} else {
+							if ("onreturn".equals(attrName)) {
+								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
+								String onreturnObject = pair[0];
+								String onreturnMethod = pair[1];
+								reference = new RuntimeBeanReference(onreturnObject);
+								beanDefinition.getPropertyValues().addPropertyValue("onreturnMethod", onreturnMethod);
+							} else if ("oninvoke".equals(attrName)) {
+								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
+								String oninvokeObject = pair[0];
+								String oninvokeMethod = pair[1];
+								reference = new RuntimeBeanReference(oninvokeObject);
+								beanDefinition.getPropertyValues().addPropertyValue("oninvokeMethod", oninvokeMethod);
+							} else if ("onthrow".equals(attrName)) {
+								String[] pair = StringUtils.splitWithCommaOrSemicolon(value);
+								String onthrowObject = pair[0];
+								String onthrowMethod = pair[1];
+								reference = new RuntimeBeanReference(onthrowObject);
+								beanDefinition.getPropertyValues().addPropertyValue("onreturnMethod", onthrowMethod);
+							} else if ("ref".equals(attrName)&& parserContext.getRegistry().containsBeanDefinition(value)) {
 								BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(value);
 								if (!refBean.isSingleton()) {
-                                    throw new IllegalStateException("The exported service ref " + value + " must be singleton! Please set the " + value + " bean scope to singleton, eg: <bean id=\"" + value + "\" scope=\"singleton\" ...>");
-                                }
-								reference = new RuntimeBeanReference(value);
+									throw new IllegalStateException(
+											"The exported service ref " + value + " must be singleton! Please set the "
+													+ value + " bean scope to singleton, eg: <bean id=\"" + value
+													+ "\" scope=\"singleton\" ...>");
+								}
 							}
+							reference = new RuntimeBeanReference(value);
 						}
 						beanDefinition.getPropertyValues().addPropertyValue(attrName, reference);
 					}
@@ -128,58 +149,61 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private void parseChildNodes(RootBeanDefinition beanDefinition, NodeList childNodes, ParserContext parserContext) {
-		for(int i = 0;i < childNodes.getLength();i++) {
+		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node node = childNodes.item(i);
-			if(node instanceof Element) {
+			if (node instanceof Element) {
 				Element element = (Element) node;
 				String nodeName = node.getLocalName();
-				if(nodeName.equals("method")) {
+				if (nodeName.equals("method")) {
 					parseMethod(element, beanDefinition, parserContext);
-				}else if(nodeName.equals("argument")) {
+				} else if (nodeName.equals("argument")) {
 					parseArgument(element, beanDefinition, parserContext);
-				}else if(nodeName.equals("parameter")) {
+				} else if (nodeName.equals("parameter")) {
 					parseParameter(element, beanDefinition, parserContext);
 				}
 			}
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void parseParameter(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
-		 ManagedMap<String, TypedStringValue> parameters = (ManagedMap<String, TypedStringValue>) beanDefinition.getPropertyValues().get("parameters");
-		 if(parameters == null) {
-			    parameters = new ManagedMap<String, TypedStringValue>();
-				beanDefinition.getPropertyValues().add("parameters", parameters);
-			}
-		 String key = element.getAttribute("key");
-         String value = element .getAttribute("value");
-         parameters.put(key, new TypedStringValue(value, String.class));
+		ManagedMap<String, TypedStringValue> parameters = (ManagedMap<String, TypedStringValue>) beanDefinition
+				.getPropertyValues().get("parameters");
+		if (parameters == null) {
+			parameters = new ManagedMap<String, TypedStringValue>();
+			beanDefinition.getPropertyValues().add("parameters", parameters);
+		}
+		String key = element.getAttribute("key");
+		String value = element.getAttribute("value");
+		parameters.put(key, new TypedStringValue(value, String.class));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void parseArgument(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
 		RootBeanDefinition methodDefinition = (RootBeanDefinition) parse(element, parserContext, ArgumentConfig.class);
-		ManagedList<BeanDefinitionHolder> arguments = (ManagedList<BeanDefinitionHolder>) beanDefinition.getPropertyValues().get("arguments");
-		if(arguments == null) {
+		ManagedList<BeanDefinitionHolder> arguments = (ManagedList<BeanDefinitionHolder>) beanDefinition
+				.getPropertyValues().get("arguments");
+		if (arguments == null) {
 			arguments = new ManagedList<BeanDefinitionHolder>();
 			beanDefinition.getPropertyValues().add("arguments", arguments);
 		}
 		String index = element.getAttribute("index");
-		arguments.add(new BeanDefinitionHolder(methodDefinition, ArgumentConfig.class.getName()+ "_" + index));
+		arguments.add(new BeanDefinitionHolder(methodDefinition, ArgumentConfig.class.getName() + "_" + index));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void parseMethod(Element element, RootBeanDefinition beanDefinition, ParserContext parserContext) {
-		
+
 		RootBeanDefinition methodDefinition = (RootBeanDefinition) parse(element, parserContext, MethodConfig.class);
-		ManagedMap<String, BeanDefinitionHolder> methodMap = (ManagedMap<String, BeanDefinitionHolder>) beanDefinition.getPropertyValues().get("methods");
-		if(methodMap == null) {
+		ManagedMap<String, BeanDefinitionHolder> methodMap = (ManagedMap<String, BeanDefinitionHolder>) beanDefinition
+				.getPropertyValues().get("methods");
+		if (methodMap == null) {
 			methodMap = new ManagedMap<String, BeanDefinitionHolder>();
 			beanDefinition.getPropertyValues().add("methods", methodMap);
 		}
 		String name = element.getAttribute("name");
-		methodMap.put(name,new BeanDefinitionHolder(methodDefinition, MethodConfig.class.getName()+ "_" + name));
+		methodMap.put(name, new BeanDefinitionHolder(methodDefinition, MethodConfig.class.getName() + "_" + name));
 	}
 
 	private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) {
