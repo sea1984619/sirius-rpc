@@ -29,6 +29,7 @@ public class RequestTask implements Runnable{
 		Response response = null;
 		RpcInvokeContent.getContent().set("channel", channel);
 		try {
+			Thread.sleep(4000);
 			response = invoker.invoke(request);
 		} catch (Throwable e) {
 			 processor.handlerException(channel,request, e);

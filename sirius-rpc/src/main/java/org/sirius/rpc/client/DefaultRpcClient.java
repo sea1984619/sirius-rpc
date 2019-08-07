@@ -120,7 +120,7 @@ public class DefaultRpcClient implements RpcClient {
 					//等一会防止channel还没创建好就执行操作了
 					synchronized(consumerConfig) {
 						try {
-							consumerConfig.wait(5000);
+							consumerConfig.wait(10000);
 						} catch (InterruptedException e) {
 							//no op
 						}

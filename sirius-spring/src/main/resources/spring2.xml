@@ -18,7 +18,8 @@
 	-->
 	<bean id="check" class="org.sirius.spring.test.Check" />
 	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" >
-	   <sirius:method name = "buyApple" invokeType = "async" timeout = "3000"  oninvoke = "check.check" onreturn ="check.checkreturn">
+	   <sirius:method name = "buyApple"  timeout = "3000"  oninvoke = "check.check" 
+	     onreturn ="check.checkreturn" onthrow = "check.checkthrow">
 	   </sirius:method>
 	</sirius:reference>
 	<sirius:registry protocol ="zookeeper" address = "127.0.0.1:2181"></sirius:registry>

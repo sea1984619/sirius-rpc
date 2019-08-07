@@ -154,7 +154,7 @@ public class CallbackFilter implements Filter {
 	@Override
 	public Response onResponse(Response response, Request request) {
 		Object result = response.getResult();
-		if (result.getClass().isAssignableFrom(Throwable.class)) {
+		if (Throwable.class.isAssignableFrom(result.getClass())) {
 			if (hasThrowCallback(request)) {
 				fireThrowCallback((Throwable) result, request);
 			}
@@ -202,8 +202,21 @@ public class CallbackFilter implements Filter {
 	}
 
 	private void fireThrowCallback(Throwable e, Request request) {
-		// TODO Auto-generated method stub
-
+		CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONTHROW);
+		try {
+			Method returnMethod = warper.getMethod();
+			if (returnMethod.getParameterCount() == 1) {
+				returnMethod.invoke(warper.getObject(), e);
+			} else {
+				Object[] req = request.getParameters();
+				Object[] params = new Object[req.length + 1];
+				params[0] = e;
+				System.arraycopy(req, 0, params, 1, req.length);
+				returnMethod.invoke(warper.getObject(), params);
+			}
+		} catch (Exception ee) {
+			logger.error("onthrow callback failed,the request is {} ", request.toString(), ee);
+		}
 	}
 
 	private boolean hasThrowCallback(Request request) {

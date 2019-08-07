@@ -47,7 +47,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		Response response = null;
 		String invokeType = request.getInvokeType();
 		DefaultInvokeFuture<Response> future;
-		Channel channel;
+		Channel channel = null;
 		try {
 			ChannelGroupList channelGroupList = client.getGroupList(consumerConfig.getInterface());
 			ChannelGroup group = loadBalancer.select(channelGroupList.getChannelGroup());
@@ -56,7 +56,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 			int timeout = request.getTimeout();
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
-
+				System.out.println("超时为"+timeout);
 				future = new DefaultInvokeFuture<Response>(channel, request, timeout, null);
 				response = future.getResponse();
 				RpcInvokeContent.getContent().setFuture(null);
@@ -79,7 +79,7 @@ public class AbstractCluster<T> extends Cluster<T> {
 		} catch (Throwable t) {
 			logger.error("invocation of {}.{} invoked failed, the reason is {}", request.getClassName(),
 					request.getMethodName(), t);
-			throw t;
+			response = buildErrorResponse(request,t);
 		}
 		// fiter回调时会用到
 		RpcInvokeContent.getContent().set(CHANNEL_KEY, channel);
@@ -89,6 +89,11 @@ public class AbstractCluster<T> extends Cluster<T> {
 	private Response buildEmptyResponse(Request request) {
 		Response response = new Response(request.invokeId());
 		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
+		return response;
+	}
+	private Response buildErrorResponse(Request request,Throwable t) {
+		Response response = new Response(request.invokeId());
+		response.setResult(t);
 		return response;
 	}
 }

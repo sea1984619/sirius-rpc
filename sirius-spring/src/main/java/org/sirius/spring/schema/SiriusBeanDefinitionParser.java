@@ -129,7 +129,7 @@ public class SiriusBeanDefinitionParser implements BeanDefinitionParser {
 								String onthrowObject = value.substring(0, index);
 								String onthrowMethod = value.substring(index + 1);
 								reference = new RuntimeBeanReference(onthrowObject);
-								beanDefinition.getPropertyValues().addPropertyValue("onreturnMethod", onthrowMethod);
+								beanDefinition.getPropertyValues().addPropertyValue("onthrowMethod", onthrowMethod);
 							} else {
 								if ("ref".equals(attrName)&& parserContext.getRegistry().containsBeanDefinition(value)) {
 									BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(value);
