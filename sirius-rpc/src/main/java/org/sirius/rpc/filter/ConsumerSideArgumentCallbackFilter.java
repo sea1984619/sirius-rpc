@@ -97,7 +97,7 @@ public class ConsumerSideArgumentCallbackFilter implements Filter {
 	}
 
 	@Override
-	public Response onResponse(Response res ,Invoker invoker, Request request) {
+	public Response onResponse(Response res , Request request) {
 		ArgumentWarper argument = (ArgumentWarper) RpcInvokeContent.getContent().get("newArgumentWarper");
 		if (argument != null) {
 			Channel channel = (Channel) RpcInvokeContent.getContent().get("channel");

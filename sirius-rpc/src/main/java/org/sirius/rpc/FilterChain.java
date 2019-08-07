@@ -23,9 +23,9 @@ public class FilterChain {
 			last = new AbstractInvoker(last.getConfig()) {
 				@Override
 				public Response invoke(Request request) throws Throwable {
-
+					
 					Response res = filter.invoke(next, request);
-					return filter.onResponse(res,next,request);
+					return filter.onResponse(res,request);
 				}
 			};
 		}

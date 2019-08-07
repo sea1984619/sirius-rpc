@@ -129,7 +129,7 @@ public class CallbackFilter implements Filter {
 	}
 
 	@Override
-	public Response onResponse(Response res ,Invoker invoker, Request request) {
+	public Response onResponse(Response res , Request request) {
 		if(hasReturnCallback()) {
 			
 		}

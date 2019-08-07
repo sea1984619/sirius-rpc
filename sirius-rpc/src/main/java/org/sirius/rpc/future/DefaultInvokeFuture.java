@@ -90,7 +90,7 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		if (future != null) {
 			if (future.filters != null) {
 				for (Filter filter : future.filters) {
-					filter.onResponse(response,null,null);
+					filter.onResponse(response,future.request);
 				}
 			}
 			future.complete(response);

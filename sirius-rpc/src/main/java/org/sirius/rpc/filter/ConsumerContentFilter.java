@@ -24,7 +24,7 @@ public class ConsumerContentFilter  implements Filter{
 	}
 	
 	@Override
-	public Response onResponse(Response res,Invoker invoker, Request request) {
+	public Response onResponse(Response res,Request request) {
 		RpcInvokeContent content = RpcInvokeContent.getContent();
 		//这是一个consumer端的filter, 如果 content.isProviderSide() 为true ,表明 这个一个 A 调用 B服务,
 		 //而B服务 作为调用者,又调用C的情况, 调用完成后 此时content 应从客户端转为服务端;

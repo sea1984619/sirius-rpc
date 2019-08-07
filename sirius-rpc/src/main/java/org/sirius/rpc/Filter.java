@@ -10,7 +10,7 @@ public interface Filter {
 
 	Response invoke(Invoker invoker, Request request) throws Throwable;
 	
-	default  Response onResponse(Response res ,Invoker invoker, Request request) {
+	default  Response onResponse(Response res , Request request) {
 		return res;
 	}
 }
