@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
+import org.sirius.common.util.Maps;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -17,8 +18,6 @@ import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
-
-import com.google.common.collect.Maps;
 
 @AutoActive(consumerSide = true)
 @Extension(value = "callbackFilter", singleton = true)
@@ -39,7 +38,6 @@ public class CallbackFilter implements Filter {
 			// 此处无需同步控制, 最坏的结果不过是开始时 init()方法多执行几遍
 			init(invoker);
 			isFirstCall = false;
-			System.out.println(callbackMap.get("buyApple"));
 		}
 		if (hasInvokeCallback(request)) {
 			fireInvokeCallback(request);
