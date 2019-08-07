@@ -91,7 +91,7 @@ public class RpcConstants {
     /**
      * 调用方式：future
      */
-    public static final String  INVOKER_TYPE_FUTURE                = "future";
+    public static final String  INVOKER_TYPE_FUTURE                = "async";
 
     /**
      * Hessian序列化 [不推荐]

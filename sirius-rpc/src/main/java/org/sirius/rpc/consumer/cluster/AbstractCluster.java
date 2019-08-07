@@ -62,7 +62,6 @@ public class AbstractCluster<T> extends Cluster<T> {
 				RpcInvokeContent.getContent().setFuture(null);
 
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
-
 				response = buildEmptyResponse(request);
 				// 异步调用 需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
@@ -73,10 +72,8 @@ public class AbstractCluster<T> extends Cluster<T> {
 				response = buildEmptyResponse(request);
 				RpcInvokeContent.getContent().setFuture(null);
 
-			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_CALLBACK)) {
-
 			} else {
-				throw new RpcException("Unknown invoke type" + invokeType);
+				throw new RpcException("Unknown invoke type " + invokeType);
 			}
 
 		} catch (Throwable t) {

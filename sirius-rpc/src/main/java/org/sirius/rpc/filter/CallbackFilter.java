@@ -42,17 +42,8 @@ public class CallbackFilter implements Filter {
 			System.out.println(callbackMap.get("buyApple"));
 		}
 		if (hasInvokeCallback(request)) {
-			CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONINVOKE);
-			try {
-				warper.getMethod().invoke(warper.getObject(), request.getParameters());
-			} catch (Exception e) {
-				logger.error("oninvoke callback of request {} invoke failed", request, e);
-				if (hasThrowCallback(request)) {
-
-				}
-			}
+			fireInvokeCallback(request);
 		}
-
 		return invoker.invoke(request);
 	}
 
@@ -86,7 +77,9 @@ public class CallbackFilter implements Filter {
 					try {
 						Method callbackMethod = object.getClass().getDeclaredMethod(methodName,
 								originMethod.getParameterTypes());
-						callbackMethod.setAccessible(true);
+						if (!callbackMethod.isAccessible()) {
+							callbackMethod.setAccessible(true);
+						}
 						CallbackWarper warper = new CallbackWarper(callbackMethod, object);
 						methodMap.putIfAbsent(ONINVOKE, warper);
 					} catch (NoSuchMethodException e) {
@@ -108,9 +101,6 @@ public class CallbackFilter implements Filter {
 					Method returnMethod = null;
 					try {
 						returnMethod = object.getClass().getDeclaredMethod(methodName, types);
-						returnMethod.setAccessible(true);
-						CallbackWarper warper = new CallbackWarper(returnMethod, object);
-						methodMap.putIfAbsent(ONRETURN, warper);
 					} catch (NoSuchMethodException e) {
 						try {
 							Class<?>[] temType = new Class<?>[] { returnType };
@@ -122,10 +112,40 @@ public class CallbackFilter implements Filter {
 									object.getClass().toString(), e);
 							ThrowUtil.throwException(new RpcException("creat onreturn method failed"));
 						}
-						returnMethod.setAccessible(true);
-						CallbackWarper warper = new CallbackWarper(returnMethod, object);
-						methodMap.putIfAbsent(ONRETURN, warper);
 					}
+					if (!returnMethod.isAccessible()) {
+						returnMethod.setAccessible(true);
+					}
+					CallbackWarper warper = new CallbackWarper(returnMethod, object);
+					methodMap.putIfAbsent(ONRETURN, warper);
+				}
+				if (methodConfig.getOnthrow() != null) {
+					Object object = methodConfig.getOnthrow();
+					String methodName = methodConfig.getOnthrowMethod();
+					Class<?>[] paramtypes = originMethod.getParameterTypes();
+					Class<?>[] throwtypes = new Class<?>[paramtypes.length + 1];
+					throwtypes[0] = Throwable.class;
+					System.arraycopy(paramtypes, 0, throwtypes, 1, paramtypes.length);
+					Method throwMethod = null;
+					try {
+						throwMethod = object.getClass().getDeclaredMethod(methodName, throwtypes);
+					} catch (NoSuchMethodException e) {
+						try {
+							Class<?>[] temType = new Class<?>[] { Throwable.class };
+							throwMethod = object.getClass().getDeclaredMethod(methodName, temType);
+						} catch (NoSuchMethodException ee) {
+							logger.error(
+									"the onthrow callback method in class {} is not found ,please check the callback method name "
+											+ "and the parameterTypes of the throw method must match the invoke method or only have the Throwable.class type",
+									object.getClass().toString(), e);
+							ThrowUtil.throwException(new RpcException("creat onthrow method failed"));
+						}
+					}
+					if (!throwMethod.isAccessible()) {
+						throwMethod.setAccessible(true);
+					}
+					CallbackWarper warper = new CallbackWarper(throwMethod, object);
+					methodMap.putIfAbsent(ONTHROW, warper);
 				}
 			}
 		}
@@ -135,31 +155,55 @@ public class CallbackFilter implements Filter {
 	public Response onResponse(Response response, Request request) {
 		Object result = response.getResult();
 		if (result.getClass().isAssignableFrom(Throwable.class)) {
-
+			if (hasThrowCallback(request)) {
+				fireThrowCallback((Throwable) result, request);
+			}
 		} else {
 			if (hasReturnCallback(request)) {
-				CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONRETURN);
-				try {
-					Method returnMethod = warper.getMethod();
-					if (returnMethod.getParameterCount() == 1) {
-						returnMethod.invoke(warper.getObject(), result);
-					} else {
-						Object[] req = request.getParameters();
-						Object[] params = new Object[req.length + 1];
-						params[0] = result;
-						System.arraycopy(req, 0, params, 1, req.length);
-						returnMethod.invoke(warper.getObject(), params);
-					}
-				} catch (Exception e) {
-					logger.error("onreturn callback failed,the request is {} ,the result is {} ", request.toString(),
-							result.toString(), e);
-					if (hasThrowCallback(request)) {
-
-					}
-				}
+				fireReturnCallback(result,request);
 			}
 		}
 		return response;
+	}
+
+	private void fireReturnCallback(Object result, Request request) {
+		CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONRETURN);
+		try {
+			Method returnMethod = warper.getMethod();
+			if (returnMethod.getParameterCount() == 1) {
+				returnMethod.invoke(warper.getObject(), result);
+			} else {
+				Object[] req = request.getParameters();
+				Object[] params = new Object[req.length + 1];
+				params[0] = result;
+				System.arraycopy(req, 0, params, 1, req.length);
+				returnMethod.invoke(warper.getObject(), params);
+			}
+		} catch (Exception e) {
+			logger.error("onreturn callback failed,the request is {} ,the result is {} ", request.toString(),
+					result.toString(), e);
+			if (hasThrowCallback(request)) {
+				fireThrowCallback(e, request);
+			}
+		}
+
+	}
+
+	private void fireInvokeCallback(Request request) {
+		CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONINVOKE);
+		try {
+			warper.getMethod().invoke(warper.getObject(), request.getParameters());
+		} catch (Exception e) {
+			logger.error("oninvoke callback of request {} invoke failed", request, e);
+			if (hasThrowCallback(request)) {
+				fireThrowCallback(e, request);
+			}
+		}
+	}
+
+	private void fireThrowCallback(Throwable e, Request request) {
+		// TODO Auto-generated method stub
+
 	}
 
 	private boolean hasThrowCallback(Request request) {
