@@ -12,7 +12,7 @@ public class ReferTest {
 		 ApplicationContext ctx = new ClassPathXmlApplicationContext("spring2.xml");
 		 Shop shop = (Shop) ctx.getBean("shop");
          Apple apple = shop.buyApple("黑色");		
-         System.out.println(apple.color);
+         System.out.println("ddd"+apple.color);
 //	
 	}
 }

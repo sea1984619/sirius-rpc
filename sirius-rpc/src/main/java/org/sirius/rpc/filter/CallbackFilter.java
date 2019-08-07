@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import org.sirius.common.ext.AutoActive;
 import org.sirius.common.ext.Extension;
-import org.sirius.common.util.ReflectUtils;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -30,6 +29,7 @@ public class CallbackFilter implements Filter {
 	private Map<String, Map<String, CallbackWarper>> callbackMap = Maps.newConcurrentMap();
 	private final static String ONINVOKE = "oninvoke";
 	private final static String ONRETURN = "onreturn";
+	private final static String ONTHROW = "onthrow";
 	private boolean isFirstCall = true;
 
 	@Override
@@ -39,20 +39,21 @@ public class CallbackFilter implements Filter {
 			// 此处无需同步控制, 最坏的结果不过是开始时 init()方法多执行几遍
 			init(invoker);
 			isFirstCall = false;
+			System.out.println(callbackMap.get("buyApple"));
 		}
-		if (hasInvokeCallback(invoker, request)) {
+		if (hasInvokeCallback(request)) {
 			CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONINVOKE);
-			warper.getMethod().invoke(warper.getObject(), request.getParameters());
+			try {
+				warper.getMethod().invoke(warper.getObject(), request.getParameters());
+			} catch (Exception e) {
+				logger.error("oninvoke callback of request {} invoke failed", request, e);
+				if (hasThrowCallback(request)) {
+
+				}
+			}
 		}
 
 		return invoker.invoke(request);
-	}
-
-	private boolean hasInvokeCallback(Invoker invoker, Request request) {
-		if (!callbackMap.containsKey(request.getMethodName()))
-			return false;
-		Map<String, CallbackWarper> methodMap = callbackMap.get(request.getMethodName());
-		return methodMap.containsKey(ONINVOKE);
 	}
 
 	private void init(Invoker invoker) {
@@ -76,14 +77,15 @@ public class CallbackFilter implements Filter {
 					if (method.getName().equals(entry.getKey())) {
 						// 默认服务接口没有同名的重载方法, 因为无法做到同名重载方法的methodconfig配置
 						originMethod = method;
-						return;
+						break;
 					}
 				}
 				if (methodConfig.getOninvoke() != null) {
 					Object object = methodConfig.getOninvoke();
 					String methodName = methodConfig.getOninvokeMethod();
 					try {
-						Method callbackMethod = object.getClass().getDeclaredMethod(methodName,originMethod.getParameterTypes());
+						Method callbackMethod = object.getClass().getDeclaredMethod(methodName,
+								originMethod.getParameterTypes());
 						callbackMethod.setAccessible(true);
 						CallbackWarper warper = new CallbackWarper(callbackMethod, object);
 						methodMap.putIfAbsent(ONINVOKE, warper);
@@ -98,7 +100,6 @@ public class CallbackFilter implements Filter {
 				if (methodConfig.getOnreturn() != null) {
 					Object object = methodConfig.getOnreturn();
 					String methodName = methodConfig.getOnreturnMethod();
-
 					Class<?>[] paramTypes = originMethod.getParameterTypes();
 					Class<?> returnType = originMethod.getReturnType();
 					Class<?>[] types = new Class<?>[paramTypes.length + 1];
@@ -107,9 +108,12 @@ public class CallbackFilter implements Filter {
 					Method returnMethod = null;
 					try {
 						returnMethod = object.getClass().getDeclaredMethod(methodName, types);
+						returnMethod.setAccessible(true);
+						CallbackWarper warper = new CallbackWarper(returnMethod, object);
+						methodMap.putIfAbsent(ONRETURN, warper);
 					} catch (NoSuchMethodException e) {
 						try {
-							Class<?>[] temType = new Class<?>[] {returnType};
+							Class<?>[] temType = new Class<?>[] { returnType };
 							returnMethod = object.getClass().getDeclaredMethod(methodName, temType);
 						} catch (NoSuchMethodException ee) {
 							logger.error(
@@ -118,7 +122,6 @@ public class CallbackFilter implements Filter {
 									object.getClass().toString(), e);
 							ThrowUtil.throwException(new RpcException("creat onreturn method failed"));
 						}
-
 						returnMethod.setAccessible(true);
 						CallbackWarper warper = new CallbackWarper(returnMethod, object);
 						methodMap.putIfAbsent(ONRETURN, warper);
@@ -129,16 +132,54 @@ public class CallbackFilter implements Filter {
 	}
 
 	@Override
-	public Response onResponse(Response res , Request request) {
-		if(hasReturnCallback()) {
-			
+	public Response onResponse(Response response, Request request) {
+		Object result = response.getResult();
+		if (result.getClass().isAssignableFrom(Throwable.class)) {
+
+		} else {
+			if (hasReturnCallback(request)) {
+				CallbackWarper warper = callbackMap.get(request.getMethodName()).get(ONRETURN);
+				try {
+					Method returnMethod = warper.getMethod();
+					if (returnMethod.getParameterCount() == 1) {
+						returnMethod.invoke(warper.getObject(), result);
+					} else {
+						Object[] req = request.getParameters();
+						Object[] params = new Object[req.length + 1];
+						params[0] = result;
+						System.arraycopy(req, 0, params, 1, req.length);
+						returnMethod.invoke(warper.getObject(), params);
+					}
+				} catch (Exception e) {
+					logger.error("onreturn callback failed,the request is {} ,the result is {} ", request.toString(),
+							result.toString(), e);
+					if (hasThrowCallback(request)) {
+
+					}
+				}
+			}
 		}
-		return res;
+		return response;
 	}
-	private boolean hasReturnCallback() {
-		// TODO Auto-generated method stub
-		return false;
+
+	private boolean hasThrowCallback(Request request) {
+		if (!callbackMap.containsKey(request.getMethodName()))
+			return false;
+		return callbackMap.get(request.getMethodName()).containsKey(ONTHROW);
 	}
+
+	private boolean hasInvokeCallback(Request request) {
+		if (!callbackMap.containsKey(request.getMethodName()))
+			return false;
+		return callbackMap.get(request.getMethodName()).containsKey(ONINVOKE);
+	}
+
+	private boolean hasReturnCallback(Request request) {
+		if (!callbackMap.containsKey(request.getMethodName()))
+			return false;
+		return callbackMap.get(request.getMethodName()).containsKey(ONRETURN);
+	}
+
 	private class CallbackWarper {
 
 		private Method method;
