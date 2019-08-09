@@ -10,7 +10,6 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcException;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.client.RpcClient;
-import org.sirius.rpc.config.AbstractInterfaceConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.AsyncResponse;
