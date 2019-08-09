@@ -11,8 +11,10 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.FilterChain;
 import org.sirius.rpc.client.DefaultRpcClient;
 import org.sirius.rpc.client.RpcClient;
+import org.sirius.rpc.consumer.cluster.AbstractCluster;
+import org.sirius.rpc.consumer.cluster.Cluster;
 import org.sirius.rpc.consumer.cluster.router.Router;
-import org.sirius.rpc.consumer.invoke.ConsumerProxyInvoker;
+import org.sirius.rpc.consumer.invoke.ConsumerInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 
@@ -817,8 +819,9 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 						List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
 						RpcClient client = DefaultRpcClient.getInstance();
 						client.addConsumerConfig(this);
-						Invoker<T> invoker = new ConsumerProxyInvoker<T>(this,client);
-						invoker = FilterChain.buildeFilterChain(invoker, filter);
+						Cluster<T> cluster = new AbstractCluster<T>(this, client);
+						Invoker<T> chain = FilterChain.buildeFilterChain(cluster, filter);
+						ConsumerInvoker<T> invoker = new ConsumerInvoker<T>(this, chain);
 						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
 					}
 				}

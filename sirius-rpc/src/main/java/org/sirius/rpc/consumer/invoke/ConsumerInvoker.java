@@ -17,7 +17,7 @@ import org.sirius.transport.api.Response;
  */
 public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerProxyInvoker.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerInvoker.class);
 	private ConsumerConfig<T> consumerConfig;
 	private Invoker<T> invokerChain;
 	@SuppressWarnings("unchecked")
