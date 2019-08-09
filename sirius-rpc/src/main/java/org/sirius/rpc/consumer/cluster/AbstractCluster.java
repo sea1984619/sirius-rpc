@@ -1,7 +1,5 @@
 package org.sirius.rpc.consumer.cluster;
-
 import java.util.List;
-
 import org.sirius.common.ext.Extensible;
 import org.sirius.common.util.ClassUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -79,8 +77,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 					request.getMethodName(), t);
 			response = buildErrorResponse(request,t);
 		}
-		// fiter回调时会用到
-		System.out.println(channel);
+		// 方法返回时,ArgumentCallbackHandler会用到
 		RpcInvokeContent.getContent().set(RpcConstants.CHANNEL, channel);
 		return response;
 	}

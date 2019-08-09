@@ -5,6 +5,9 @@ import java.util.List;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.transport.api.Request;
 
+/*
+ * 表示这是一个参数回调request
+ */
 public class ArgumentCallbackRequest extends Request {
 
 	private static final long serialVersionUID = -1599291269995568269L;
