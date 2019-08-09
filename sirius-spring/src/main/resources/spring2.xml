@@ -8,14 +8,14 @@
                         http://sirius.org/schema/sirius 
                         http://sirius.org/schema/sirius/sirius.xsd ">
 
-<!--  
+
 
 	<sirius:reference id="person"   interface=" org.sirius.spring.schema.Person">
 	   <sirius:method name = "eat" timeout = "30000">
-	     <sirius:argument index ="0" callback = "true"  retry = "true"  ></sirius:argument>
+	     <sirius:argument index ="0" callback = "true"  retry = "false"  ></sirius:argument>
 	   </sirius:method>
 	</sirius:reference>
-	-->
+	
 	<bean id="check" class="org.sirius.spring.test.Check" />
 	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" >
 	   <sirius:method name = "buyApple"  invokeType = "async" timeout = "3000"  oninvoke = "check.check" 

@@ -16,9 +16,7 @@ public class PersonImpl implements Person{
                         for(Map.Entry<String, EatListener> entry : listeners.entrySet()){  
                            try {  
                         	   String s = getChanged(entry.getKey());
-                        	   System.out.println("发送:"+s);
                                entry.getValue().onEat(s); 
-                               
                            } catch (Throwable t) {  
                                t.printStackTrace();
                            }  
@@ -42,7 +40,7 @@ public class PersonImpl implements Person{
     }  
        
     private String getChanged(String key) {  
-        return "Changed: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());  
+        return "改变Changed: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());  
     }
 
 

@@ -20,8 +20,10 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 	public void handleResponse(Channel channel, Response response) {
 
 		if (response instanceof ArgumentCallbackResponse) {
+			System.out.println(response);
 			handleArgumentCallbackResponse(channel, response);
 		}else {
+			System.out.println("dddddd"+response);
 			 DefaultInvokeFuture.received(response);
 		}
 	}
@@ -31,7 +33,9 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		// 获取回调参数
 		Request request = (Request) argResponse.getResult();
 		Long callbackId = argResponse.invokeId();
-		Invoker invoker = DefaultInvokeFuture.getCallbackInvoker(callbackId.intValue());
+		Invoker invoker = ArgumentCallbackHandler.getCallbackInvoker(callbackId.intValue());
+		System.out.println(invoker);
+		System.out.println(request.getParameters());
 		try {
 			Response _response = invoker.invoke(request);
 			channel.send(_response);

@@ -45,6 +45,7 @@ public class CallbackInvoker implements Invoker {
 		Response res = null;
 		try {
 			res = syncSend(response, request);
+			logger.info("send response {}",request.getParameters());
 		} catch (Throwable t) {
 			// 只有网络连接原因 或者 缓存区满 才重试
 			if (!channel.isActive() || !channel.isWritable() || t instanceof TimeoutException) {

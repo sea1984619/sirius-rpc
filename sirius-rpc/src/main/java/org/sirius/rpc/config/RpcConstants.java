@@ -405,5 +405,7 @@ public class RpcConstants {
     public static final String  GLOBAL_SETTING                     = "global_setting";
 
     /* --------系统参数相关结束---------*/
+    
+    public final static String CHANNEL = "channel";
 
 }

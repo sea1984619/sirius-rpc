@@ -151,7 +151,17 @@ public class CallbackFilter implements Filter {
 
 	@Override
 	public Response onResponse(Response response, Request request) {
+		
 		Object result = response.getResult();
+		/*
+		 * void方法的invoke调用返回的result为null
+		 */
+		if(result == null) {
+			if (hasReturnCallback(request)) {
+				fireReturnCallback(result,request);
+			}
+			return response;
+		}
 		if (Throwable.class.isAssignableFrom(result.getClass())) {
 			if (hasThrowCallback(request)) {
 				fireThrowCallback((Throwable) result, request);

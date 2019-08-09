@@ -98,16 +98,18 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		DefaultInvokeFuture<Response> future = (DefaultInvokeFuture<Response>) futures.remove(id);
 		if (future != null) {
 			AsyncResponse asyncResponse = future.getAsyncResponse();
-			List<Filter> filters = asyncResponse.getFilters();
-			if (filters != null) {
-				//临时content,存储当前线程的content;
-				RpcInvokeContent tem = RpcInvokeContent.getContent();
-				RpcInvokeContent.setContent(asyncResponse.getContent());
-				for (Filter filter : filters) {
-					filter.onResponse(response,future.request);
+			if(asyncResponse != null) {
+				List<Filter> filters = asyncResponse.getFilters();
+				if (filters != null) {
+					//临时content,存储当前线程的content;
+					RpcInvokeContent tem = RpcInvokeContent.getContent();
+					RpcInvokeContent.setContent(asyncResponse.getContent());
+					for (Filter filter : filters) {
+						filter.onResponse(response,future.request);
+					}
+					//恢复当前线程content;
+					RpcInvokeContent.setContent(tem);
 				}
-				//恢复当前线程content;
-				RpcInvokeContent.setContent(tem);
 			}
 			future.complete(response);
 		}

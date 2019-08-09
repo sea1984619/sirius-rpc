@@ -11,10 +11,10 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.FilterChain;
 import org.sirius.rpc.client.DefaultRpcClient;
 import org.sirius.rpc.client.RpcClient;
+import org.sirius.rpc.consumer.ConsumerInvoker;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.consumer.cluster.Cluster;
 import org.sirius.rpc.consumer.cluster.router.Router;
-import org.sirius.rpc.consumer.invoke.ConsumerInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 

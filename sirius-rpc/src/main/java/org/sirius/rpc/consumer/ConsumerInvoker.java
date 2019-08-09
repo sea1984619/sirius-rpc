@@ -1,4 +1,4 @@
-package org.sirius.rpc.consumer.invoke;
+package org.sirius.rpc.consumer;
 
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
@@ -18,12 +18,14 @@ public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerInvoker.class);
 	private ConsumerConfig<T> consumerConfig;
 	private Invoker<T> invokerChain;
+	private ArgumentCallbackHandler argumentCallbackHandler;
 	
 	@SuppressWarnings("unchecked")
 	public ConsumerInvoker(ConsumerConfig<T> consumerConfig, Invoker<T> invokerChain) {
 		super(consumerConfig);
 		this.invokerChain = invokerChain;
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
+		argumentCallbackHandler = new ArgumentCallbackHandler(consumerConfig, invokerChain);
 	}
 
 	@Override
@@ -31,16 +33,21 @@ public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 		
 		RpcInvokeContent content = RpcInvokeContent.getContent();
 		boolean needSwapWhenReturn = false;
-		 //这是一个consumer端的invoker, 如果 content.isProviderSide() 为true ,表明 这个一个 A 调用 B服务,
-		 //而B服务 作为调用者,又调用C的情况,此时content 应从服务端 转换为客户端;
+		 /*
+		  * 这是一个consumer端的invoker, 如果 content.isProviderSide() 为true ,表明 这个一个 A 调用 B服务,
+		  *  而B服务 作为调用者,又调用C的情况,此时content 应从服务端 转换为客户端;
+		  */
 		if(content.isProviderSide()) {
 			RpcInvokeContent.swapContent();
 			needSwapWhenReturn = true;
 		}
 		
+		argumentCallbackHandler.handleRequest(request);
+		
 		Response response = null;
 		if (!consumerConfig.isGeneric()) {
-			// 找到调用类型， generic的时候类型在filter里进行判断
+			
+			/* 找到调用类型， generic的时候类型在filter里进行判断*/
 			String invokeType = RpcInvokeContent.getContent().getInvokeType();
 			if (invokeType != null) {
 				request.setInvokeType(invokeType);
@@ -63,6 +70,7 @@ public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 
 		try {
 			response = invokerChain.invoke(request);
+			argumentCallbackHandler.onReturn();
 		}catch(Exception e){
 			logger.error(e);
 			ThrowUtil.throwException(e);
