@@ -8,21 +8,23 @@ import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.consumer.cluster.Cluster;
 import org.sirius.rpc.invoker.AbstractInvoker;
+import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 
+/*
+ * 客户端调用的起点
+ */
 public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ConsumerProxyInvoker.class);
-	private Cluster cluster;
 	private ConsumerConfig<T> consumerConfig;
-	private RpcClient client;
+	private Invoker<T> invokerChain;
 	@SuppressWarnings("unchecked")
-	public ConsumerInvoker(ConsumerConfig<T> consumerConfig, RpcClient client) {
+	public ConsumerInvoker(ConsumerConfig<T> consumerConfig, Invoker<T> invokerChain) {
 		super(consumerConfig);
+		this.invokerChain = invokerChain;
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
-		this.client = client;
-		cluster = new AbstractCluster<T>(consumerConfig, client);
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 		}
 
 		try {
-			response = cluster.invoke(request);
+			response = invokerChain.invoke(request);
 		}finally {
 			if(needSwapWhenReturn) {
 				//客户端调用产生了future 需要转存进服务端content里;

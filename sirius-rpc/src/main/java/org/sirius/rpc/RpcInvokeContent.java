@@ -118,7 +118,6 @@ public class RpcInvokeContent {
 	}
 
 	public void clear() {
-		values.clear();
 		this.future = null;
 	}
 }
