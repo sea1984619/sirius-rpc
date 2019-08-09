@@ -1,4 +1,4 @@
-package org.sirius.rpc.callback;
+package org.sirius.rpc.argumentcallback;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,9 +16,9 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
-public class CallbackInvoker implements Invoker {
+public class ArgumentCallbackInvoker implements Invoker{
 
-	private static final InternalLogger logger = InternalLoggerFactory.getInstance(CallbackInvoker.class);
+	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ArgumentCallbackInvoker.class);
 	public static final HashedWheelTimer timer = new HashedWheelTimer(new DefaultThreadFactory("CallbackInvoker.timer", true));
 	private Channel channel;
 	private final int id;
@@ -26,7 +26,7 @@ public class CallbackInvoker implements Invoker {
 	private int attempts;
 	private int delay;
 
-	public CallbackInvoker(Channel channel, Integer id, boolean retry, int attempts, int delay) {
+	public ArgumentCallbackInvoker(Channel channel, Integer id, boolean retry, int attempts, int delay) {
 		this.channel = channel;
 		this.id = id;
 		this.retry = retry;

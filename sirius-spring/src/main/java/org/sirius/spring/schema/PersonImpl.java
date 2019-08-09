@@ -36,11 +36,11 @@ public class PersonImpl implements Person{
 
 	
 	public void addListener(String key, EatListener listener) {  
-        listeners.put(String.valueOf(listener.hashCode()), listener);  
+        listeners.put(String.valueOf(listener.hashCode()), listener);
     }  
        
     private String getChanged(String key) {  
-        return "改变Changed: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());  
+        return "Changed: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());  
     }
 
 

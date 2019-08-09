@@ -3,7 +3,7 @@ package org.sirius.rpc.consumer;
 
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
-import org.sirius.rpc.callback.ArgumentCallbackResponse;
+import org.sirius.rpc.argumentcallback.ArgumentCallbackResponse;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.provider.DefaultProviderProcessor;
@@ -20,10 +20,8 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 	public void handleResponse(Channel channel, Response response) {
 
 		if (response instanceof ArgumentCallbackResponse) {
-			System.out.println(response);
 			handleArgumentCallbackResponse(channel, response);
 		}else {
-			System.out.println("dddddd"+response);
 			 DefaultInvokeFuture.received(response);
 		}
 	}
@@ -34,8 +32,6 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		Request request = (Request) argResponse.getResult();
 		Long callbackId = argResponse.invokeId();
 		Invoker invoker = ArgumentCallbackHandler.getCallbackInvoker(callbackId.intValue());
-		System.out.println(invoker);
-		System.out.println(request.getParameters());
 		try {
 			Response _response = invoker.invoke(request);
 			channel.send(_response);

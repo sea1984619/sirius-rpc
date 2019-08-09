@@ -1,4 +1,4 @@
-package org.sirius.rpc.callback;
+package org.sirius.rpc.argumentcallback;
 
 import org.sirius.transport.api.Response;
 

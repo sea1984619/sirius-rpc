@@ -11,7 +11,7 @@ import org.sirius.common.util.Maps;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.RpcInvokeContent;
-import org.sirius.rpc.callback.ArgumentCallbackRequest;
+import org.sirius.rpc.argumentcallback.ArgumentCallbackRequest;
 import org.sirius.rpc.config.ArgumentConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.MethodConfig;
@@ -114,13 +114,13 @@ public class ArgumentCallbackHandler {
 			}
 
 			ArgumentCallbackRequest argRequset = new ArgumentCallbackRequest(request, arguments);
-			request = argRequset;
 			if (hasNewCallback) {
 				/*
 				 * 先存起来,因为现在拿不到channel,等返回时拿到channel再存进retryRequest里
 				 */
 				RpcInvokeContent.getContent().set(NEWREQUEST, argRequset);
 			}
+			return argRequset;
 		}
 		return request;
 	}

@@ -42,7 +42,7 @@ public class ConsumerInvoker<T> extends AbstractInvoker<T> {
 			needSwapWhenReturn = true;
 		}
 		
-		argumentCallbackHandler.handleRequest(request);
+		request = argumentCallbackHandler.handleRequest(request);
 		
 		Response response = null;
 		if (!consumerConfig.isGeneric()) {
