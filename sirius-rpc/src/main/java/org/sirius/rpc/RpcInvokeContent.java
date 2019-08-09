@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 
 import org.sirius.common.util.Maps;
 import org.sirius.common.util.internal.InternalThreadLocal;
+import org.sirius.rpc.future.DefaultInvokeFuture;
 
 /*
  * rpc调用上下文, 供使用者进行一些调用参数配置, 以及获取异步调用的future;
@@ -35,7 +36,7 @@ public class RpcInvokeContent {
 	private InetSocketAddress remoteAddress;
 
 	private Map<Object, Object> values = Maps.newConcurrentMap();
-	private Future<?> future;
+	private DefaultInvokeFuture<?> future;
 
 	public static void swapContent() {
 		RpcInvokeContent tem;
@@ -92,12 +93,11 @@ public class RpcInvokeContent {
 		values.remove(key);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Future<T> getFuture() {
-		return (Future<T>) future;
+	public DefaultInvokeFuture<?> getFuture() {
+		return  future;
 	}
 
-	public void setFuture(Future<?> future) {
+	public void setFuture(DefaultInvokeFuture<?> future) {
 		this.future = future;
 	}
 

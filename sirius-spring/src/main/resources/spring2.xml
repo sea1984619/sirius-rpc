@@ -18,7 +18,7 @@
 	-->
 	<bean id="check" class="org.sirius.spring.test.Check" />
 	<sirius:reference id="shop"   interface="org.sirius.spring.test.Shop" >
-	   <sirius:method name = "buyApple"  timeout = "3000"  oninvoke = "check.check" 
+	   <sirius:method name = "buyApple"  invokeType = "async" timeout = "3000"  oninvoke = "check.check" 
 	     onreturn ="check.checkreturn" onthrow = "check.checkthrow">
 	   </sirius:method>
 	</sirius:reference>

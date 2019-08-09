@@ -10,11 +10,13 @@ import org.sirius.rpc.Filter;
 import org.sirius.rpc.RpcException;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.client.RpcClient;
+import org.sirius.rpc.config.AbstractInterfaceConfig;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.future.DefaultInvokeFuture;
+import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.load.balance.LoadBalancer;
 import org.sirius.rpc.load.balance.RandomLoadBalancer;
 import org.sirius.transport.api.Request;
@@ -24,22 +26,20 @@ import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.api.channel.ChannelGroupList;
 
 @Extensible
-public class AbstractCluster<T> extends Cluster<T> {
+public class AbstractCluster<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private static final String CHANNEL_KEY = "channel";
 	private Router router;
 	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
 	private RpcClient client;
+	private ConsumerConfig<T> consumerConfig;
 
+	@SuppressWarnings("unchecked")
 	public AbstractCluster(ConsumerConfig<T> consumerConfig, RpcClient client) {
 		super(consumerConfig);
 		this.client = client;
-
-	}
-
-	public void setConsumerConfig(ConsumerConfig<T> consumerConfig) {
-		this.consumerConfig = consumerConfig;
+		this.consumerConfig = (ConsumerConfig<T>) getConfig();
 	}
 
 	@Override

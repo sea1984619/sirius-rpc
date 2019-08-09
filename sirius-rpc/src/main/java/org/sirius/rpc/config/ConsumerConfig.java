@@ -817,9 +817,10 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 				synchronized(this) {
 					if(proxy == null) {
 						List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
+						this.setFilterRef(filter);
 						RpcClient client = DefaultRpcClient.getInstance();
 						client.addConsumerConfig(this);
-						Cluster<T> cluster = new AbstractCluster<T>(this, client);
+						AbstractCluster<T> cluster = new AbstractCluster<T>(this, client);
 						Invoker<T> chain = FilterChain.buildeFilterChain(cluster, filter);
 						ConsumerInvoker<T> invoker = new ConsumerInvoker<T>(this, chain);
 						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
