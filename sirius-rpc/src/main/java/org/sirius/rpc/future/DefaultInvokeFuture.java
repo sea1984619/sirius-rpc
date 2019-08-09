@@ -13,6 +13,8 @@ import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
+import org.sirius.rpc.RpcInvokeContent;
+import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
@@ -25,12 +27,11 @@ import io.netty.util.TimerTask;
 public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements InvokeFuture<V> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultInvokeFuture.class);
-	public volatile boolean isFilted;
-	public Channel channel;
-	public Request request;
-	public int timeout;
-	public long id;
-	private List<Filter> filters;
+	private Channel channel;
+	private Request request;
+	private int timeout;
+	private long id;
+	private AsyncResponse asyncResponse;
 
 	private static final int FUTURES_CONTAINER_INITIAL_CAPACITY = org.sirius.common.util.SystemPropertyUtil
 			.getInt("rpc.invoke.futures_container_initial_capacity", 1024);
@@ -46,12 +47,12 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 	// 参数回调invoker map {key ->回调参数的hashcode : value ->回调参数对象生成的invoker}
 	private static ConcurrentMap<Integer, Invoker> callbackInvokers = Maps.newConcurrentMap();
 
-	public DefaultInvokeFuture(Channel channel, Request request, int timeout, List<Filter> filters) {
+	public DefaultInvokeFuture(Channel channel, Request request, int timeout, AsyncResponse response) {
 		this.channel = channel;
 		this.request = request;
 		this.id = request.invokeId();
 		this.timeout = timeout;
-		this.filters = filters;
+		this.asyncResponse = response;
 
 		futures.put(id, this);
 		TimeoutTask timeoutTask = new TimeoutTask(id);
@@ -64,6 +65,14 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 
 	public static Invoker getCallbackInvoker(int hashcode) {
 		return callbackInvokers.get(hashcode);
+	}
+
+	public AsyncResponse getAsyncResponse() {
+		return asyncResponse;
+	}
+
+	public void setAsyncResponse(AsyncResponse asyncResponse) {
+		this.asyncResponse = asyncResponse;
 	}
 
 	@Override
@@ -88,10 +97,17 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		long id = response.invokeId();
 		DefaultInvokeFuture<Response> future = (DefaultInvokeFuture<Response>) futures.remove(id);
 		if (future != null) {
-			if (future.filters != null) {
-				for (Filter filter : future.filters) {
+			AsyncResponse asyncResponse = future.getAsyncResponse();
+			List<Filter> filters = asyncResponse.getFilters();
+			if (filters != null) {
+				//临时content,存储当前线程的content;
+				RpcInvokeContent tem = RpcInvokeContent.getContent();
+				RpcInvokeContent.setContent(asyncResponse.getContent());
+				for (Filter filter : filters) {
 					filter.onResponse(response,future.request);
 				}
+				//恢复当前线程content;
+				RpcInvokeContent.setContent(tem);
 			}
 			future.complete(response);
 		}

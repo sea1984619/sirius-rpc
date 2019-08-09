@@ -42,7 +42,6 @@ public class AbstractCluster<T> extends Cluster<T> {
 		this.consumerConfig = consumerConfig;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Response invoke(Request request) throws Throwable {
 		Response response = null;
@@ -62,10 +61,11 @@ public class AbstractCluster<T> extends Cluster<T> {
 				RpcInvokeContent.getContent().setFuture(null);
 
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
-				response = buildAsyncResponse(request);
+				
 				// 异步调用 需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
-				future = new DefaultInvokeFuture<Response>(channel, request, timeout, filters);
+				response = buildAsyncResponse(request, filters);
+				future = new DefaultInvokeFuture<Response>(channel, request, timeout, (AsyncResponse)response);
 				RpcInvokeContent.getContent().setFuture(future);
 
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_ONEWAY)) {
@@ -87,11 +87,12 @@ public class AbstractCluster<T> extends Cluster<T> {
 	}
 
 	private Response buildEmptyResponse(Request request) {
-		// TODO Auto-generated method stub
-		return null;
+		Response response = new Response(request.invokeId());
+		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
+		return response;
 	}
 
-	private Response buildAsyncResponse(Request request,List<Filter> filters) {
+	private AsyncResponse buildAsyncResponse(Request request,List<Filter> filters) {
 		AsyncResponse response = new AsyncResponse(request.invokeId());
 		response.setFilters(filters);
 		/*
