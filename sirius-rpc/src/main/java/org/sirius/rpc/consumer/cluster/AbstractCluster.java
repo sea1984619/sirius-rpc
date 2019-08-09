@@ -12,6 +12,7 @@ import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
+import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.consumer.cluster.router.Router;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.load.balance.LoadBalancer;
@@ -56,13 +57,12 @@ public class AbstractCluster<T> extends Cluster<T> {
 			int timeout = request.getTimeout();
 			// 同步调用
 			if (invokeType.equals(RpcConstants.INVOKER_TYPE_SYNC)) {
-				System.out.println("超时为"+timeout);
 				future = new DefaultInvokeFuture<Response>(channel, request, timeout, null);
 				response = future.getResponse();
 				RpcInvokeContent.getContent().setFuture(null);
 
 			} else if (invokeType.equals(RpcConstants.INVOKER_TYPE_FUTURE)) {
-				response = buildEmptyResponse(request);
+				response = buildAsyncResponse(request);
 				// 异步调用 需要设置过滤链 过滤返回结果
 				List<Filter> filters = consumerConfig.getFilterRef();
 				future = new DefaultInvokeFuture<Response>(channel, request, timeout, filters);
@@ -87,7 +87,20 @@ public class AbstractCluster<T> extends Cluster<T> {
 	}
 
 	private Response buildEmptyResponse(Request request) {
-		Response response = new Response(request.invokeId());
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Response buildAsyncResponse(Request request,List<Filter> filters) {
+		AsyncResponse response = new AsyncResponse(request.invokeId());
+		response.setFilters(filters);
+		/*
+		 * 这里的content只是引用, 是否需要深拷贝？假设content里存储了一些只有单次调用才生效的数据,
+		 * 而在执行filter异步回调时又需要这些数据, 而因为执行回调的线程和当前线程不是一个线程,它们并发执行
+		 * 那么这些数据在回调时很大可能会当前线程被更改。这种情况肯定需要深拷贝。
+		 * 但是深拷贝是个很大的坑,不碰为好,所以filter执行回调时应该避免使用到仅单次调用有效的数据
+		 */
+		response.setContent(RpcInvokeContent.getContent());
 		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
 		return response;
 	}

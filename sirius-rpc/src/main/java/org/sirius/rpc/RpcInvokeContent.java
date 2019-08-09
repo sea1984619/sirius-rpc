@@ -37,7 +37,6 @@ public class RpcInvokeContent {
 	private Map<Object, Object> values = Maps.newConcurrentMap();
 	private Future<?> future;
 
-	// 交换两个content,此方法配合@ConsumerContentFilter适用
 	public static void swapContent() {
 		RpcInvokeContent tem;
 		tem = local.get();

@@ -6,6 +6,7 @@ import java.util.List;
 import org.sirius.common.ext.ExtensionLoader;
 import org.sirius.common.ext.ExtensionLoaderFactory;
 import org.sirius.common.util.StringUtils;
+import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.transport.api.Request;
@@ -25,6 +26,9 @@ public class FilterChain {
 				public Response invoke(Request request) throws Throwable {
 					
 					Response res = filter.invoke(next, request);
+					if(res instanceof AsyncResponse) {
+						return res;
+					}
 					return filter.onResponse(res,request);
 				}
 			};
