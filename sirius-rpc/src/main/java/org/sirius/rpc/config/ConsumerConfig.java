@@ -14,7 +14,7 @@ import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.consumer.ConsumerInvoker;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.consumer.cluster.Cluster;
-import org.sirius.rpc.consumer.cluster.router.Router;
+import org.sirius.rpc.consumer.router.Router;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 

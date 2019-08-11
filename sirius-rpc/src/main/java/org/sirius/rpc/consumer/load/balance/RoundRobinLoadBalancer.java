@@ -1,4 +1,4 @@
-package org.sirius.rpc.load.balance;
+package org.sirius.rpc.consumer.load.balance;
 
 import java.util.List;
 

@@ -1,7 +1,10 @@
 package org.sirius.rpc.consumer.cluster;
 import java.util.List;
 import org.sirius.common.ext.Extensible;
+import org.sirius.common.ext.ExtensionLoader;
+import org.sirius.common.ext.ExtensionLoaderFactory;
 import org.sirius.common.util.ClassUtil;
+import org.sirius.common.util.StringUtils;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
@@ -11,11 +14,11 @@ import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.AsyncResponse;
-import org.sirius.rpc.consumer.cluster.router.Router;
+import org.sirius.rpc.consumer.load.balance.LoadBalancer;
+import org.sirius.rpc.consumer.load.balance.RandomLoadBalancer;
+import org.sirius.rpc.consumer.router.Router;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.AbstractInvoker;
-import org.sirius.rpc.load.balance.LoadBalancer;
-import org.sirius.rpc.load.balance.RandomLoadBalancer;
 import org.sirius.transport.api.Request;
 import org.sirius.transport.api.Response;
 import org.sirius.transport.api.channel.Channel;
@@ -36,7 +39,24 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		super(consumerConfig);
 		this.client = client;
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
+		init(consumerConfig);
 	}
+	
+
+	public void init(ConsumerConfig<T> consumerConfig) {
+		String loadBalancer = consumerConfig.getLoadBalancer();
+		if(StringUtils.isEmpty(loadBalancer)) {
+			loadBalancer = "roundRobin";
+		}
+		ExtensionLoader<LoadBalancer>  loadBalancerLoader = ExtensionLoaderFactory.getExtensionLoader(LoadBalancer.class);
+		this.loadBalancer = (LoadBalancer) loadBalancerLoader.getExtensionClass(loadBalancer);
+		
+		List<String> routers = consumerConfig.getRouter();
+		for(String router : routers) {
+			
+		}
+	}
+
 
 	@Override
 	public Response invoke(Request request) throws Throwable {
