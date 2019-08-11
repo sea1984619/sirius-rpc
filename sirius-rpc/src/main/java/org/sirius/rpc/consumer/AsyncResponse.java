@@ -11,6 +11,8 @@ import org.sirius.transport.api.Response;
  */
 public class AsyncResponse extends Response {
 
+	private static final long serialVersionUID = -8186400333717035532L;
+
 	private List<Filter> filters;
 	
 	private RpcInvokeContent content;

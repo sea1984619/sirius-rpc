@@ -85,7 +85,7 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	@Override
-	public void addConsumerConfig(ConsumerConfig<?> consumerConfig){
+	public void addConsumerConfig(ConsumerConfig<?> consumerConfig) {
 		try {
 			creatChannel(consumerConfig);
 		} catch (Throwable e) {
@@ -99,8 +99,7 @@ public class DefaultRpcClient implements RpcClient {
 		if (consumerConfig.getDirectUrl() != null) {
 			String url = consumerConfig.getDirectUrl();
 			UnresolvedAddress address = parseUrl(url);
-			doCreantChannel(connector, address, consumerConfig, groupList);
-
+			doCreantChannel(connector, address, consumerConfig, groupList, 0);
 		} else {
 			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
 			listener = new DefaultProviderInfoListener(connector, groupList, consumerConfig);
@@ -117,12 +116,12 @@ public class DefaultRpcClient implements RpcClient {
 						logger.error("subscribe to {} failed ,please retry..", registry, t);
 						throw t;
 					}
-					//等一会防止channel还没创建好就执行操作了
-					synchronized(consumerConfig) {
+					// 等一会防止channel还没创建好就执行操作了
+					synchronized (consumerConfig) {
 						try {
 							consumerConfig.wait(10000);
 						} catch (InterruptedException e) {
-							//no op
+							// no op
 						}
 					}
 				}
@@ -130,18 +129,22 @@ public class DefaultRpcClient implements RpcClient {
 		}
 	}
 
-	private static void doCreantChannel(Connector connector, UnresolvedAddress address, ConsumerConfig<?> consumerConfig,
-			ChannelGroupList groupList) {
+	private static void doCreantChannel(Connector connector, UnresolvedAddress address,
+			ConsumerConfig<?> consumerConfig, ChannelGroupList groupList, int weight) {
 		int connectionNum = consumerConfig.getConnectionNum();
-		try {
-			for (int i = 0; i < connectionNum; i++) {
-				Channel channel = connector.connect(address, false);
-				groupList.add(channel.getGroup());
+
+		Channel channel = null;
+		for (int i = 0; i < connectionNum; i++) {
+			try {
+				channel = connector.connect(address, false);
+			} catch (Throwable t) {
+				logger.error("connect to {} failed, please check the address is available or not ", address, t);
+				throw t;
 			}
-		} catch (Throwable t) {
-			logger.error("connect to {} failed, please check the address is available or not ", address, t);
-			throw t;
 		}
+		channel.getGroup().setWeight(weight);
+		groupList.add(channel.getGroup());
+
 	}
 
 	private UnresolvedAddress parseUrl(String url) {
@@ -170,9 +173,10 @@ public class DefaultRpcClient implements RpcClient {
 			for (ProviderInfo info : infos) {
 				String host = info.getHost();
 				int port = info.getPort();
+				int weight = info.getWeight();
 				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
-				doCreantChannel(connector, address, consumerConfig, groupList);
-				synchronized(consumerConfig) {
+				doCreantChannel(connector, address, consumerConfig, groupList,weight);
+				synchronized (consumerConfig) {
 					consumerConfig.notifyAll();
 				}
 			}

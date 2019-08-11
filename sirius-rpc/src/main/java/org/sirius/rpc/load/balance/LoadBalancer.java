@@ -1,17 +1,13 @@
 package org.sirius.rpc.load.balance;
 
-import java.util.List;
 
 import org.sirius.common.ext.Extensible;
+import org.sirius.transport.api.channel.ChannelGroup;
+import org.sirius.transport.api.channel.ChannelGroupList;
+
 
 @Extensible
-public interface LoadBalancer<T>{
+public interface LoadBalancer{
 
-	T select(List<T> list);
-	
-	/*
-	 * 带权重的负载均衡
-	 * @param weightArray  权重数组
-	 */
-	T select(List<T> list,int[] weightArray);
+	ChannelGroup select(ChannelGroupList list);
 }

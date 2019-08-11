@@ -17,5 +17,4 @@ public class WeightSupport {
 		}
 		return low;
 	}
-
 }

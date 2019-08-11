@@ -3,18 +3,12 @@ package org.sirius.rpc.load.balance;
 import java.util.List;
 
 import org.sirius.common.util.IntegerSequencer;
+import org.sirius.transport.api.channel.ChannelGroup;
 
-public class RoundRobinLoadBalancer<T> implements LoadBalancer<T> {
-
-	private IntegerSequencer sequencer = new IntegerSequencer();
-	@Override
-	public T select(List<T> list) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+public class RoundRobinLoadBalancer extends AbstractLoadBalancer {
 
 	@Override
-	public T select(List<T> list, int[] weightArray) {
+	public ChannelGroup doSelect(List<ChannelGroup> groups, int[] weights) {
 		// TODO Auto-generated method stub
 		return null;
 	}

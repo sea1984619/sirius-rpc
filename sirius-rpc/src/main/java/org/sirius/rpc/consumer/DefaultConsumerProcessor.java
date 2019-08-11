@@ -31,7 +31,7 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 		// 获取回调参数
 		Request request = (Request) argResponse.getResult();
 		Long callbackId = argResponse.invokeId();
-		Invoker invoker = ArgumentCallbackHandler.getCallbackInvoker(callbackId.intValue());
+		Invoker<?> invoker = ArgumentCallbackHandler.getCallbackInvoker(callbackId.intValue());
 		try {
 			Response _response = invoker.invoke(request);
 			channel.send(_response);

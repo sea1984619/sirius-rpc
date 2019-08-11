@@ -27,7 +27,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private Router router;
-	private LoadBalancer<ChannelGroup> loadBalancer = new RandomLoadBalancer<ChannelGroup>();;
+	private LoadBalancer loadBalancer = new RandomLoadBalancer();;
 	private RpcClient client;
 	private ConsumerConfig<T> consumerConfig;
 
@@ -46,7 +46,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		Channel channel = null;
 		try {
 			ChannelGroupList channelGroupList = client.getGroupList(consumerConfig.getInterface());
-			ChannelGroup group = loadBalancer.select(channelGroupList.getChannelGroup());
+			ChannelGroup group = loadBalancer.select(channelGroupList);
 			channel = group.next();
 			channel.send(request);
 			int timeout = request.getTimeout();
