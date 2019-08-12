@@ -815,6 +815,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
 		return configValueCache;
 	}
 
+	
 	public <V extends AbstractInterfaceConfig> V copyOf(V oldConfig, Class<V> clazz) {
 		V newConfig = null;
 		try {

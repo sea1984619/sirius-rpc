@@ -28,8 +28,14 @@ public class ConditionRouter implements Router {
 
 	private String condition;
 	private ConsumerConfig<?> config;
+	/*
+	 * 左匹配支持多个条件. 以"&"分割 例如 "host = 192.* & method = get*"
+	 */
 	public List<Condition> leftConditions = new ArrayList<Condition>();
-	public List<Condition> rightConditions = new ArrayList<Condition>();
+	/*
+	 * 右匹配暂时只支持 host一个条件匹配。
+	 */
+	public Condition rightCondition;
 
 	public ConditionRouter(String condition, ConsumerConfig<?> config) {
 		this.config = config;
@@ -38,47 +44,42 @@ public class ConditionRouter implements Router {
 		String[] lefts = StringUtils.split(pair[0], "&");
 		for (String left : lefts) {
 			if (!StringUtils.isEmpty(left)) {
-				Condition c = new Condition(left);
-				boolean a = c.available ? leftConditions.add(c) : null;
+				leftConditions.add(new Condition(left));
 			}
 		}
-		String[] rights = StringUtils.split(pair[1], "&");
-		for (String right : rights) {
-			if (!StringUtils.isEmpty(right)) {
-				Condition c = new Condition(right);
-				boolean a = c.available ? rightConditions.add(c) : null;
-			}
-		}
+		if (!StringUtils.isEmpty(pair[1]))
+			rightCondition = new Condition(pair[1]);
 	}
 
 	@Override
 	public List<ChannelGroup> route(List<ChannelGroup> groupList, Request request) {
 		boolean needFilte = false;
-		if()
-		String kind = leftCondition.getKind();
-		if (kind == null) {
-			return groupList;
-		}
-		switch (kind) {
-		case host:
-			String host = groupList.get(0).localAddress().getHost();
-			needFilte = handle(host);
-			break;
-		case method:
-			String methodName = request.getMethodName();
-			needFilte = handle(methodName);
-			break;
-		case application:
-			String appName = config.getAppName();
-			needFilte = handle(appName);
-			break;
+		if (leftConditions.size() == 0) {
+			needFilte = true;
+		} else {
+			for (Condition c : leftConditions) {
+				String kind = c.getKind();
+				String tobeMatched;
+				if (kind.equals(host))
+					tobeMatched = groupList.get(0).localAddress().getHost();
+				else if (kind.equals(method))
+					tobeMatched = request.getMethodName();
+				else
+					tobeMatched = config.getConfigValueCache().get(kind).toString();
+
+				if (!match(tobeMatched, c)) {
+					needFilte = false;
+					break;
+				}
+				needFilte = true;
+			}
 		}
 		if (needFilte) {
 			List<ChannelGroup> filted = new ArrayList<ChannelGroup>();
-			if (rightCondition.nullConditon)
+
+			if (groupList.size() == 0 || rightCondition == null)
 				return filted;
-			if (groupList.size() == 0)
-				return groupList;
+
 			for (ChannelGroup group : groupList) {
 				String remoteAddress = group.remoteAddress().getHost();
 				if (rightCondition.getInclude() != null) {
@@ -87,9 +88,11 @@ public class ConditionRouter implements Router {
 						System.out.println("a:" + group.remoteAddress());
 					}
 				} else {
-					if (!rightCondition.matchExclude(remoteAddress)) {
-						filted.add(group);
-						System.out.println("b:" + group.remoteAddress());
+					if (rightCondition.getExclude() != null) {
+						if (!rightCondition.matchExclude(remoteAddress)) {
+							filted.add(group);
+							System.out.println("b:" + group.remoteAddress());
+						}
 					}
 				}
 			}
@@ -98,18 +101,19 @@ public class ConditionRouter implements Router {
 		return groupList;
 	}
 
-	private boolean handle(String tobeMatched) {
-		if (leftCondition.getInclude() != null) {
-			if (leftCondition.matchInclude(tobeMatched)) {
+	private boolean match(String tobeMatched, Condition c) {
+		if (c.getInclude() != null) {
+			if (c.matchInclude(tobeMatched)) {
 				return true;
 			}
 		} else {
-			if (leftCondition.getExclude() != null) {
-				if (!leftCondition.matchExclude(tobeMatched))
+			if (c.getExclude() != null) {
+				if (!c.matchExclude(tobeMatched))
 					return true;
 			}
 		}
 		return false;
+
 	}
 
 	public String getCondition() {
@@ -124,7 +128,6 @@ public class ConditionRouter implements Router {
 		private String kind;
 		private List<String> include;
 		private List<String> exclude;
-		public boolean available = false;
 
 		public Condition(String condition) {
 			if (condition.indexOf(not_equal) > 0) {
@@ -137,7 +140,6 @@ public class ConditionRouter implements Router {
 				}
 				this.kind = kind;
 				exclude = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
-				this.available = true;
 				return;
 			} else {
 				if (condition.indexOf(equal) > 0) {
@@ -150,12 +152,11 @@ public class ConditionRouter implements Router {
 					}
 					this.kind = kind;
 					include = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
-					this.available = true;
 					return;
 				}
 			}
 			ThrowUtil.throwException(
-					new RpcException("the expression of [" + condition + "] is wrong , must contain = or != "));
+					new RpcException("the expression of [" + condition + "] is wrong ,must contain = or !="));
 		}
 
 		public boolean matchInclude(String tobematched) {
@@ -176,6 +177,9 @@ public class ConditionRouter implements Router {
 			return false;
 		}
 
+		/*
+		 * 正则表达式不会搞,所以,很简单的匹配方法,不过可以满足绝大部分需求了。
+		 */
 		public boolean match(String tobematched, String condition) {
 			if (tobematched.equals(condition))
 				return true;
@@ -219,7 +223,7 @@ public class ConditionRouter implements Router {
 
 	public static void main(String args[]) {
 
-		String rule = "method!=get*=> host= 192.168.1.1";
+		String rule = "host=192.168.* & method= get*=>";
 		ChannelGroup group1 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.1", 2000));
 		group1.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
 		ChannelGroup group2 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.2", 2000));
