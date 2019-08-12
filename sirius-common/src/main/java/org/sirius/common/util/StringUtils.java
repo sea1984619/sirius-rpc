@@ -440,9 +440,9 @@ public class StringUtils {
     }
     
     public static void main(String args[]) {
-    	String  s = "120 =>";
+    	String  s = "=>120";
     	String[] d = StringUtils.split(s, "=>");
-    	System.out.println(d[0]);
+    	System.out.println(d.length);
     	System.out.println(d[1].trim());
     }
 }

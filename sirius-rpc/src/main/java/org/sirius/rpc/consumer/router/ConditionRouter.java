@@ -17,9 +17,7 @@ import org.sirius.transport.netty.channel.NettyChannelGroup;
 import com.google.common.collect.Maps;
 
 /*
- *规则用法和dubbo一样, 每一个ConditionRouter只过滤一类条件,
- *比如 host=192.168.12.0,152.200.133.12 => host=192.168.1.1
- *     method=get* => host=192.168.1.1
+ *规则用法和dubbo一样
  */
 public class ConditionRouter implements Router {
 
@@ -30,36 +28,47 @@ public class ConditionRouter implements Router {
 
 	private String condition;
 	private ConsumerConfig<?> config;
-	public Condition leftCondition;
-	public Condition rightCondition;
+	public List<Condition> leftConditions = new ArrayList<Condition>();
+	public List<Condition> rightConditions = new ArrayList<Condition>();
 
 	public ConditionRouter(String condition, ConsumerConfig<?> config) {
-		this.condition = condition.replaceAll(" ", "");
 		this.config = config;
+		this.condition = condition.replaceAll(" ", "");
 		String[] pair = StringUtils.split(this.condition, middle_separator);
-		this.leftCondition = new Condition(pair[0]);
-		this.rightCondition = new Condition(pair[1]);
-
+		String[] lefts = StringUtils.split(pair[0], "&");
+		for (String left : lefts) {
+			if (!StringUtils.isEmpty(left)) {
+				Condition c = new Condition(left);
+				boolean a = c.available ? leftConditions.add(c) : null;
+			}
+		}
+		String[] rights = StringUtils.split(pair[1], "&");
+		for (String right : rights) {
+			if (!StringUtils.isEmpty(right)) {
+				Condition c = new Condition(right);
+				boolean a = c.available ? rightConditions.add(c) : null;
+			}
+		}
 	}
 
 	@Override
 	public List<ChannelGroup> route(List<ChannelGroup> groupList, Request request) {
-
+		boolean needFilte = false;
+		if()
 		String kind = leftCondition.getKind();
 		if (kind == null) {
 			return groupList;
 		}
-		boolean needFilte = false;
-		switch(kind){
-		case host :
+		switch (kind) {
+		case host:
 			String host = groupList.get(0).localAddress().getHost();
 			needFilte = handle(host);
 			break;
-		case method :
+		case method:
 			String methodName = request.getMethodName();
 			needFilte = handle(methodName);
 			break;
-		case application :
+		case application:
 			String appName = config.getAppName();
 			needFilte = handle(appName);
 			break;
@@ -75,12 +84,12 @@ public class ConditionRouter implements Router {
 				if (rightCondition.getInclude() != null) {
 					if (rightCondition.matchInclude(remoteAddress)) {
 						filted.add(group);
-						System.out.println("a:"+group.remoteAddress());
+						System.out.println("a:" + group.remoteAddress());
 					}
 				} else {
 					if (!rightCondition.matchExclude(remoteAddress)) {
 						filted.add(group);
-						System.out.println("b:"+group.remoteAddress());
+						System.out.println("b:" + group.remoteAddress());
 					}
 				}
 			}
@@ -89,14 +98,14 @@ public class ConditionRouter implements Router {
 		return groupList;
 	}
 
-	private boolean handle(String  tobeMatched) {
-		if(leftCondition.getInclude() != null) {
+	private boolean handle(String tobeMatched) {
+		if (leftCondition.getInclude() != null) {
 			if (leftCondition.matchInclude(tobeMatched)) {
 				return true;
 			}
-		}else {
-			if(leftCondition.getExclude() != null) {
-				if(!leftCondition.matchExclude(tobeMatched))
+		} else {
+			if (leftCondition.getExclude() != null) {
+				if (!leftCondition.matchExclude(tobeMatched))
 					return true;
 			}
 		}
@@ -112,37 +121,41 @@ public class ConditionRouter implements Router {
 		private static final String equal = "=";
 		private static final String not_equal = "!=";
 		private static final String wildcard = "*";
-		private boolean nullConditon;
 		private String kind;
 		private List<String> include;
 		private List<String> exclude;
+		public boolean available = false;
 
 		public Condition(String condition) {
-			if (StringUtils.isEmpty(condition)) {
-				nullConditon = true;
-				return;
-			}
 			if (condition.indexOf(not_equal) > 0) {
 				String[] pair = StringUtils.split(condition, not_equal);
 				String kind = pair[0];
 				String expression = pair[1];
-				if (StringUtils.isEmpty(kind)) {
-					return;// 无效规则,直接返回
+				if (StringUtils.isEmpty(kind) || StringUtils.isEmpty(expression)) {
+					ThrowUtil.throwException(new RpcException("the expression of [" + condition
+							+ "] is wrong ,both side of (= or != ) must not be blank"));
 				}
 				this.kind = kind;
 				exclude = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
+				this.available = true;
+				return;
 			} else {
 				if (condition.indexOf(equal) > 0) {
 					String[] pair = StringUtils.split(condition, equal);
 					String kind = pair[0];
 					String expression = pair[1];
-					if (StringUtils.isEmpty(kind)) {
-						return; // 无效规则,直接返回
+					if (StringUtils.isEmpty(kind) || StringUtils.isEmpty(expression)) {
+						ThrowUtil.throwException(new RpcException("the expression of [" + condition
+								+ "] is wrong ,both side of (= or != ) must not be blank"));
 					}
 					this.kind = kind;
 					include = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
+					this.available = true;
+					return;
 				}
 			}
+			ThrowUtil.throwException(
+					new RpcException("the expression of [" + condition + "] is wrong , must contain = or != "));
 		}
 
 		public boolean matchInclude(String tobematched) {
@@ -186,14 +199,6 @@ public class ConditionRouter implements Router {
 
 		public String getKind() {
 			return kind;
-		}
-
-		public boolean isNullConditon() {
-			return nullConditon;
-		}
-
-		public void setNullConditon(boolean nullConditon) {
-			this.nullConditon = nullConditon;
 		}
 	}
 
