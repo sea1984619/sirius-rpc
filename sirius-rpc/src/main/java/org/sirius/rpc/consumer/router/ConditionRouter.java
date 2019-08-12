@@ -24,17 +24,16 @@ import com.google.common.collect.Maps;
 public class ConditionRouter implements Router {
 
 	private static final String middle_separator = "=>";
-	private static final String wildcard = "*";
 	private static final String host = "host";
 	private static final String method = "method";
 	private static final String application = "application";
 
 	private String condition;
-	private ConsumerConfig config;
+	private ConsumerConfig<?> config;
 	public Condition leftCondition;
 	public Condition rightCondition;
 
-	public ConditionRouter(String condition, ConsumerConfig config) {
+	public ConditionRouter(String condition, ConsumerConfig<?> config) {
 		this.condition = condition.replaceAll(" ", "");
 		this.config = config;
 		String[] pair = StringUtils.split(this.condition, middle_separator);
