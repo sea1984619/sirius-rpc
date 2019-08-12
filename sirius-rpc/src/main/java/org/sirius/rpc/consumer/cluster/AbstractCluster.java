@@ -1,5 +1,6 @@
 package org.sirius.rpc.consumer.cluster;
 import java.util.List;
+
 import org.sirius.common.ext.Extensible;
 import org.sirius.common.ext.ExtensionLoader;
 import org.sirius.common.ext.ExtensionLoaderFactory;
@@ -39,11 +40,21 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		super(consumerConfig);
 		this.client = client;
 		this.consumerConfig = (ConsumerConfig<T>) getConfig();
-		init(consumerConfig);
+		initLoadBalancer(consumerConfig);
+		initRouterChain(consumerConfig);
 	}
 	
 
-	public void init(ConsumerConfig<T> consumerConfig) {
+	@SuppressWarnings("unchecked")
+	private void initRouterChain(ConsumerConfig<T> consumerConfig) {
+		ExtensionLoader<Router>  routerLoader = ExtensionLoaderFactory.getExtensionLoader(Router.class);
+		List<Router> routers = routerLoader.getAllExtensions(null, true);
+		
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public void initLoadBalancer(ConsumerConfig<T> consumerConfig) {
 		String loadBalancer = consumerConfig.getLoadBalancer();
 		if(StringUtils.isEmpty(loadBalancer)) {
 			loadBalancer = "roundRobin";
@@ -51,10 +62,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		ExtensionLoader<LoadBalancer>  loadBalancerLoader = ExtensionLoaderFactory.getExtensionLoader(LoadBalancer.class);
 		this.loadBalancer = (LoadBalancer) loadBalancerLoader.getExtensionClass(loadBalancer);
 		
-		List<String> routers = consumerConfig.getRouter();
-		for(String router : routers) {
-			
-		}
+		
 	}
 
 

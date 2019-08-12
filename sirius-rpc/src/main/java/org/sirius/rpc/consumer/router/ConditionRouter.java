@@ -210,7 +210,7 @@ public class ConditionRouter implements Router {
 
 	public static void main(String args[]) {
 
-		String rule = "host=192.168.* & method!= get*=>  host= 192.168.1.*";
+		String rule = "host=192.168.* & method= get*=>  host= 192.168.1.*";
 		ChannelGroup group1 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.1", 2000));
 		group1.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
 		ChannelGroup group2 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.3.2", 2000));

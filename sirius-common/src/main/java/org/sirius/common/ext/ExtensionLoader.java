@@ -288,6 +288,8 @@ public class ExtensionLoader<T> {
 	public List<T> getAllExtensions(String[] values, boolean needConsumerSide) {
 
 		List<T> actualExt = new ArrayList<T>();
+		if(values == null)
+			values = new String[]{};
 		List<String> aliasList = new ArrayList<String>(Arrays.asList(values));
 
 		if (aliasList.contains("-default")) {

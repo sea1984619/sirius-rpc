@@ -3,6 +3,7 @@ package org.sirius.common.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
