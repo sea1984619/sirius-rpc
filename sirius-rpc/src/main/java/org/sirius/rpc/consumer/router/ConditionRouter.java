@@ -3,7 +3,6 @@ package org.sirius.rpc.consumer.router;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.sirius.common.util.StringUtils;
 import org.sirius.common.util.ThrowUtil;
@@ -13,8 +12,6 @@ import org.sirius.transport.api.Request;
 import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.api.channel.ChannelGroup;
 import org.sirius.transport.netty.channel.NettyChannelGroup;
-
-import com.google.common.collect.Maps;
 
 /*
  *规则用法和dubbo一样
@@ -82,18 +79,8 @@ public class ConditionRouter implements Router {
 
 			for (ChannelGroup group : groupList) {
 				String remoteAddress = group.remoteAddress().getHost();
-				if (rightCondition.getInclude() != null) {
-					if (rightCondition.matchInclude(remoteAddress)) {
-						filted.add(group);
-						System.out.println("a:" + group.remoteAddress());
-					}
-				} else {
-					if (rightCondition.getExclude() != null) {
-						if (!rightCondition.matchExclude(remoteAddress)) {
-							filted.add(group);
-							System.out.println("b:" + group.remoteAddress());
-						}
-					}
+				if(match(remoteAddress, rightCondition)) {
+					filted.add(group);
 				}
 			}
 			return filted;
@@ -223,12 +210,12 @@ public class ConditionRouter implements Router {
 
 	public static void main(String args[]) {
 
-		String rule = "host=192.168.* & method= get*=>";
+		String rule = "host=192.168.* & method!= get*=>  host= 192.168.1.*";
 		ChannelGroup group1 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.1", 2000));
 		group1.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
-		ChannelGroup group2 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.2", 2000));
+		ChannelGroup group2 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.3.2", 2000));
 		group2.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
-		ChannelGroup group3 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.3", 2000));
+		ChannelGroup group3 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.5.3", 2000));
 		group3.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
 		ChannelGroup group4 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.4", 2000));
 		group4.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
