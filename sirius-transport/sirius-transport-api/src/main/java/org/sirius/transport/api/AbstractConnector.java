@@ -1,7 +1,9 @@
 package org.sirius.transport.api;
 
+import java.net.InetAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.sirius.common.util.NetUtils;
 import org.sirius.common.util.internal.logging.CheckNullUtil;
 import org.sirius.transport.api.Transporter.Protocol;
 import org.sirius.transport.api.channel.ChannelGroup;
@@ -11,7 +13,7 @@ public abstract class AbstractConnector implements Connector {
 	protected Protocol protocol;
 	protected ConsumerProcessor processor;
 	protected Config config;
-	protected ConcurrentHashMap<UnresolvedAddress ,ChannelGroup> adressTOchannelGroup  = new ConcurrentHashMap<UnresolvedAddress ,ChannelGroup>();
+	protected ConcurrentHashMap<UnresolvedAddress ,ChannelGroup> adressToChannelGroup  = new ConcurrentHashMap<UnresolvedAddress ,ChannelGroup>();
 	
 	public AbstractConnector(Protocol protocol) {
 		this.protocol = protocol;
@@ -42,10 +44,13 @@ public abstract class AbstractConnector implements Connector {
 
 	public ChannelGroup group(UnresolvedAddress address) {
 		CheckNullUtil.check(address);
-		ChannelGroup group = adressTOchannelGroup.get(address);
+		ChannelGroup group = adressToChannelGroup.get(address);
 		if(group==null) {
 			ChannelGroup newGroup = creatChannelGroup(address);
-			 group = adressTOchannelGroup.putIfAbsent(address, newGroup);
+			
+			 group = adressToChannelGroup.putIfAbsent(address, newGroup);
+			 InetAddress local =  NetUtils.getLocalAddress();
+			 group.setLocalAddress(new UnresolvedSocketAddress(local.getHostAddress(),0));
 			 if(group==null)
 				 return newGroup;
  		}

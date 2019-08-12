@@ -512,6 +512,6 @@ public class NetUtils {
 	}
 
 	public static void main(String args[]) throws UnknownHostException {
-		System.out.println(NetUtils.getLocalHostByRegistry("121.63.139.171:18090"));
+		System.out.println(NetUtils.getLocalIpv4());
 	}
 }

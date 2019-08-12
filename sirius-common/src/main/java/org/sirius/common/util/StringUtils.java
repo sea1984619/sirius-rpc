@@ -438,4 +438,11 @@ public class StringUtils {
         }
         return str.substring(0, pos);
     }
+    
+    public static void main(String args[]) {
+    	String  s = "120 =>";
+    	String[] d = StringUtils.split(s, "=>");
+    	System.out.println(d[0]);
+    	System.out.println(d[1].trim());
+    }
 }

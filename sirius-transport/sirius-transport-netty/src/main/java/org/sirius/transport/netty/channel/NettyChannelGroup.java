@@ -12,6 +12,7 @@ import io.netty.channel.ChannelFutureListener;
 public class NettyChannelGroup implements ChannelGroup {
 
 	private UnresolvedAddress remoteAddress;
+	private UnresolvedAddress lacalAddress;
 	private int capacity;
 	private int weight;
 	private ChannelFutureListener cleaner = future -> remove(NettyChannel.attachChannel(future.channel()));
@@ -104,5 +105,13 @@ public class NettyChannelGroup implements ChannelGroup {
 	public int hashCode() {
 		return remoteAddress.hashCode();
 	}
-	
+	@Override
+	public UnresolvedAddress localAddress() {
+		// TODO Auto-generated method stub
+		return this.lacalAddress;
+	}
+	@Override
+	public void setLocalAddress(UnresolvedAddress local) {
+		this.lacalAddress = local;
+	}
 }

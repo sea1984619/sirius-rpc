@@ -9,16 +9,14 @@ import org.sirius.transport.api.UnresolvedAddress;
  */
 public interface ChannelGroup {
 
-	/*
-	 * return  这一组channel的地址
-	 */
 	UnresolvedAddress  remoteAddress();
+	
+	UnresolvedAddress localAddress();
+	
+	void setLocalAddress(UnresolvedAddress local);
 	
 	List<Channel>   channels();
 	
-	/*
-	 * return  下一个可用的channel
-	 */
 	Channel     next();
 	
 	boolean     add(Channel c);
