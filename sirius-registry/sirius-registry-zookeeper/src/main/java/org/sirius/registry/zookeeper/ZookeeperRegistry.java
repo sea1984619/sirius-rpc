@@ -32,10 +32,10 @@ import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.registry.AbstractRegistry;
+import org.sirius.rpc.registry.NotifyListener;
 import org.sirius.rpc.registry.ProviderInfo;
-import org.sirius.rpc.registry.ProviderInfoGroup;
-import org.sirius.rpc.registry.ProviderInfoListener;
 
+@SuppressWarnings("rawtypes")
 @Extension(value = "zookeeper", singleton = true)
 public class ZookeeperRegistry extends AbstractRegistry {
 
@@ -76,6 +76,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	/**
 	 * 保存服务消费者的url
 	 */
+	
 	private ConcurrentMap<ConsumerConfig, String> consumerUrls = new ConcurrentHashMap<ConsumerConfig, String>();
 
 	/**
@@ -92,6 +93,8 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	 * 例如：{ConsumerConfig ： PathChildrenCache }
 	 */
 	private static final ConcurrentMap<ConsumerConfig, PathChildrenCache> INTERFACE_PROVIDER_CACHE = new ConcurrentHashMap<ConsumerConfig, PathChildrenCache>();
+	private static final ConcurrentMap<ConsumerConfig, PathChildrenCache> INTERFACE_ROUTER_CACHE = new ConcurrentHashMap<ConsumerConfig, PathChildrenCache>();
+	private static final ConcurrentMap<ConsumerConfig, PathChildrenCache> INTERFACE_CONFIG_CACHE = new ConcurrentHashMap<ConsumerConfig, PathChildrenCache>();
 
 	public ZookeeperRegistry(RegistryConfig config) {
 		super(config);
@@ -188,7 +191,6 @@ public class ZookeeperRegistry extends AbstractRegistry {
 				providerUrls.put(config, urls);
 			}
 			if (CommonUtils.isNotEmpty(urls)) {
-
 				String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
 				for (String url : urls) {
 					url = URLEncoder.encode(url, "UTF-8");
@@ -215,16 +217,46 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
+	protected void doSubscribe(ConsumerConfig<?> config, NotifyListener listener) {
+		subscribeConsumerUrls(config);
+		subscribeProvider(config,listener);
+		subscribeConfig(config,listener);
+		subscribeRouter(config,listener);
+	}
+	protected void subscribeConsumerUrls(ConsumerConfig config) {
+        // 注册Consumer节点
+        String url = null;
+        if (config.isRegister()) {
+            try {
+                String consumerPath = ZookeeperRegistryHelper.buildConsumerPath(rootPath, config);
+                if (consumerUrls.containsKey(config)) {
+                    url = consumerUrls.get(config);
+                } else {
+                    url = ZookeeperRegistryHelper.convertConsumerToUrl(config);
+                    consumerUrls.put(config, url);
+                }
+                String encodeUrl = URLEncoder.encode(url, "UTF-8");
+                getAndCheckZkClient().create().creatingParentContainersIfNeeded()
+                    .withMode(CreateMode.EPHEMERAL) // Consumer临时节点
+                    .forPath(consumerPath + PATH_SEPARATOR + encodeUrl);
+
+            } catch (KeeperException.NodeExistsException nodeExistsException) {
+                if (logger.isWarnEnabled()) {
+                	logger.warn("consumer has exists in zookeeper, consumer=" + url);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to register consumer to zookeeperRegistry!", e);
+            }
+        }
+    }
+	@SuppressWarnings("deprecation")
+	private void subscribeProvider(ConsumerConfig<?> config, NotifyListener listener){
 		final String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
 		PathChildrenCache pathChildrenCache = INTERFACE_PROVIDER_CACHE.get(config);
 		try {
 			if (pathChildrenCache == null) {
-				// TODO 换成监听父节点变化（只是监听变化了，而不通知变化了什么，然后客户端自己来拉数据的）
 				pathChildrenCache = new PathChildrenCache(zkClient, providerPath, true);
-				final PathChildrenCache finalPathChildrenCache = pathChildrenCache;
 				pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
 					@Override
 					public void childEvent(CuratorFramework client1, PathChildrenCacheEvent event) throws Exception {
@@ -236,14 +268,12 @@ public class ZookeeperRegistry extends AbstractRegistry {
 						if (childData != null) {
 							ProviderInfo providerInfo = (ProviderInfo) ZookeeperRegistryHelper
 									.convertUrlToProvider(providerPath, childData);
-							ProviderInfoGroup group = new ProviderInfoGroup();
-							group.add(providerInfo);
 							switch (event.getType()) {
 							case CHILD_ADDED: // 加了一个provider
-								listener.notifyOnLine(group);
+								listener.providerOnLine(providerInfo);
 								break;
 							case CHILD_REMOVED: // 删了一个provider
-								listener.notifyOffLine(group);
+								listener.providerOffLine(providerInfo);
 								break;
 							case CHILD_UPDATED: // 更新一个Provider
 								break;
@@ -251,15 +281,98 @@ public class ZookeeperRegistry extends AbstractRegistry {
 								break;
 							}
 						}
-
 					}
 				});
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
 				List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(providerPath,
 						pathChildrenCache.getCurrentData());
-				ProviderInfoGroup group = new ProviderInfoGroup(providerInfos);
-				listener.notifyOnLine(group);
+				for(ProviderInfo info : providerInfos){
+					listener.providerOnLine(info);
+				}
 				INTERFACE_PROVIDER_CACHE.put(config, pathChildrenCache);
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to subscribe provider from zookeeperRegistry!", e);
+		}
+	}
+	
+    @SuppressWarnings("deprecation")
+	private void subscribeConfig(ConsumerConfig<?> config, NotifyListener listener){
+    	final String configPath = ZookeeperRegistryHelper.buildConfigPath(rootPath, config);
+		PathChildrenCache pathChildrenCache = INTERFACE_CONFIG_CACHE.get(config);
+		try {
+			if (pathChildrenCache == null) {
+				pathChildrenCache = new PathChildrenCache(zkClient, configPath, true);
+				pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
+					@Override
+					public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+						if (logger.isDebugEnabled()) {
+							logger.debug(config.getAppName(),
+									"Receive zookeeper event: " + "type=[" + event.getType() + "]");
+						}
+						ChildData childData = event.getData();
+						if (childData != null) {
+							
+							switch (event.getType()) {
+							case CHILD_ADDED: 
+								break;
+							case CHILD_REMOVED: 
+								break;
+							case CHILD_UPDATED: 
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				});
+				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
+				
+				INTERFACE_CONFIG_CACHE.put(config, pathChildrenCache);
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to subscribe config from zookeeperRegistry!", e);
+		}
+	}
+    
+    @SuppressWarnings("deprecation")
+	private void subscribeRouter(ConsumerConfig<?> config, NotifyListener listener){
+    	final String routerPath = ZookeeperRegistryHelper.buildRouterPath(rootPath, config);
+		PathChildrenCache pathChildrenCache = INTERFACE_ROUTER_CACHE.get(config);
+		try {
+			if (pathChildrenCache == null) {
+				pathChildrenCache = new PathChildrenCache(zkClient, routerPath, true);
+				pathChildrenCache.getListenable().addListener(new PathChildrenCacheListener() {
+					@Override
+					public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+						if (logger.isDebugEnabled()) {
+							logger.debug(config.getAppName(),
+									"Receive zookeeper event: " + "type=[" + event.getType() + "]");
+						}
+						ChildData childData = event.getData();
+						if (childData != null) {
+							String router =  ZookeeperRegistryHelper.convertUrlToRouter(routerPath, childData);
+							switch (event.getType()) {
+							case CHILD_ADDED: 
+								listener.routerAdd(router);
+								break;
+							case CHILD_REMOVED: // 
+								listener.routerDelete(router);
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				});
+				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
+				List<String> routers = ZookeeperRegistryHelper.convertUrlsToRouter(routerPath, pathChildrenCache.getCurrentData());
+				for(String router : routers){
+					listener.routerAdd(router);
+				}
+				INTERFACE_ROUTER_CACHE.put(config, pathChildrenCache);
 			}
 
 		} catch (Exception e) {

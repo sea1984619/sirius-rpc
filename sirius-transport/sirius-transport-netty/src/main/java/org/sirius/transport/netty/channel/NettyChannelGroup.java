@@ -107,7 +107,6 @@ public class NettyChannelGroup implements ChannelGroup {
 	}
 	@Override
 	public UnresolvedAddress localAddress() {
-		// TODO Auto-generated method stub
 		return this.lacalAddress;
 	}
 	@Override
