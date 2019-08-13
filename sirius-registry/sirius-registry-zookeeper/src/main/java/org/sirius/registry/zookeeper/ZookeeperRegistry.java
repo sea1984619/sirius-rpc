@@ -3,6 +3,7 @@ package org.sirius.registry.zookeeper;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -76,7 +77,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	/**
 	 * 保存服务消费者的url
 	 */
-	
+
 	private ConcurrentMap<ConsumerConfig, String> consumerUrls = new ConcurrentHashMap<ConsumerConfig, String>();
 
 	/**
@@ -175,11 +176,32 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
 			zkClient.close();
 		}
+		providerUrls.clear();
+		consumerUrls.clear();
 	}
 
 	@Override
-	protected void doRegister(ProviderConfig config) {
+	public void shutdown() {
+		closePathChildrenCache(INTERFACE_PROVIDER_CACHE);
+		closePathChildrenCache(INTERFACE_CONFIG_CACHE);
+		closePathChildrenCache(INTERFACE_ROUTER_CACHE);
+		providerUrls.clear();
+		consumerUrls.clear();
 
+	}
+
+	private void closePathChildrenCache(ConcurrentMap<ConsumerConfig, PathChildrenCache> map) {
+		for (Map.Entry<ConsumerConfig, PathChildrenCache> entry : map.entrySet()) {
+			try {
+				entry.getValue().close();
+			} catch (Exception e) {
+				logger.error("Close PathChildrenCache error!", e);
+			}
+		}
+	}
+
+	@Override
+	protected void doRegister(ProviderConfig<?> config) {
 		// 注册服务端节点
 		try {
 			// 避免重复计算
@@ -220,38 +242,39 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	@Override
 	protected void doSubscribe(ConsumerConfig<?> config, NotifyListener listener) {
 		subscribeConsumerUrls(config);
-		subscribeProvider(config,listener);
-		subscribeConfig(config,listener);
-		subscribeRouter(config,listener);
+		subscribeProvider(config, listener);
+		subscribeConfig(config, listener);
+		subscribeRouter(config, listener);
 	}
-	protected void subscribeConsumerUrls(ConsumerConfig config) {
-        // 注册Consumer节点
-        String url = null;
-        if (config.isRegister()) {
-            try {
-                String consumerPath = ZookeeperRegistryHelper.buildConsumerPath(rootPath, config);
-                if (consumerUrls.containsKey(config)) {
-                    url = consumerUrls.get(config);
-                } else {
-                    url = ZookeeperRegistryHelper.convertConsumerToUrl(config);
-                    consumerUrls.put(config, url);
-                }
-                String encodeUrl = URLEncoder.encode(url, "UTF-8");
-                getAndCheckZkClient().create().creatingParentContainersIfNeeded()
-                    .withMode(CreateMode.EPHEMERAL) // Consumer临时节点
-                    .forPath(consumerPath + PATH_SEPARATOR + encodeUrl);
 
-            } catch (KeeperException.NodeExistsException nodeExistsException) {
-                if (logger.isWarnEnabled()) {
-                	logger.warn("consumer has exists in zookeeper, consumer=" + url);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to register consumer to zookeeperRegistry!", e);
-            }
-        }
-    }
+	protected void subscribeConsumerUrls(ConsumerConfig config) {
+		// 注册Consumer节点
+		String url = null;
+		if (config.isRegister()) {
+			try {
+				String consumerPath = ZookeeperRegistryHelper.buildConsumerPath(rootPath, config);
+				if (consumerUrls.containsKey(config)) {
+					url = consumerUrls.get(config);
+				} else {
+					url = ZookeeperRegistryHelper.convertConsumerToUrl(config);
+					consumerUrls.put(config, url);
+				}
+				String encodeUrl = URLEncoder.encode(url, "UTF-8");
+				getAndCheckZkClient().create().creatingParentContainersIfNeeded().withMode(CreateMode.EPHEMERAL) // Consumer临时节点
+						.forPath(consumerPath + PATH_SEPARATOR + encodeUrl);
+
+			} catch (KeeperException.NodeExistsException nodeExistsException) {
+				if (logger.isWarnEnabled()) {
+					logger.warn("consumer has exists in zookeeper, consumer=" + url);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to register consumer to zookeeperRegistry!", e);
+			}
+		}
+	}
+
 	@SuppressWarnings("deprecation")
-	private void subscribeProvider(ConsumerConfig<?> config, NotifyListener listener){
+	private void subscribeProvider(ConsumerConfig<?> config, NotifyListener listener) {
 		final String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
 		PathChildrenCache pathChildrenCache = INTERFACE_PROVIDER_CACHE.get(config);
 		try {
@@ -286,7 +309,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
 				List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(providerPath,
 						pathChildrenCache.getCurrentData());
-				for(ProviderInfo info : providerInfos){
+				for (ProviderInfo info : providerInfos) {
 					listener.providerOnLine(info);
 				}
 				INTERFACE_PROVIDER_CACHE.put(config, pathChildrenCache);
@@ -296,10 +319,10 @@ public class ZookeeperRegistry extends AbstractRegistry {
 			throw new RuntimeException("Failed to subscribe provider from zookeeperRegistry!", e);
 		}
 	}
-	
-    @SuppressWarnings("deprecation")
-	private void subscribeConfig(ConsumerConfig<?> config, NotifyListener listener){
-    	final String configPath = ZookeeperRegistryHelper.buildConfigPath(rootPath, config);
+
+	@SuppressWarnings("deprecation")
+	private void subscribeConfig(ConsumerConfig<?> config, NotifyListener listener) {
+		final String configPath = ZookeeperRegistryHelper.buildConfigPath(rootPath, config);
 		PathChildrenCache pathChildrenCache = INTERFACE_CONFIG_CACHE.get(config);
 		try {
 			if (pathChildrenCache == null) {
@@ -313,13 +336,13 @@ public class ZookeeperRegistry extends AbstractRegistry {
 						}
 						ChildData childData = event.getData();
 						if (childData != null) {
-							
+
 							switch (event.getType()) {
-							case CHILD_ADDED: 
+							case CHILD_ADDED:
 								break;
-							case CHILD_REMOVED: 
+							case CHILD_REMOVED:
 								break;
-							case CHILD_UPDATED: 
+							case CHILD_UPDATED:
 								break;
 							default:
 								break;
@@ -328,7 +351,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 					}
 				});
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
-				
+
 				INTERFACE_CONFIG_CACHE.put(config, pathChildrenCache);
 			}
 
@@ -336,10 +359,10 @@ public class ZookeeperRegistry extends AbstractRegistry {
 			throw new RuntimeException("Failed to subscribe config from zookeeperRegistry!", e);
 		}
 	}
-    
-    @SuppressWarnings("deprecation")
-	private void subscribeRouter(ConsumerConfig<?> config, NotifyListener listener){
-    	final String routerPath = ZookeeperRegistryHelper.buildRouterPath(rootPath, config);
+
+	@SuppressWarnings("deprecation")
+	private void subscribeRouter(ConsumerConfig<?> config, NotifyListener listener) {
+		final String routerPath = ZookeeperRegistryHelper.buildRouterPath(rootPath, config);
 		PathChildrenCache pathChildrenCache = INTERFACE_ROUTER_CACHE.get(config);
 		try {
 			if (pathChildrenCache == null) {
@@ -353,12 +376,12 @@ public class ZookeeperRegistry extends AbstractRegistry {
 						}
 						ChildData childData = event.getData();
 						if (childData != null) {
-							String router =  ZookeeperRegistryHelper.convertUrlToRouter(routerPath, childData);
+							String router = ZookeeperRegistryHelper.convertUrlToRouter(routerPath, childData);
 							switch (event.getType()) {
-							case CHILD_ADDED: 
+							case CHILD_ADDED:
 								listener.routerAdd(router);
 								break;
-							case CHILD_REMOVED: // 
+							case CHILD_REMOVED: //
 								listener.routerDelete(router);
 								break;
 							default:
@@ -368,8 +391,9 @@ public class ZookeeperRegistry extends AbstractRegistry {
 					}
 				});
 				pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
-				List<String> routers = ZookeeperRegistryHelper.convertUrlsToRouter(routerPath, pathChildrenCache.getCurrentData());
-				for(String router : routers){
+				List<String> routers = ZookeeperRegistryHelper.convertUrlsToRouter(routerPath,
+						pathChildrenCache.getCurrentData());
+				for (String router : routers) {
 					listener.routerAdd(router);
 				}
 				INTERFACE_ROUTER_CACHE.put(config, pathChildrenCache);
@@ -383,11 +407,49 @@ public class ZookeeperRegistry extends AbstractRegistry {
 	@Override
 	protected void doUnSubscribe(ConsumerConfig config) {
 
+		try {
+			String url = consumerUrls.remove(config);
+			if (url != null) {
+				String consumerPath = ZookeeperRegistryHelper.buildConsumerPath(rootPath, config);
+				url = URLEncoder.encode(url, "UTF-8");
+				getAndCheckZkClient().delete().forPath(consumerPath + PATH_SEPARATOR + url);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to unregister consumer to zookeeperRegistry!", e);
+
+		}
+		PathChildrenCache providerCache = INTERFACE_PROVIDER_CACHE.remove(config);
+		PathChildrenCache routerCache = INTERFACE_ROUTER_CACHE.remove(config);
+		PathChildrenCache configCache = INTERFACE_PROVIDER_CACHE.remove(config);
+		try {
+			if (providerCache != null) {
+				providerCache.close();
+			}
+			if (routerCache != null) {
+				routerCache.close();
+			}
+			if (configCache != null) {
+				configCache.close();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to unsubscribe consumer config from zookeeperRegistry!", e);
+		}
 	}
 
 	@Override
 	protected void doUnregister(ProviderConfig config) {
-
+		try {
+			List<String> urls = providerUrls.remove(config);
+			if (CommonUtils.isNotEmpty(urls)) {
+				String providerPath = ZookeeperRegistryHelper.buildProviderPath(rootPath, config);
+				for (String url : urls) {
+					url = URLEncoder.encode(url, "UTF-8");
+					getAndCheckZkClient().delete().forPath(providerPath + PATH_SEPARATOR + url);
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to unregister provider to zookeeperRegistry!", e);
+		}
 	}
 
 	/**
@@ -442,4 +504,5 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		}
 		return zkClient;
 	}
+
 }

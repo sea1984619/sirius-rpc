@@ -68,4 +68,15 @@ public class DefaultRegistry extends AbstractRegistry{
 	protected void doSubscribe(ConsumerConfig<?> config, NotifyListener listener) {
 		service.subscribe(config, listener);
 	}
+
+	@Override
+	public boolean start() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+	}
 }

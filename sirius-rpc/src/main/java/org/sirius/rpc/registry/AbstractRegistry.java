@@ -72,17 +72,7 @@ public abstract class AbstractRegistry implements Registry {
 			timer.newTimeout(new UnSubscribeRetryTask(config), 3000, TimeUnit.MILLISECONDS);
 		}
 	}
-
 	
-	@Override
-	public boolean start() {
-		return false;
-	}
-
-	@Override
-	public void shutdown() {
-
-	}
 	protected abstract void init();
 	protected abstract void doRegister(ProviderConfig<?> config);
 	protected abstract void doUnSubscribe(ConsumerConfig<?> config);
