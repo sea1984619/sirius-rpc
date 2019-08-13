@@ -12,9 +12,8 @@ import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.invoker.Invoker;
+import org.sirius.rpc.registry.NotifyListener;
 import org.sirius.rpc.registry.ProviderInfo;
-import org.sirius.rpc.registry.ProviderInfoGroup;
-import org.sirius.rpc.registry.ProviderInfoListener;
 import org.sirius.rpc.registry.Registry;
 import org.sirius.rpc.registry.RegistryFactory;
 import org.sirius.transport.api.Connector;
@@ -36,7 +35,7 @@ public class DefaultRpcClient implements RpcClient {
 	private GroupListDirectory directory = new GroupListDirectory();
 	private Connector connector;
 	private ConsumerProcessor processor;
-	private ProviderInfoListener listener;
+	private NotifyListener listener;
 
 	private DefaultRpcClient() {
 		init();
@@ -102,7 +101,7 @@ public class DefaultRpcClient implements RpcClient {
 			doCreantChannel(connector, address, consumerConfig, groupList, 0);
 		} else {
 			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
-			listener = new DefaultProviderInfoListener(connector, groupList, consumerConfig);
+			listener = new DefaultNotifyListener(connector, groupList, consumerConfig);
 			for (RegistryConfig registryConfig : registryConfigs) {
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
@@ -154,13 +153,13 @@ public class DefaultRpcClient implements RpcClient {
 		return new UnresolvedSocketAddress(host, port);
 	}
 
-	public static class DefaultProviderInfoListener implements ProviderInfoListener, java.io.Serializable {
+	public static class DefaultNotifyListener implements NotifyListener, java.io.Serializable {
 		private static final long serialVersionUID = -6425896640822350525L;
 		private transient Connector connector;
 		private transient ChannelGroupList groupList;
 		private transient ConsumerConfig<?> consumerConfig;
 
-		public DefaultProviderInfoListener(Connector connector, ChannelGroupList groupList,
+		public DefaultNotifyListener(Connector connector, ChannelGroupList groupList,
 				ConsumerConfig<?> consumerConfig) {
 			this.connector = connector;
 			this.groupList = groupList;
@@ -168,43 +167,46 @@ public class DefaultRpcClient implements RpcClient {
 		}
 
 		@Override
-		public void notifyOnLine(ProviderInfoGroup providerInfoGroup) {
-			List<ProviderInfo> infos = providerInfoGroup.getProviderInfos();
-			for (ProviderInfo info : infos) {
-				String host = info.getHost();
-				int port = info.getPort();
-				int weight = info.getWeight();
-				UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
-				doCreantChannel(connector, address, consumerConfig, groupList,weight);
-				synchronized (consumerConfig) {
-					consumerConfig.notifyAll();
-				}
+		public void providerOnLine(ProviderInfo info) {
+			String host = info.getHost();
+			int port = info.getPort();
+			int weight = info.getWeight();
+			UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
+			doCreantChannel(connector, address, consumerConfig, groupList,weight);
+			synchronized (consumerConfig) {
+				consumerConfig.notifyAll();
 			}
+			
 		}
 
 		@Override
-		public void notifyOffLine(ProviderInfoGroup providerInfoGroup) {
+		public void providerOffLine(ProviderInfo providerInfo) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
-		public void notifyConfiguration(ProviderInfoGroup providerInfoGroup) {
+		public void routerAdd(String router) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
-		public void notifyRouter(ProviderInfoGroup providerInfoGroup) {
+		public void routerDelete(String router) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
 		@Override
-		public void notifyUpdate(ProviderInfoGroup providerInfoGroup) {
+		public void configAdd(String config) {
 			// TODO Auto-generated method stub
-
+			
 		}
 
+		@Override
+		public void ConfigDelete(String config) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 }
