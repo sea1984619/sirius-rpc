@@ -37,6 +37,9 @@ public class ConditionRouter implements Router {
 	public ConditionRouter(String condition, ConsumerConfig<?> config) {
 		this.config = config;
 		this.condition = condition.replaceAll(" ", "");
+		if(condition.indexOf(middle_separator) < 0)
+			ThrowUtil.throwException(
+					new RpcException("the expression of [" + condition + "] is wrong ,must contain =>"));
 		String[] pair = StringUtils.split(this.condition, middle_separator);
 		String[] lefts = StringUtils.split(pair[0], "&");
 		for (String left : lefts) {
@@ -198,7 +201,5 @@ public class ConditionRouter implements Router {
 
 		List filted = cr.route(list, r);
 		System.out.println(filted.size());
-
 	}
-
 }
