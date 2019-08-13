@@ -21,7 +21,6 @@ public class ConditionRouter implements Router {
 	private static final String middle_separator = "=>";
 	private static final String host = "host";
 	private static final String method = "method";
-	private static final String application = "application";
 
 	private String condition;
 	private ConsumerConfig<?> config;
