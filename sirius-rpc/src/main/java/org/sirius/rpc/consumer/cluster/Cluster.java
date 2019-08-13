@@ -2,7 +2,6 @@ package org.sirius.rpc.consumer.cluster;
 
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.invoker.Invoker;
-import org.sirius.rpc.registry.ProviderInfoListener;
 
 public  abstract class Cluster<T> implements Invoker<T> {
 

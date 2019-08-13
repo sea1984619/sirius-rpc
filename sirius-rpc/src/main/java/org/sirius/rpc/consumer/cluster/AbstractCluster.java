@@ -18,6 +18,7 @@ import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.consumer.load.balance.LoadBalancer;
 import org.sirius.rpc.consumer.load.balance.RandomLoadBalancer;
 import org.sirius.rpc.consumer.router.Router;
+import org.sirius.rpc.consumer.router.RouterChain;
 import org.sirius.rpc.future.DefaultInvokeFuture;
 import org.sirius.rpc.invoker.AbstractInvoker;
 import org.sirius.transport.api.Request;
@@ -30,7 +31,7 @@ import org.sirius.transport.api.channel.ChannelGroupList;
 public class AbstractCluster<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
-	private Router router;
+	private RouterChain routerChain;
 	private LoadBalancer loadBalancer = new RandomLoadBalancer();;
 	private RpcClient client;
 	private ConsumerConfig<T> consumerConfig;
@@ -44,14 +45,12 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		initRouterChain(consumerConfig);
 	}
 	
-
 	@SuppressWarnings("unchecked")
 	private void initRouterChain(ConsumerConfig<T> consumerConfig) {
 		ExtensionLoader<Router>  routerLoader = ExtensionLoaderFactory.getExtensionLoader(Router.class);
 		List<Router> routers = routerLoader.getAllExtensions(null, true);
 		
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public void initLoadBalancer(ConsumerConfig<T> consumerConfig) {
@@ -61,10 +60,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		}
 		ExtensionLoader<LoadBalancer>  loadBalancerLoader = ExtensionLoaderFactory.getExtensionLoader(LoadBalancer.class);
 		this.loadBalancer = (LoadBalancer) loadBalancerLoader.getExtensionClass(loadBalancer);
-		
-		
 	}
-
 
 	@Override
 	public Response invoke(Request request) throws Throwable {

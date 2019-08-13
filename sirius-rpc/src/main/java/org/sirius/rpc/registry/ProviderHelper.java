@@ -10,11 +10,6 @@ import org.sirius.common.util.StringUtils;
 
 public class ProviderHelper {
 
-	public static void compareGroup(ProviderInfoGroup oldGroup, ProviderInfoGroup newGroup, List<ProviderInfo> add,
-			List<ProviderInfo> remove) {
-		compareProviders(oldGroup.getProviderInfos(), newGroup.getProviderInfos(), add, remove);
-	}
-
 	/**
 	 * Compare two provider list, return add list and remove list
 	 *
@@ -59,87 +54,7 @@ public class ProviderHelper {
 		}
 	}
 
-	/**
-	 * Compare two provider group list, return add list and remove list
-	 *
-	 * @param oldGroups
-	 *            old provider group list
-	 * @param newGroups
-	 *            new provider group list
-	 * @param add
-	 *            provider list need add
-	 * @param remove
-	 *            provider list need remove
-	 */
-	public static void compareGroups(List<ProviderInfoGroup> oldGroups, List<ProviderInfoGroup> newGroups,
-			List<ProviderInfo> add, List<ProviderInfo> remove) {
-		// 比较老列表和当前列表
-		if (CommonUtils.isEmpty(oldGroups)) {
-			// 空变成非空
-			if (CommonUtils.isNotEmpty(newGroups)) {
-				for (ProviderInfoGroup newGroup : newGroups) {
-					add.addAll(newGroup.getProviderInfos());
-				}
-			}
-			// 空到空，忽略
-		} else {
-			// 非空变成空
-			if (CommonUtils.isEmpty(newGroups)) {
-				for (ProviderInfoGroup oldGroup : oldGroups) {
-					remove.addAll(oldGroup.getProviderInfos());
-				}
-			} else {
-				// 非空变成非空，比较
-				if (CommonUtils.isNotEmpty(oldGroups)) {
-					Map<String, List<ProviderInfo>> oldMap = convertToMap(oldGroups);
-					Map<String, List<ProviderInfo>> mapTmp = convertToMap(newGroups);
-					// 遍历新的
-					for (Map.Entry<String, List<ProviderInfo>> oldEntry : oldMap.entrySet()) {
-						String key = oldEntry.getKey();
-						List<ProviderInfo> oldList = oldEntry.getValue();
-						if (mapTmp.containsKey(key)) {
-							// 老的有，新的也有，比较变化的部分
-							final List<ProviderInfo> newList = mapTmp.remove(key);
-							compareProviders(oldList, newList, add, remove);
-							mapTmp.remove(key);
-						} else {
-							// 老的有，新的没有
-							remove.addAll(oldList);
-						}
-					}
-					// 新的有，老的没有
-					for (Map.Entry<String, List<ProviderInfo>> entry : mapTmp.entrySet()) {
-						add.addAll(entry.getValue());
-					}
-				}
-			}
-		}
-	}
-
-	private static Map<String, List<ProviderInfo>> convertToMap(List<ProviderInfoGroup> ProviderInfoGroups) {
-		Map<String, List<ProviderInfo>> map = new HashMap<String, List<ProviderInfo>>(ProviderInfoGroups.size());
-		for (ProviderInfoGroup ProviderInfoGroup : ProviderInfoGroups) {
-			List<ProviderInfo> ps = map.get(ProviderInfoGroup.getName());
-			if (ps == null) {
-				ps = new ArrayList<ProviderInfo>();
-				map.put(ProviderInfoGroup.getName(), ps);
-			}
-			ps.addAll(ProviderInfoGroup.getProviderInfos());
-		}
-		return map;
-	}
-
-	/**
-	 * Is empty boolean.
-	 *
-	 * @param group
-	 *            the group
-	 * @return the boolean
-	 */
-	public static boolean isEmpty(ProviderInfoGroup group) {
-		return group == null || group.isEmpty();
-	}
-
+	
 	/**
 	 * Write provider info to url string
 	 * 

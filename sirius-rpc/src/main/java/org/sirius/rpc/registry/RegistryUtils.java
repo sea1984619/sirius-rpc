@@ -169,17 +169,21 @@ public class RegistryUtils {
         return sb.toString();
     }
 
-    public static String buildProviderPath(String rootPath, AbstractInterfaceConfig config) {
+    public static String buildProviderPath(String rootPath, AbstractInterfaceConfig<?, ?> config) {
         return rootPath + "sirius-rpc/" + config.getInterface() + "/providers";
     }
 
-    public static String buildConsumerPath(String rootPath, AbstractInterfaceConfig config) {
+    public static String buildConsumerPath(String rootPath, AbstractInterfaceConfig<?, ?> config) {
         return rootPath + "sirius-rpc/" + config.getInterface() + "/consumers";
     }
 
-    public static String buildConfigPath(String rootPath, AbstractInterfaceConfig config) {
+    public static String buildConfigPath(String rootPath, AbstractInterfaceConfig<?, ?> config) {
         return rootPath + "sirius-rpc/" + config.getInterface() + "/configs";
     }
+    public static String buildRouterPath(String rootPath, AbstractInterfaceConfig<?, ?> config) {
+        return rootPath + "sirius-rpc/" + config.getInterface() + "/routers";
+    }
+
 
     /**
      * Read the warmUp weight parameter,

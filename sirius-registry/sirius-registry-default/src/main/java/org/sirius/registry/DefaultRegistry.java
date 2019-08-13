@@ -8,8 +8,7 @@ import org.sirius.rpc.config.ProviderConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.registry.AbstractRegistry;
-import org.sirius.rpc.registry.ProviderInfoListener;
-import org.sirius.rpc.registry.RegistryFactory;
+import org.sirius.rpc.registry.NotifyListener;
 import org.sirius.rpc.registry.RegistryService;
 
 @Extension(value = "sirius", singleton = false)
@@ -50,23 +49,23 @@ public class DefaultRegistry extends AbstractRegistry{
 		service = consumerConfig.refer();   
 	}
 	@Override
-	protected void doRegister(ProviderConfig config) {
+	protected void doRegister(ProviderConfig<?> config) {
 		service.register(config);
 		
 	}
 
 	@Override
-	protected void doUnSubscribe(ConsumerConfig config) {
+	protected void doUnSubscribe(ConsumerConfig<?> config) {
 		service.unSubscribe(config);
 	}
 
 	@Override
-	protected void doUnregister(ProviderConfig config) {
+	protected void doUnregister(ProviderConfig<?> config) {
 		service.unRegister(config);
 	}
 
 	@Override
-	protected void doSubscribe(ConsumerConfig config, ProviderInfoListener listener) {
+	protected void doSubscribe(ConsumerConfig<?> config, NotifyListener listener) {
 		service.subscribe(config, listener);
 	}
 }

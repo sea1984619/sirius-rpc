@@ -2,7 +2,6 @@ package org.sirius.rpc.registry;
 
 import java.util.concurrent.TimeUnit;
 
-import org.sirius.common.concurrent.ConcurrentHashSet;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
@@ -30,7 +29,7 @@ public abstract class AbstractRegistry implements Registry {
 		return this.registryConfig;
 	}
 	@Override
-	public void register(ProviderConfig config) {
+	public void register(ProviderConfig<?> config) {
 
 		try {
 			doRegister(config);
@@ -42,7 +41,7 @@ public abstract class AbstractRegistry implements Registry {
 	}
 
 	@Override
-	public void unRegister(ProviderConfig config) {
+	public void unRegister(ProviderConfig<?> config) {
 		try {
 			doUnregister(config);
 		} catch (Exception e) {
@@ -53,7 +52,7 @@ public abstract class AbstractRegistry implements Registry {
 	}
 
 	@Override
-	public void subscribe(ConsumerConfig config, ProviderInfoListener listener) {
+	public void subscribe(ConsumerConfig<?> config, NotifyListener listener) {
 		try {
 			doSubscribe(config, listener);
 		} catch (Exception e) {
@@ -64,7 +63,7 @@ public abstract class AbstractRegistry implements Registry {
 	}
 
 	@Override
-	public void unSubscribe(ConsumerConfig config) {
+	public void unSubscribe(ConsumerConfig<?> config) {
 		try {
 			doUnSubscribe(config);
 		} catch (Exception e) {
@@ -85,15 +84,15 @@ public abstract class AbstractRegistry implements Registry {
 
 	}
 	protected abstract void init();
-	protected abstract void doRegister(ProviderConfig config);
-	protected abstract void doUnSubscribe(ConsumerConfig config);
-	protected abstract void doUnregister(ProviderConfig config) ;
-	protected abstract void doSubscribe(ConsumerConfig config, ProviderInfoListener listener);
+	protected abstract void doRegister(ProviderConfig<?> config);
+	protected abstract void doUnSubscribe(ConsumerConfig<?> config);
+	protected abstract void doUnregister(ProviderConfig<?> config) ;
+	protected abstract void doSubscribe(ConsumerConfig<?> config, NotifyListener listener);
 
 	public class RegisterRetryTask implements TimerTask {
 
-		private ProviderConfig config;
-		public RegisterRetryTask(ProviderConfig config) {
+		private ProviderConfig<?> config;
+		public RegisterRetryTask(ProviderConfig<?> config) {
 			this.config = config;
 		}
 		@Override
@@ -104,8 +103,8 @@ public abstract class AbstractRegistry implements Registry {
 
 	public class UnRegisterRetryTask implements TimerTask {
 
-		private ProviderConfig config;
-		public UnRegisterRetryTask(ProviderConfig config) {
+		private ProviderConfig<?> config;
+		public UnRegisterRetryTask(ProviderConfig<?> config) {
 			this.config = config;
 		}
 		@Override
@@ -116,9 +115,9 @@ public abstract class AbstractRegistry implements Registry {
 
 	public class SubscribeRetryTask implements TimerTask {
 
-		private ConsumerConfig config;
-		private ProviderInfoListener listener;
-		public SubscribeRetryTask(ConsumerConfig config,ProviderInfoListener listener) {
+		private ConsumerConfig<?> config;
+		private NotifyListener listener;
+		public SubscribeRetryTask(ConsumerConfig<?> config,NotifyListener listener) {
 			this.config = config;
 			this.listener = listener;
 		}
@@ -130,8 +129,8 @@ public abstract class AbstractRegistry implements Registry {
 	}
 	public class UnSubscribeRetryTask implements TimerTask {
 
-		private ConsumerConfig config;
-		public UnSubscribeRetryTask(ConsumerConfig config) {
+		private ConsumerConfig<?> config;
+		public UnSubscribeRetryTask(ConsumerConfig<?> config) {
 			this.config = config;
 		}
 		@Override

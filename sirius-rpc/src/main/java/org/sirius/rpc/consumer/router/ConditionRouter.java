@@ -36,7 +36,7 @@ public class ConditionRouter implements Router {
 	public ConditionRouter(String condition, ConsumerConfig<?> config) {
 		this.config = config;
 		this.condition = condition.replaceAll(" ", "");
-		if(condition.indexOf(middle_separator) < 0)
+		if (condition.indexOf(middle_separator) < 0)
 			ThrowUtil.throwException(
 					new RpcException("the expression of [" + condition + "] is wrong ,must contain =>"));
 		String[] pair = StringUtils.split(this.condition, middle_separator);
@@ -98,7 +98,7 @@ public class ConditionRouter implements Router {
 		return this.condition;
 	}
 
-	public class Condition {
+	private class Condition {
 
 		private static final String equal = "=";
 		private static final String not_equal = "!=";
@@ -107,16 +107,16 @@ public class ConditionRouter implements Router {
 		private boolean isExclude;
 		private List<String> conditions;
 
-		public Condition(String condition) {
+		Condition(String condition) {
 			String[] pair = null;
-			if(condition.indexOf(equal) < 0) {
+			if (condition.indexOf(equal) < 0) {
 				ThrowUtil.throwException(
 						new RpcException("the expression of [" + condition + "] is wrong ,must contain = or !="));
 			}
-			if(condition.indexOf(not_equal)>0) {
+			if (condition.indexOf(not_equal) > 0) {
 				pair = StringUtils.split(condition, not_equal);
 				this.isExclude = true;
-			}else {
+			} else {
 				pair = StringUtils.split(condition, equal);
 			}
 			if (StringUtils.isEmpty(pair[0]) || StringUtils.isEmpty(pair[1])) {
@@ -127,7 +127,7 @@ public class ConditionRouter implements Router {
 			conditions = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(pair[1]));
 		}
 
-		public boolean match(String tobeMatched) {
+		boolean match(String tobeMatched) {
 			boolean matched = false;
 			for (String condition : conditions) {
 				if (match(tobeMatched, condition)) {
@@ -156,7 +156,7 @@ public class ConditionRouter implements Router {
 			return false;
 		}
 
-		public String getKind() {
+		String getKind() {
 			return kind;
 		}
 	}
