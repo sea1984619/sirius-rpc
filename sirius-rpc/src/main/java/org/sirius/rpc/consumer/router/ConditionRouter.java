@@ -64,7 +64,10 @@ public class ConditionRouter implements Router {
 				else
 					tobeMatched = config.getConfigValueCache().get(kind).toString();
 
-				if (!match(tobeMatched, c)) {
+				/*
+				 * 条件需要全部匹配,有一个不匹配就不需要过滤了
+				 */
+				if (!c.match(tobeMatched)) {
 					needFilte = false;
 					break;
 				}
@@ -79,28 +82,14 @@ public class ConditionRouter implements Router {
 
 			for (ChannelGroup group : groupList) {
 				String remoteAddress = group.remoteAddress().getHost();
-				if(match(remoteAddress, rightCondition)) {
+				if (rightCondition.match(remoteAddress)) {
 					filted.add(group);
+					System.out.println("select : " + group.remoteAddress());
 				}
 			}
 			return filted;
 		}
 		return groupList;
-	}
-
-	private boolean match(String tobeMatched, Condition c) {
-		if (c.getInclude() != null) {
-			if (c.matchInclude(tobeMatched)) {
-				return true;
-			}
-		} else {
-			if (c.getExclude() != null) {
-				if (!c.matchExclude(tobeMatched))
-					return true;
-			}
-		}
-		return false;
-
 	}
 
 	public String getCondition() {
@@ -113,79 +102,56 @@ public class ConditionRouter implements Router {
 		private static final String not_equal = "!=";
 		private static final String wildcard = "*";
 		private String kind;
-		private List<String> include;
-		private List<String> exclude;
+		private boolean isExclude;
+		private List<String> conditions;
 
 		public Condition(String condition) {
-			if (condition.indexOf(not_equal) > 0) {
-				String[] pair = StringUtils.split(condition, not_equal);
-				String kind = pair[0];
-				String expression = pair[1];
-				if (StringUtils.isEmpty(kind) || StringUtils.isEmpty(expression)) {
-					ThrowUtil.throwException(new RpcException("the expression of [" + condition
-							+ "] is wrong ,both side of (= or != ) must not be blank"));
-				}
-				this.kind = kind;
-				exclude = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
-				return;
-			} else {
-				if (condition.indexOf(equal) > 0) {
-					String[] pair = StringUtils.split(condition, equal);
-					String kind = pair[0];
-					String expression = pair[1];
-					if (StringUtils.isEmpty(kind) || StringUtils.isEmpty(expression)) {
-						ThrowUtil.throwException(new RpcException("the expression of [" + condition
-								+ "] is wrong ,both side of (= or != ) must not be blank"));
-					}
-					this.kind = kind;
-					include = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(expression));
-					return;
-				}
+			String[] pair = null;
+			if(condition.indexOf(equal) < 0) {
+				ThrowUtil.throwException(
+						new RpcException("the expression of [" + condition + "] is wrong ,must contain = or !="));
 			}
-			ThrowUtil.throwException(
-					new RpcException("the expression of [" + condition + "] is wrong ,must contain = or !="));
+			if(condition.indexOf(not_equal)>0) {
+				pair = StringUtils.split(condition, not_equal);
+				this.isExclude = true;
+			}else {
+				pair = StringUtils.split(condition, equal);
+			}
+			if (StringUtils.isEmpty(pair[0]) || StringUtils.isEmpty(pair[1])) {
+				ThrowUtil.throwException(new RpcException(
+						"the expression of [" + condition + "] is wrong ,both side of (= or != ) must not be blank"));
+			}
+			this.kind = pair[0];
+			conditions = Arrays.asList(StringUtils.splitWithCommaOrSemicolon(pair[1]));
 		}
 
-		public boolean matchInclude(String tobematched) {
-			for (String condition : include) {
-				if (match(tobematched, condition)) {
-					return true;
+		public boolean match(String tobeMatched) {
+			boolean matched = false;
+			for (String condition : conditions) {
+				if (match(tobeMatched, condition)) {
+					matched = true;
+					break;
 				}
 			}
-			return false;
-		}
-
-		public boolean matchExclude(String tobematched) {
-			for (String condition : exclude) {
-				if (match(tobematched, condition)) {
-					return true;
-				}
-			}
-			return false;
+			if (isExclude)
+				matched = !matched;
+			return matched;
 		}
 
 		/*
 		 * 正则表达式不会搞,所以,很简单的匹配方法,不过可以满足绝大部分需求了。
 		 */
-		public boolean match(String tobematched, String condition) {
-			if (tobematched.equals(condition))
+		private boolean match(String tobeMatched, String condition) {
+			if (tobeMatched.equals(condition))
 				return true;
 			if (condition.equals(wildcard))
 				return true;
 			if (condition.endsWith(wildcard)) {
 				String sub = condition.substring(0, condition.length() - 1);
-				if (tobematched.startsWith(sub))
+				if (tobeMatched.startsWith(sub))
 					return true;
 			}
 			return false;
-		}
-
-		public List<String> getInclude() {
-			return include;
-		}
-
-		public List<String> getExclude() {
-			return exclude;
 		}
 
 		public String getKind() {
@@ -210,7 +176,7 @@ public class ConditionRouter implements Router {
 
 	public static void main(String args[]) {
 
-		String rule = "host=192.168.* & method= get*=>  host= 192.168.1.*";
+		String rule = "host!=192.168.* & method= get*=>  host!= 192.168.1.*";
 		ChannelGroup group1 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.1.1", 2000));
 		group1.setLocalAddress(new UnresolvedSocketAddress("192.168.1.10", 2000));
 		ChannelGroup group2 = new NettyChannelGroup(new UnresolvedSocketAddress("192.168.3.2", 2000));
