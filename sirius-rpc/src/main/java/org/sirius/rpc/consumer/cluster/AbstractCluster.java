@@ -15,8 +15,7 @@ import org.sirius.rpc.client.RpcClient;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RpcConstants;
 import org.sirius.rpc.consumer.AsyncResponse;
-import org.sirius.rpc.consumer.load.balance.LoadBalancer;
-import org.sirius.rpc.consumer.load.balance.RandomLoadBalancer;
+import org.sirius.rpc.consumer.loadbalance.LoadBalancer;
 import org.sirius.rpc.consumer.router.Router;
 import org.sirius.rpc.consumer.router.RouterChain;
 import org.sirius.rpc.future.DefaultInvokeFuture;
@@ -32,7 +31,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractCluster.class);
 	private RouterChain routerChain;
-	private LoadBalancer loadBalancer = new RandomLoadBalancer();;
+	private LoadBalancer loadBalancer;
 	private RpcClient client;
 	private ConsumerConfig<T> consumerConfig;
 
@@ -70,7 +69,8 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		Channel channel = null;
 		try {
 			ChannelGroupList channelGroupList = client.getGroupList(consumerConfig.getInterface());
-			ChannelGroup group = loadBalancer.select(channelGroupList);
+			List<ChannelGroup> groups = routerChain.route(channelGroupList.getList(), request);
+			ChannelGroup group = loadBalancer.select(groups,request);
 			channel = group.next();
 			channel.send(request);
 			int timeout = request.getTimeout();
@@ -102,6 +102,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 			response = buildErrorResponse(request,t);
 		}
 		// 方法返回时,ArgumentCallbackHandler会用到
+		System.out.println(channel);
 		RpcInvokeContent.getContent().set(RpcConstants.CHANNEL, channel);
 		return response;
 	}

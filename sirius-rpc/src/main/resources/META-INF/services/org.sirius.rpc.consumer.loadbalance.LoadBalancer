@@ -1,0 +1,3 @@
+org.sirius.rpc.consumer.loadbalance.RoundRobinLoadBalancer
+org.sirius.rpc.consumer.loadbalance.ConsistentHashLoadBalancer
+org.sirius.rpc.consumer.loadbalance.RandomLoadBalancer
