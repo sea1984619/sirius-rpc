@@ -259,16 +259,8 @@ public class CallbackFilter implements Filter {
 			return method;
 		}
 
-		public void setMethod(Method method) {
-			this.method = method;
-		}
-
 		public Object getObject() {
 			return object;
-		}
-
-		public void setObject(Object object) {
-			this.object = object;
 		}
 	}
 }
