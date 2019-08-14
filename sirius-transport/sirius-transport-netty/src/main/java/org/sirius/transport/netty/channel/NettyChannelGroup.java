@@ -14,7 +14,11 @@ public class NettyChannelGroup implements ChannelGroup {
 	private UnresolvedAddress remoteAddress;
 	private UnresolvedAddress lacalAddress;
 	private int capacity;
-	private int weight;
+	public int weight;
+	//有效权重，初始化为weight ,加权轮询时使用
+	public int effectiveWeight;
+	//节点当前权重，初始化为0 加权轮询时使用
+	public int currentWeight = 0;
 	private ChannelFutureListener cleaner = future -> remove(NettyChannel.attachChannel(future.channel()));
 	private CopyOnWriteArrayList<NettyChannel> channels = new CopyOnWriteArrayList<NettyChannel>();
 	private IntegerSequencer  sequencer = new IntegerSequencer();
@@ -73,6 +77,22 @@ public class NettyChannelGroup implements ChannelGroup {
 		this.weight = weight;
 	}
 
+	@Override
+	public int getEffectiveWeight() {
+		return effectiveWeight;
+	}
+	@Override
+	public void setEffectiveWeight(int effectiveWeight) {
+		this.effectiveWeight = effectiveWeight;
+	}
+	@Override
+	public int getCurrentWeight() {
+		return currentWeight;
+	}
+	@Override
+	public void setCurrentWeight(int currentWeight) {
+		this.currentWeight = currentWeight;
+	}
 	@Override
 	public boolean remove(Channel c) {
 		return c instanceof NettyChannel && channels.remove(c);

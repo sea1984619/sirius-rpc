@@ -27,6 +27,14 @@ public interface ChannelGroup {
 	
 	void setWeight(int weight);
 	
+	public int getEffectiveWeight(); 
+		
+	public void setEffectiveWeight(int effectiveWeight);
+		
+	public int getCurrentWeight();
+		
+	public void setCurrentWeight(int currentWeight) ;
+		
 	boolean  remove(Channel c);
 	
 	int size();

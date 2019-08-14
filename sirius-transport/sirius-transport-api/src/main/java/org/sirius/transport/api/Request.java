@@ -82,5 +82,4 @@ public class Request extends Message implements Serializable{
 	public void setInvokeType(String invokeType) {
 		this.invokeType = invokeType;
 	}
-
 }

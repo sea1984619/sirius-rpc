@@ -10,7 +10,6 @@ import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
-import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.registry.NotifyListener;
 import org.sirius.rpc.registry.ProviderInfo;
@@ -22,7 +21,6 @@ import org.sirius.transport.api.UnresolvedAddress;
 import org.sirius.transport.api.UnresolvedSocketAddress;
 import org.sirius.transport.api.channel.Channel;
 import org.sirius.transport.api.channel.ChannelGroupList;
-import org.sirius.transport.api.channel.DirectoryGroupList;
 import org.sirius.transport.api.channel.GroupListDirectory;
 import org.sirius.transport.netty.NettyTcpConnector;
 

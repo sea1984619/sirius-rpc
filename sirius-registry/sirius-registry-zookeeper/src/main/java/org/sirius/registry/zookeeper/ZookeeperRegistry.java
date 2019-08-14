@@ -185,6 +185,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		closePathChildrenCache(INTERFACE_PROVIDER_CACHE);
 		closePathChildrenCache(INTERFACE_CONFIG_CACHE);
 		closePathChildrenCache(INTERFACE_ROUTER_CACHE);
+		zkClient.close();
 		providerUrls.clear();
 		consumerUrls.clear();
 
