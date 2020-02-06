@@ -45,7 +45,7 @@ public class CallbackFilter implements Filter {
 		return invoker.invoke(request);
 	}
 
-	private void init(Invoker invoker) {
+	private void init(Invoker<?> invoker) {
 		AbstractInvoker<?> _invoker = (AbstractInvoker<?>) invoker;
 		ConsumerConfig<?> consumerConfig = (ConsumerConfig<?>) _invoker.getConfig();
 		Map<String, MethodConfig> methodConfigMap = consumerConfig.getMethods();

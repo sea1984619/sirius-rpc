@@ -15,6 +15,7 @@ import org.sirius.rpc.consumer.ConsumerInvoker;
 import org.sirius.rpc.consumer.cluster.AbstractCluster;
 import org.sirius.rpc.consumer.cluster.Cluster;
 import org.sirius.rpc.consumer.router.Router;
+import org.sirius.rpc.generic.GenericClass;
 import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.proxy.ProxyFactory;
 
@@ -27,15 +28,12 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * The constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 4244077707655448146L;
-	
 
-	
 	private transient volatile T proxy;
 	/**
 	 * 调用的协议
 	 */
 	protected String protocol = "sirius";
-	
 
 	/**
 	 * 直连调用地址
@@ -45,12 +43,12 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	/**
 	 * 是否泛化调用
 	 */
-	protected boolean generic  = false;
+	protected boolean generic = false;
 
 	/**
 	 * 是否异步调用
 	 */
-	protected String invokeType           = "sync";
+	protected String invokeType = "sync";
 
 	/**
 	 * 连接超时时间
@@ -125,7 +123,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 * 路由配置别名
 	 */
 	protected List<String> router;
-	
+
 	private List<Router> routerRef;
 
 	/**
@@ -159,7 +157,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 */
 	protected int concurrents;
 
-
 	/**
 	 * Build key.
 	 *
@@ -175,7 +172,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 	 *
 	 * @return the proxyClass
 	 */
-	
 
 	/**
 	 * Gets protocol.
@@ -261,27 +257,27 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return this;
 	}
 
-	
-	 /**
-     * Gets routerRef.
-     *
-     * @return the routerRef
-     */
-    public List<Router> getRouterRef() {
-        return routerRef;
-    }
+	/**
+	 * Gets routerRef.
+	 *
+	 * @return the routerRef
+	 */
+	public List<Router> getRouterRef() {
+		return routerRef;
+	}
 
-    /**
-     * Sets routerRef.
-     *
-     * @param routerRef the routerRef
-     * @return the routerRef
-     */
-    public ConsumerConfig<T> setRouterRef(List<Router> routerRef) {
-        this.routerRef = routerRef;
-        return this;
-    }
-    
+	/**
+	 * Sets routerRef.
+	 *
+	 * @param routerRef
+	 *            the routerRef
+	 * @return the routerRef
+	 */
+	public ConsumerConfig<T> setRouterRef(List<Router> routerRef) {
+		this.routerRef = routerRef;
+		return this;
+	}
+
 	/**
 	 * Gets connect timeout.
 	 *
@@ -597,9 +593,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return this;
 	}
 
-	
-
-	
 	/**
 	 * Gets timeout.
 	 *
@@ -762,7 +755,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return (Integer) getMethodConfigValue(methodName, RpcConstants.CONFIG_KEY_TIMEOUT, getTimeout());
 	}
 
-	
 	/**
 	 * Gets the call type corresponding to the method name
 	 *
@@ -774,7 +766,6 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 		return (String) getMethodConfigValue(methodName, RpcConstants.CONFIG_KEY_INVOKE_TYPE, getInvokeType());
 	}
 
-	
 	/**
 	 * Sets serialization.
 	 *
@@ -790,45 +781,49 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
 
 	@Override
 	public Class<?> getProxyClass() {
-		 if (proxyClass != null) {
-	            return proxyClass;
-	        }
-	        try {
-	            if (StringUtils.isNotBlank(interfaceName)) {
-	                this.proxyClass = ClassUtil.forName(interfaceName);
-	                if (!proxyClass.isInterface()) {
-	                    throw new RuntimeException("consumer.interface + interfaceName +  must set interface class, not implement class");
-	                }
-	            } else {
-	                throw new RuntimeException("consumerConfig.interfaceName must be not null");
-	            }
-	        } catch (RuntimeException t) {
-	            throw new IllegalStateException(t.getMessage(), t);
-	        }
-	        return proxyClass;
+		if (generic == true) {
+			return GenericClass.class;
+		}
+		if (proxyClass != null) {
+			return proxyClass;
+		}
+		try {
+			if (StringUtils.isNotBlank(interfaceName)) {
+				this.proxyClass = ClassUtil.forName(interfaceName);
+				if (!proxyClass.isInterface()) {
+					throw new RuntimeException(
+							"consumer.interface + interfaceName +  must set interface class, not implement class");
+				}
+			} else {
+				throw new RuntimeException("consumerConfig.interfaceName must be not null");
+			}
+		} catch (RuntimeException t) {
+			throw new IllegalStateException(t.getMessage(), t);
+		}
+		return proxyClass;
 	}
 
 	@SuppressWarnings("unchecked")
 	public T refer() {
-		if(proxy != null) {
+		if (proxy != null) {
 			return proxy;
 		}
 		try {
-				synchronized(this) {
-					if(proxy == null) {
-						List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
-						this.setFilterRef(filter);
-						RpcClient client = DefaultRpcClient.getInstance();
-						client.addConsumerConfig(this);
-						AbstractCluster<T> cluster = new AbstractCluster<T>(this, client);
-						Invoker<T> chain = FilterChain.buildeFilterChain(cluster, filter);
-						ConsumerInvoker<T> invoker = new ConsumerInvoker<T>(this, chain);
-						proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
-					}
+			synchronized (this) {
+				if (proxy == null) {
+					List<Filter> filter = FilterChain.loadFilter(getFilter(), true);
+					this.setFilterRef(filter);
+					RpcClient client = DefaultRpcClient.getInstance();
+					client.addConsumerConfig(this);
+					AbstractCluster<T> cluster = new AbstractCluster<T>(this, client);
+					Invoker<T> chain = FilterChain.buildeFilterChain(cluster, filter);
+					ConsumerInvoker<T> invoker = new ConsumerInvoker<T>(this, chain);
+					proxy = (T) ProxyFactory.getProxy(invoker, getProxyClass());
 				}
-		}catch(Throwable t) {
+			}
+		} catch (Throwable t) {
 			throw new RuntimeException("error ! creation of consumerProxy failed", t);
 		}
-		return  proxy;
+		return proxy;
 	}
 }

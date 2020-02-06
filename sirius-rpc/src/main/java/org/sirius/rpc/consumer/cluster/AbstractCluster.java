@@ -120,7 +120,7 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		 * 这里的content只是引用, 是否需要深拷贝？假设content里存储了一些只有单次调用才生效的数据,
 		 * 而在执行filter异步回调时又需要这些数据, 而因为执行回调的线程和当前线程不是一个线程,它们并发执行
 		 * 那么这些数据在回调时很大可能会当前线程被更改。这种情况肯定需要深拷贝。
-		 * 但是深拷贝坑比较深,不碰为好,所以filter执行回调时应该避免使用到仅单次调用有效的数据
+		 * 但是深拷贝在级联属性很多的情况会很复杂,还是不用为好,所以filter执行回调时应该避免使用到仅单次调用有效的数据
 		 */
 		response.setContent(RpcInvokeContent.getContent());
 		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));

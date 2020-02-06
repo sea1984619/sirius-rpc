@@ -8,7 +8,7 @@ import org.sirius.transport.api.Response;
 @Extensible
 public interface Filter {
 
-	Response invoke(Invoker invoker, Request request) throws Throwable;
+	Response invoke(Invoker<?> invoker, Request request) throws Throwable;
 	
 	default  Response onResponse(Response res , Request request) {
 		return res;

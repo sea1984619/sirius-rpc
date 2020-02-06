@@ -340,14 +340,14 @@ public final class ClassGenerator {
                     }
                 }
             }
-//            try {
-//				byte[]code = mCtc.toBytecode();
-//				FileOutputStream fos = new FileOutputStream(mClassName+".class");  
-//		        fos.write(code);  
-//		        fos.close();  
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+            try {
+				byte[]code = mCtc.toBytecode();
+				FileOutputStream fos = new FileOutputStream(mClassName+".class");  
+		        fos.write(code);  
+		        fos.close();  
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
             return mCtc.toClass(loader, pd);
         } catch (RuntimeException e) {
             throw e;
