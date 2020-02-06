@@ -16,6 +16,7 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultThreadFactory;
 
+@SuppressWarnings("rawtypes")
 public class ArgumentCallbackInvoker implements Invoker{
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(ArgumentCallbackInvoker.class);
