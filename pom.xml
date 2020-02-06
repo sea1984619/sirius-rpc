@@ -1,423 +1,431 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.sirius-rpc</groupId>
-  <artifactId>sirius</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <modules>
-  	<module>sirius-serialization</module>
-  	<module>sirius-transport</module>
-  	<module>sirius-rpc</module>
-    <module>sirius-common</module>
-    <module>sirius-registry</module>
-    <module>sirius-config</module>
-    <module>sirius-spring</module>
-  </modules>
-  
-  
-   <properties>
-        <netty.version>4.1.19.Final</netty.version>
-        <jmh.version>1.20</jmh.version>
-        <hessian.version>4.0.38</hessian.version>
-        <kryo.version>2.23.0</kryo.version>
-        <protostuff.version>1.6.0</protostuff.version>
-        <asm.version>6.0</asm.version>
-        <bytebuddy.version>1.7.9</bytebuddy.version>
-        <disruptor.version>3.4.2</disruptor.version>
-        <metrics.version>4.0.2</metrics.version>
-        <affinity.version>3.1.7</affinity.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <junit.version>4.12</junit.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <curator.version>4.2.0</curator.version>
-        <zookeeper.version>3.4.14</zookeeper.version>
-        <opentracing.version>0.31.0</opentracing.version>
-        <spring-framework.version>4.3.0.RELEASE</spring-framework.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-  <dependencyManagement>
-        <dependencies>
-            <!-- # sirius module dependency: begin -->
-            <!-- ## required dependency: begin -->
-             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-config</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-rpc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-spring</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.sirius-rpc</groupId>
+	<artifactId>sirius</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>sirius-serialization</module>
+		<module>sirius-transport</module>
+		<module>sirius-rpc</module>
+		<module>sirius-common</module>
+		<module>sirius-registry</module>
+		<module>sirius-config</module>
+		<module>sirius-spring</module>
+	</modules>
 
-            <!-- ### api: begin -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-registry-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-serialization-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-transport-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- ### api: end -->
-            <!-- ## required dependency: end -->
 
-            <!-- ## optional dependency: begin -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-flightexec</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-monitor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+	<properties>
+		<netty.version>4.1.19.Final</netty.version>
+		<jmh.version>1.20</jmh.version>
+		<hessian.version>4.0.38</hessian.version>
+		<kryo.version>2.23.0</kryo.version>
+		<protostuff.version>1.6.0</protostuff.version>
+		<asm.version>6.0</asm.version>
+		<bytebuddy.version>1.7.9</bytebuddy.version>
+		<disruptor.version>3.4.2</disruptor.version>
+		<metrics.version>4.0.2</metrics.version>
+		<affinity.version>3.1.7</affinity.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<junit.version>4.12</junit.version>
+		<hamcrest.version>1.3</hamcrest.version>
+		<curator.version>4.2.0</curator.version>
+		<zookeeper.version>3.4.14</zookeeper.version>
+		<opentracing.version>0.31.0</opentracing.version>
+		<spring-framework.version>4.3.0.RELEASE</spring-framework.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<!-- # sirius module dependency: begin -->
+			<!-- ## required dependency: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-config</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-rpc</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-spring</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <!-- ### registry impl: begin -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-registry-default</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-registry-zookeeper</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- ### registry impl: end -->
+			<!-- ### api: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-registry-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-serialization-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-transport-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- ### api: end -->
+			<!-- ## required dependency: end -->
 
-            <!-- ### serialization impl: begin -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-serialization-hessian</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-serialization-java</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-serialization-kryo</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-serialization-protostuff</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- ### serialization impl: end -->
+			<!-- ## optional dependency: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-flightexec</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-monitor</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <!-- ### transport impl: begin -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>sirius-transport-netty</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- ### transport impl: end -->
-            <!-- ## optional dependency: end -->
-            <!-- # sirius module dependency: end -->
+			<!-- ### registry impl: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-registry-default</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-registry-zookeeper</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- ### registry impl: end -->
 
-            <!-- # netty dependency: begin -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-buffer</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-epoll</artifactId>
-                <version>${netty.version}</version>
-                <classifier>linux-x86_64</classifier>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-kqueue</artifactId>
-                <version>${netty.version}</version>
-                <classifier>osx-x86_64</classifier>
-            </dependency>
-            <!-- # netty dependency: end -->
+			<!-- ### serialization impl: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-serialization-hessian</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-serialization-java</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-serialization-kryo</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-serialization-protostuff</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- ### serialization impl: end -->
 
-            <!-- # serialization dependency: begin -->
-            <dependency>
-                <groupId>com.caucho</groupId>
-                <artifactId>hessian</artifactId>
-                <version>${hessian.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.esotericsoftware.kryo</groupId>
-                <artifactId>kryo</artifactId>
-                <version>${kryo.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.protostuff</groupId>
-                <artifactId>protostuff-core</artifactId>
-                <version>${protostuff.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.protostuff</groupId>
-                <artifactId>protostuff-runtime</artifactId>
-                <version>${protostuff.version}</version>
-            </dependency>
-            <!-- # serialization dependency: end -->
+			<!-- ### transport impl: begin -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>sirius-transport-netty</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- ### transport impl: end -->
+			<!-- ## optional dependency: end -->
+			<!-- # sirius module dependency: end -->
 
-            <!-- # common dependency: begin -->
-            <!-- ## required dependency: begin -->
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>${asm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.bytebuddy</groupId>
-                <artifactId>byte-buddy</artifactId>
-                <version>${bytebuddy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.lmax</groupId>
-                <artifactId>disruptor</artifactId>
-                <version>${disruptor.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.dropwizard.metrics</groupId>
-                <artifactId>metrics-core</artifactId>
-                <version>${metrics.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>net.openhft</groupId>
-                <artifactId>affinity</artifactId>
-                <version>${affinity.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <!-- ## required dependency: end -->
+			<!-- # netty dependency: begin -->
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-common</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-buffer</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-codec</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-handler</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport-native-epoll</artifactId>
+				<version>${netty.version}</version>
+				<classifier>linux-x86_64</classifier>
+			</dependency>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-transport-native-kqueue</artifactId>
+				<version>${netty.version}</version>
+				<classifier>osx-x86_64</classifier>
+			</dependency>
+			<!-- # netty dependency: end -->
 
-            <!-- ## optional dependency: begin -->
-            <dependency>
-                <!-- scope: provided  -->
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <!-- ### zookeeper dependency: begin 只有在依赖 [sirius-registry-zookeeper] 时才会需要它 -->
-            <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-                <version>${zookeeper.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>jline</groupId>
-                        <artifactId>jline</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            
-             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring-framework.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.apache.curator</groupId>
-                <artifactId>curator-framework</artifactId>
-                <version>${curator.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.curator</groupId>
-                <artifactId>curator-recipes</artifactId>
-                <version>${curator.version}</version>
-            </dependency>
-            <!-- ### zookeeper dependency: end -->
+			<!-- # serialization dependency: begin -->
+			<dependency>
+				<groupId>com.caucho</groupId>
+				<artifactId>hessian</artifactId>
+				<version>${hessian.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.esotericsoftware.kryo</groupId>
+				<artifactId>kryo</artifactId>
+				<version>${kryo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.protostuff</groupId>
+				<artifactId>protostuff-core</artifactId>
+				<version>${protostuff.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.protostuff</groupId>
+				<artifactId>protostuff-runtime</artifactId>
+				<version>${protostuff.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.protostuff</groupId>
+				<artifactId>protostuff-api</artifactId>
+				<version>${protostuff.version}</version>
+			</dependency>
+			<!-- # serialization dependency: end -->
 
-            <!-- ### open tracing: begin -->
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-api</artifactId>
-                <version>${opentracing.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.opentracing</groupId>
-                <artifactId>opentracing-noop</artifactId>
-                <version>${opentracing.version}</version>
-            </dependency>
-            <!-- ### open tracing: end -->
+			<!-- # common dependency: begin -->
+			<!-- ## required dependency: begin -->
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${bytebuddy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.lmax</groupId>
+				<artifactId>disruptor</artifactId>
+				<version>${disruptor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.dropwizard.metrics</groupId>
+				<artifactId>metrics-core</artifactId>
+				<version>${metrics.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>net.openhft</groupId>
+				<artifactId>affinity</artifactId>
+				<version>${affinity.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- ## required dependency: end -->
 
-          
-        </dependencies>
-    </dependencyManagement>
+			<!-- ## optional dependency: begin -->
+			<dependency>
+				<!-- scope: provided -->
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<!-- ### zookeeper dependency: begin 只有在依赖 [sirius-registry-zookeeper] 
+				时才会需要它 -->
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${zookeeper.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>netty</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jline</groupId>
+						<artifactId>jline</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
-    <dependencies>
-        <!-- # common test dependency: begin -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>${hamcrest.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- # common test dependency: end -->
-    </dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${spring-framework.version}</version>
+			</dependency>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-framework</artifactId>
+				<version>${curator.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.curator</groupId>
+				<artifactId>curator-recipes</artifactId>
+				<version>${curator.version}</version>
+			</dependency>
+			<!-- ### zookeeper dependency: end -->
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
+			<!-- ### open tracing: begin -->
+			<dependency>
+				<groupId>io.opentracing</groupId>
+				<artifactId>opentracing-api</artifactId>
+				<version>${opentracing.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentracing</groupId>
+				<artifactId>opentracing-noop</artifactId>
+				<version>${opentracing.version}</version>
+			</dependency>
+			<!-- ### open tracing: end -->
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <!-- Source -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Javadoc -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- GPG -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>oss</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
 
-  
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- # common test dependency: begin -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- # common test dependency: end -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- GPG -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
+
+
 </project>

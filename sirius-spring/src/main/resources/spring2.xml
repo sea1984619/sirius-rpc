@@ -22,6 +22,6 @@
 	     onreturn ="check.checkreturn" onthrow = "check.checkthrow">
 	   </sirius:method>
 	</sirius:reference>
-	<sirius:registry protocol ="zookeeper" address = "127.0.0.1:2181"></sirius:registry>
+	<sirius:registry protocol ="zookeeper" address = "111.177.64.197:2181"></sirius:registry>
     
 </beans>
