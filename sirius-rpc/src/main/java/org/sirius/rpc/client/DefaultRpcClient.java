@@ -1,16 +1,13 @@
 package org.sirius.rpc.client;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
-import org.sirius.common.util.Maps;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.config.ConsumerConfig;
 import org.sirius.rpc.config.RegistryConfig;
 import org.sirius.rpc.consumer.DefaultConsumerProcessor;
-import org.sirius.rpc.invoker.Invoker;
 import org.sirius.rpc.registry.NotifyListener;
 import org.sirius.rpc.registry.ProviderInfo;
 import org.sirius.rpc.registry.Registry;
