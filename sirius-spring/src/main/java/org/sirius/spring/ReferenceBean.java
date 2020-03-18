@@ -76,5 +76,4 @@ public class ReferenceBean<T> extends ConsumerConfig<T> implements FactoryBean<T
 		// TODO Auto-generated method stub
 
 	}
-
 }

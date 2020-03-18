@@ -13,6 +13,7 @@ import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.Filter;
+import org.sirius.rpc.RpcException;
 import org.sirius.rpc.RpcInvokeContent;
 import org.sirius.rpc.consumer.AsyncResponse;
 import org.sirius.rpc.invoker.Invoker;
@@ -98,42 +99,44 @@ public class DefaultInvokeFuture<V> extends CompletableFuture<V> implements Invo
 		DefaultInvokeFuture<Response> future = (DefaultInvokeFuture<Response>) futures.remove(id);
 		if (future != null) {
 			AsyncResponse asyncResponse = future.getAsyncResponse();
-			if(asyncResponse != null) {
+			if (asyncResponse != null) {
 				List<Filter> filters = asyncResponse.getFilters();
 				if (filters != null) {
-					//临时content,存储当前线程的content;
+					// 临时content,存储当前线程的content;
 					RpcInvokeContent tem = RpcInvokeContent.getContent();
 					RpcInvokeContent.setContent(asyncResponse.getContent());
-					for (Filter filter : filters) {
-						filter.onResponse(response,future.request);
+					try {
+						for (Filter filter : filters) {
+							filter.onResponse(response, future.request);
+						}
+					} finally {
+						// 恢复当前线程content;
+						RpcInvokeContent.setContent(tem);
 					}
-					//恢复当前线程content;
-					RpcInvokeContent.setContent(tem);
 				}
 			}
 			future.complete(response);
 		}
 	}
-	
-	 static final class TimeoutTask implements TimerTask {
 
-	        private final String channelId;
-	        private final long invokeId;
+	 class TimeoutTask implements TimerTask {
 
-	        public TimeoutTask(long invokeId) {
-	            this.channelId = null;
-	            this.invokeId = invokeId;
-	        }
+		private final String channelId;
+		private final long invokeId;
 
-	        public TimeoutTask(String channelId, long invokeId) {
-	            this.channelId = channelId;
-	            this.invokeId = invokeId;
-	        }
+		public TimeoutTask(long invokeId) {
+			this.channelId = null;
+			this.invokeId = invokeId;
+		}
 
-	        @Override
-	        public void run(Timeout timeout) throws Exception {
-	            DefaultInvokeFuture<?> future;
+		public TimeoutTask(String channelId, long invokeId) {
+			this.channelId = channelId;
+			this.invokeId = invokeId;
+		}
 
-	        }
-	    }
+		@Override
+		public void run(Timeout timeout) throws Exception {
+			completeExceptionally(new RpcException("time out for invoke if id " + invokeId));
+		}
+	}
 }

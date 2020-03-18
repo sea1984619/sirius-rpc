@@ -132,7 +132,6 @@ public abstract class NettyConnector extends AbstractConnector {
 		timer.stop();
 		if (processor != null) {
 			processor.shutdown();
-			;
 		}
 	}
 

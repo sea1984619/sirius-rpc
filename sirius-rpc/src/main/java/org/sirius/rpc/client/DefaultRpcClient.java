@@ -28,8 +28,6 @@ public class DefaultRpcClient implements RpcClient {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultRpcClient.class);
 	private volatile static RpcClient instance;
-	private ConcurrentMap<Class<?>, ConsumerConfig<?>> configs = Maps.newConcurrentMap();
-	private ConcurrentMap<Class<?>, Invoker<?>> invokers = Maps.newConcurrentMap();
 	private GroupListDirectory directory = new GroupListDirectory();
 	private Connector connector;
 	private ConsumerProcessor processor;
@@ -54,13 +52,8 @@ public class DefaultRpcClient implements RpcClient {
 			}
 		}
 		return instance;
-
 	}
-
-	@Override
-	public void Start() {
-	}
-
+	
 	@Override
 	public Connector getConnector() {
 		return this.connector;
@@ -72,8 +65,9 @@ public class DefaultRpcClient implements RpcClient {
 	}
 
 	@Override
-	public void Shutdown() {
-
+	public void shutdown() {
+		connector.shutdownGracefully();
+		processor.shutdown();
 	}
 
 	@Override
@@ -112,14 +106,6 @@ public class DefaultRpcClient implements RpcClient {
 					} catch (Throwable t) {
 						logger.error("subscribe to {} failed ,please retry..", registry, t);
 						throw t;
-					}
-					// 等一会防止channel还没创建好就执行操作了
-					synchronized (consumerConfig) {
-						try {
-							consumerConfig.wait(10000);
-						} catch (InterruptedException e) {
-							// no op
-						}
 					}
 				}
 			}

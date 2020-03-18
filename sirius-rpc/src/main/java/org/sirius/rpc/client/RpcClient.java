@@ -14,9 +14,7 @@ public interface  RpcClient {
 	 ChannelGroupList getGroupList(String serviceID);
 	 
 	 void addConsumerConfig(ConsumerConfig<?> consumerConfig);
-	 
-     void Start();
 	
-	 void Shutdown();
+	 void shutdown();
 	
 }
