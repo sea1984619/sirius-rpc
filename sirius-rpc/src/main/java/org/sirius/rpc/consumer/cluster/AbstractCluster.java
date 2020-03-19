@@ -1,7 +1,9 @@
 package org.sirius.rpc.consumer.cluster;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.sirius.common.ext.Extensible;
 import org.sirius.common.ext.ExtensionLoader;
 import org.sirius.common.ext.ExtensionLoaderFactory;
@@ -115,15 +117,10 @@ public class AbstractCluster<T> extends AbstractInvoker<T> {
 		return response;
 	}
 
-	private AsyncResponse buildAsyncResponse(Request request, List<Filter> filters) {
+	private AsyncResponse buildAsyncResponse(Request request, List<Filter> filters) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 		AsyncResponse response = new AsyncResponse(request.invokeId());
 		response.setFilters(filters);
-		/*
-		 * 这里的content只是引用, 是否需要深拷贝？假设content里存储了一些只有单次调用才生效的数据, 而在执行filter异步回调时又需要这些数据,
-		 * 而因为执行回调的线程和当前线程不是一个线程,它们并发执行 那么这些数据在回调时很大可能会当前线程被更改。这种情况肯定需要深拷贝。
-		 * 但是深拷贝在级联属性很多的情况会很复杂,还是不用为好,所以filter执行回调时应该避免使用到仅单次调用有效的数据
-		 */
-		response.setContent(RpcInvokeContent.getContent());
+		response.setContent((RpcInvokeContent) BeanUtils.cloneBean(RpcInvokeContent.getContent()));
 		response.setResult(ClassUtil.getDefaultPrimitiveValue(request.getReturnType()));
 		return response;
 	}

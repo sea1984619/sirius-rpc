@@ -73,12 +73,11 @@ public class DefaultRpcServer implements RpcServer {
 
 	@Override
 	public void shutdown() {
-
+		processor.shutdown();
 	}
 
 	@Override
 	public void removeInvoker(Invoker invoker) {
-		// TODO Auto-generated method stub
 		
 	}
 }

@@ -32,7 +32,7 @@ public class CallbackFilter implements Filter {
 	private boolean isFirstCall = true;
 
 	@Override
-	public Response invoke(Invoker invoker, Request request) throws Throwable {
+	public Response invoke(Invoker<?> invoker, Request request) throws Throwable {
 
 		if (isFirstCall) {
 			// 此处无需同步控制, 最坏的结果不过是开始时 init()方法多执行几遍

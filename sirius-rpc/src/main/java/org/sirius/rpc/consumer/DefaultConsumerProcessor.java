@@ -1,6 +1,7 @@
 package org.sirius.rpc.consumer;
 
 
+import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
 import org.sirius.rpc.argumentcallback.ArgumentCallbackResponse;
@@ -36,7 +37,8 @@ public class DefaultConsumerProcessor implements ConsumerProcessor {
 			Response _response = invoker.invoke(request);
 			channel.send(_response);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			logger.error(e);
+			ThrowUtil.throwException(e);
 		}
 	}
 

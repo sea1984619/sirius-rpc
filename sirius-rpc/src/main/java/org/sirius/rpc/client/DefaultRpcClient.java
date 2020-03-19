@@ -1,7 +1,9 @@
 package org.sirius.rpc.client;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 
+import org.sirius.common.util.Maps;
 import org.sirius.common.util.ThrowUtil;
 import org.sirius.common.util.internal.logging.InternalLogger;
 import org.sirius.common.util.internal.logging.InternalLoggerFactory;
@@ -21,6 +23,9 @@ import org.sirius.transport.api.channel.ChannelGroupList;
 import org.sirius.transport.api.channel.GroupListDirectory;
 import org.sirius.transport.netty.NettyTcpConnector;
 
+/*
+ * 负责与注册中心沟通,提供各种网络服务
+ */
 public class DefaultRpcClient implements RpcClient {
 
 	private static final InternalLogger logger = InternalLoggerFactory.getInstance(DefaultRpcClient.class);
@@ -28,6 +33,7 @@ public class DefaultRpcClient implements RpcClient {
 	private GroupListDirectory directory = new GroupListDirectory();
 	private Connector connector;
 	private ConsumerProcessor processor;
+	private ConcurrentMap<String,ConsumerConfig<?>>  configMap = Maps.newConcurrentMap();
 	private NotifyListener listener;
 
 	private DefaultRpcClient() {
@@ -53,12 +59,12 @@ public class DefaultRpcClient implements RpcClient {
 	
 	@Override
 	public Connector getConnector() {
-		return this.connector;
+		return connector;
 	}
 
 	@Override
 	public ConsumerProcessor getProcessor() {
-		return this.processor;
+		return processor;
 	}
 
 	@Override
@@ -75,6 +81,7 @@ public class DefaultRpcClient implements RpcClient {
 	@Override
 	public void addConsumerConfig(ConsumerConfig<?> consumerConfig) {
 		try {
+			configMap.put(consumerConfig.getInterface(),consumerConfig);		
 			creatChannel(consumerConfig);
 		} catch (Throwable e) {
 			logger.error("creat Channel failed", e);
@@ -82,16 +89,17 @@ public class DefaultRpcClient implements RpcClient {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void creatChannel(ConsumerConfig<?> consumerConfig) {
-		ChannelGroupList groupList = directory.getGroupList(consumerConfig.getInterface());
+		//直接注册 ,不通过注册中心
 		if (consumerConfig.getDirectUrl() != null) {
 			String url = consumerConfig.getDirectUrl();
 			UnresolvedAddress address = parseUrl(url);
-			doCreantChannel(connector, address, consumerConfig, groupList, 0);
+			doCreantChannel(address, consumerConfig,0);
 		} else {
 			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
-			listener = new DefaultNotifyListener(connector, groupList, consumerConfig);
 			for (RegistryConfig registryConfig : registryConfigs) {
+				listener = new DefaultNotifyListener(consumerConfig);
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
 					// 不copy的话 ,使用spring启动时发送的是referenceBean....
@@ -109,10 +117,8 @@ public class DefaultRpcClient implements RpcClient {
 		}
 	}
 
-	private static void doCreantChannel(Connector connector, UnresolvedAddress address,
-			ConsumerConfig<?> consumerConfig, ChannelGroupList groupList, int weight) {
+	private void doCreantChannel(UnresolvedAddress address,ConsumerConfig<?> consumerConfig, int weight) {
 		int connectionNum = consumerConfig.getConnectionNum();
-
 		Channel channel = null;
 		for (int i = 0; i < connectionNum; i++) {
 			try {
@@ -123,6 +129,7 @@ public class DefaultRpcClient implements RpcClient {
 			}
 		}
 		channel.getGroup().setWeight(weight);
+		ChannelGroupList groupList = directory.getGroupList(consumerConfig.getInterface());
 		groupList.add(channel.getGroup());
 
 	}
@@ -134,16 +141,11 @@ public class DefaultRpcClient implements RpcClient {
 		return new UnresolvedSocketAddress(host, port);
 	}
 
-	public static class DefaultNotifyListener implements NotifyListener, java.io.Serializable {
+	public  class DefaultNotifyListener implements NotifyListener, java.io.Serializable {
 		private static final long serialVersionUID = -6425896640822350525L;
-		private transient Connector connector;
-		private transient ChannelGroupList groupList;
 		private transient ConsumerConfig<?> consumerConfig;
 
-		public DefaultNotifyListener(Connector connector, ChannelGroupList groupList,
-				ConsumerConfig<?> consumerConfig) {
-			this.connector = connector;
-			this.groupList = groupList;
+		public DefaultNotifyListener(ConsumerConfig<?> consumerConfig) {
 			this.consumerConfig = consumerConfig;
 		}
 
@@ -153,17 +155,15 @@ public class DefaultRpcClient implements RpcClient {
 			int port = info.getPort();
 			int weight = info.getWeight();
 			UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
-			doCreantChannel(connector, address, consumerConfig, groupList,weight);
-			synchronized (consumerConfig) {
-				consumerConfig.notifyAll();
-			}
-			
+			doCreantChannel(address, consumerConfig,weight);
 		}
 
 		@Override
 		public void providerOffLine(ProviderInfo providerInfo) {
-			// TODO Auto-generated method stub
-			
+			int port = providerInfo.getPort();
+			String host = providerInfo.getHost();
+			UnresolvedAddress address = new UnresolvedSocketAddress(host, port);
+			DefaultRpcClient.this.directory.removeChannelGroup(address);
 		}
 
 		@Override
