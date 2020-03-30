@@ -35,7 +35,7 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 		executor = new DisruptorExecutor(8, null);
 	}
 
-	public Invoker lookupInvoker(Request request) {
+	public Invoker<?> lookupInvoker(Request request) {
 		return server.lookupInvoker(request);
 	}
 
@@ -47,7 +47,7 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 		}
 		try {
 			handleArgumentCallback(channel, request);
-			Invoker invoker = server.lookupInvoker(request);
+			Invoker<?> invoker = server.lookupInvoker(request);
 			if (invoker == null) {
 				throw new RpcException("the invoker for interface " + request.getClassName() + " is not founded,");
 			}
@@ -70,10 +70,10 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 				if (proxy == null) {
 					int index = argument.getIndex();
 					Object callbackObject = request.getParameters()[index];
-					Class<?> clazz = request.getParametersType()[index];
 					Class<?>[] interfaces = callbackObject.getClass().getInterfaces();
-					ArgumentCallbackInvoker callbackInvoker = new ArgumentCallbackInvoker(channel, Integer.valueOf(argument.getId()),
-							argument.getRetry(), argument.getAttempts(), argument.getDelay());
+					ArgumentCallbackInvoker callbackInvoker = new ArgumentCallbackInvoker(channel,
+							Integer.valueOf(argument.getId()), argument.getRetry(), argument.getAttempts(),
+							argument.getDelay());
 					proxy = ProxyFactory.getProxyNotCache(callbackInvoker, interfaces);
 					proxys.putIfAbsent(id, proxy);
 					// 将参数替换为callback代理
@@ -86,9 +86,6 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 						invokerFiled.setAccessible(true);
 						ArgumentCallbackInvoker callbackInvoker = (ArgumentCallbackInvoker) invokerFiled.get(proxy);
 						callbackInvoker.swapChannel(channel);
-						// 执行到这里就返回, 将channel替换好就行了,不会再重复执行一遍调用方法
-						Response response = new Response(request.invokeId());
-						response.setSerializerCode(request.getSerializerCode());
 					}
 				}
 			}
@@ -102,28 +99,23 @@ public class DefaultProviderProcessor implements ProviderProcessor {
 		} catch (Throwable t) {
 			ThrowUtil.throwException(t);
 		}
-
 	}
 
 	@Override
 	public void handlerException(Channel channel, Request request, Throwable t) {
-		// logger.error("the request of {} processing failed ,the reasons maybe {}",
-		// request.invokeId(), t);
-		// Response response = new Response(request.invokeId());
-		// response.setSerializerCode(request.getSerializerCode());
-		// response.setResult(t);
-		// try {
-		// channel.send(response);
-		// } catch (Exception e) {
-		// logger.error("the response of {} sended failed,the reasons maybe {}",
-		// request.invokeId(), e);
-		// }
-		ThrowUtil.throwException(t);
+		logger.error("the request of {} processing failed ,the reasons maybe {}", request.invokeId(), t);
+		Response response = new Response(request.invokeId());
+		response.setSerializerCode(request.getSerializerCode());
+		response.setResult(t);
+		try {
+			channel.send(response);
+		} catch (Exception e) {
+			logger.error("the response of {} sended failed,the reasons maybe {}", request.invokeId(), e);
+		}
 	}
 
 	@Override
 	public void shutdown() {
 		executor.shutdown();
 	}
-
 }

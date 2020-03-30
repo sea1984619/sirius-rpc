@@ -12,6 +12,5 @@ public class ArgumentCallbackResponse extends Response {
 
 	public ArgumentCallbackResponse(Integer id) {
 		super(id.longValue());
-		
 	}
 }

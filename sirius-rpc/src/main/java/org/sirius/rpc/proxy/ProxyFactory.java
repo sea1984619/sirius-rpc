@@ -8,15 +8,15 @@ import org.sirius.rpc.proxy.bytecode.Wrapper;
 public class ProxyFactory {
 	
 	
-	public static Object getProxy(Invoker invoker, Class<?>... ics) {
+	public static Object getProxy(Invoker<?> invoker, Class<?>... ics) {
 		return ProxyGenerator.getProxy(invoker, ics);
 	}
 	
-	public static Object getProxyNotCache(Invoker invoker, Class<?>... ics) {
+	public static Object getProxyNotCache(Invoker<?> invoker, Class<?>... ics) {
 		return ProxyGenerator.getProxyNotCache(invoker, ics);
 	}
 	
-	public static <T> Invoker getInvoker(T providerImpl, Class<T> provideClass) {
+	public static <T> Invoker<?> getInvoker(T providerImpl, Class<T> provideClass) {
 
 		Wrapper wrapper = Wrapper.getWrapper(provideClass.getClass().getName().indexOf('$') < 0 ? providerImpl.getClass() : provideClass);
 		return new ProviderProxyInvoker<T>(providerImpl, provideClass) {
@@ -27,7 +27,7 @@ public class ProxyFactory {
 		};
 	}
 
-	public static <T> Invoker getInvokerNotCache(T providerImpl, Class<T> provideClass) {
+	public static <T> Invoker<?> getInvokerNotCache(T providerImpl, Class<T> provideClass) {
 
 		Wrapper wrapper = Wrapper.getWrapperNotCache(provideClass.getClass().getName().indexOf('$') < 0 ? providerImpl.getClass() : provideClass);
 		return new ProviderProxyInvoker<T>(providerImpl, provideClass) {

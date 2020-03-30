@@ -39,6 +39,7 @@ public class ArgumentCallbackHandler {
 	 * 缓存 : key : callbackArgument.hashcode -> value : invoker
 	 * 作用主要是发送同一个回调参数时,不会创建新的callback对象;
 	 */
+	@SuppressWarnings("rawtypes")
 	private final static Map<Integer, Invoker> callbackInvokers = Maps.newConcurrentMap();
 	/*
 	 * 缓存 : key:methodName -> List<ArgumentConfig>
@@ -46,18 +47,15 @@ public class ArgumentCallbackHandler {
 	private Map<String, List<ArgumentConfig>> argumentsMap = Maps.newConcurrentMap();
 	/*
 	 * 缓存 : key:channel -> List<ArgumentCallbackRequest> 在当前channel异常关闭后,需要重试。
-	 * 将创建callbackinvoke的request保存起来,如果当前channal异常关闭,重新发送这个request,
+	 * 将创建callbackinvoke的request保存起来,如果当前channel异常关闭,重新发送这个request,
 	 * 尝试重新建立与对端callback的链接
 	 */
 	private Map<Channel, List<ArgumentCallbackRequest>> retryRequest = Maps.newConcurrentMap();
 
-	private ConsumerConfig<?> consumerConfig;
-
-	private Invoker invoker;
+	private Invoker<?> invoker;
 
 	@SuppressWarnings("rawtypes")
 	public ArgumentCallbackHandler(ConsumerConfig consumerConfig, Invoker invoker) {
-		this.consumerConfig = consumerConfig;
 		this.invoker = invoker;
 		init(consumerConfig);
 	}
@@ -157,7 +155,6 @@ public class ArgumentCallbackHandler {
 		public RetryTask(ArgumentCallbackRequest request) {
 			this.request = request;
 		}
-
 		@Override
 		public void run(Timeout timeout) throws Exception {
 			request.setReconnect(true);

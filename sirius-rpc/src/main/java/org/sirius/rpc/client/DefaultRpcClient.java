@@ -34,7 +34,6 @@ public class DefaultRpcClient implements RpcClient {
 	private Connector connector;
 	private ConsumerProcessor processor;
 	private ConcurrentMap<String,ConsumerConfig<?>>  configMap = Maps.newConcurrentMap();
-	private NotifyListener listener;
 
 	private DefaultRpcClient() {
 		init();
@@ -99,10 +98,10 @@ public class DefaultRpcClient implements RpcClient {
 		} else {
 			List<RegistryConfig> registryConfigs = consumerConfig.getRegistryRef();
 			for (RegistryConfig registryConfig : registryConfigs) {
-				listener = new DefaultNotifyListener(consumerConfig);
 				List<Registry> registrys = RegistryFactory.getRegistry(registryConfig);
 				for (Registry registry : registrys) {
 					// 不copy的话 ,使用spring启动时发送的是referenceBean....
+					NotifyListener listener = new DefaultNotifyListener(consumerConfig);
 					ConsumerConfig newConfig = consumerConfig.copyOf(consumerConfig, ConsumerConfig.class);
 					// 创建channel的动作在listener里
 					try {

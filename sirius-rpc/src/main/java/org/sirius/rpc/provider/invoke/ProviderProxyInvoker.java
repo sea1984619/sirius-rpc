@@ -16,7 +16,8 @@ public abstract class ProviderProxyInvoker<T> extends AbstractInvoker implements
 	public ProviderProxyInvoker(T provider,Class<T> type) {
 		this(null,provider,type);
 	}
-	public ProviderProxyInvoker(AbstractInterfaceConfig config ,T provider,Class<T> type) {
+	@SuppressWarnings("unchecked")
+	public ProviderProxyInvoker(AbstractInterfaceConfig<?, ?> config ,T provider,Class<T> type) {
 		super(config);
 		this.provider = provider;
 		this.type = type; 

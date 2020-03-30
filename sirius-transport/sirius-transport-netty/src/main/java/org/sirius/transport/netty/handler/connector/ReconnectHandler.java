@@ -119,7 +119,6 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
 	private boolean isReconnectNeeded(SocketAddress address,ChannelGroup group) {
 		//return AddressReconnectManager.isNeedReonnent(address) && (group == null || group.size() < group.getCapacity());
-		
 		return  true ;
 	}
 }
